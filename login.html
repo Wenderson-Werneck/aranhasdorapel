@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso | Aranhas do Rapel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --dark: #1A202C;
+            --text-gray: #718096;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .auth-container {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Cabeçalho */
+        .auth-header { background: var(--light); padding: 2rem 1rem 1rem; text-align: center; }
+        .logo-area {
+            width: 70px; height: 70px; background: white; border-radius: 50%; margin: 0 auto 1rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 2rem; color: var(--primary);
+        }
+        .auth-header h2 { color: var(--secondary); font-size: 1.5rem; margin-bottom: 0.2rem; }
+        .auth-header p { color: var(--text-gray); font-size: 0.9rem; }
+
+        /* Abas */
+        .auth-tabs { display: flex; background: #f1f5f9; padding: 0.5rem; border-radius: 12px; margin: 1rem; }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer;
+            border-radius: 8px; font-weight: 600; color: var(--text-gray); transition: all 0.3s;
+        }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* Formulários */
+        .forms-wrapper { padding: 0 2rem 2rem; }
+        .auth-form { display: none; animation: fadeIn 0.3s ease; }
+        .auth-form.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 1rem; position: relative; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #cbd5e0; }
+        .input-group input {
+            width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #edf2f7;
+            border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.3s;
+        }
+        .input-group input:focus { border-color: var(--primary); }
+
+        /* Botões */
+        .submit-btn {
+            width: 100%; background: var(--primary); color: white; border: none; padding: 12px;
+            border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(232, 61, 138, 0.3);
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232, 61, 138, 0.4); }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .divider { display: flex; align-items: center; margin: 1.5rem 0; color: #cbd5e0; font-size: 0.8rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #edf2f7; }
+        .divider span { padding: 0 10px; }
+
+        .google-btn {
+            width: 100%; background: white; border: 2px solid #edf2f7; color: var(--dark);
+            padding: 10px; border-radius: 50px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.3s;
+        }
+        .google-btn:hover { border-color: #cbd5e0; background: #f8fafc; }
+        .google-btn img { width: 20px; }
+
+        /* Checkbox e Labels */
+        .checkbox-group { display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--text-gray); margin-bottom: 1rem; text-align: left; }
+        .checkbox-group input { margin-top: 3px; cursor: pointer; }
+        .section-label { margin: 15px 0 10px; font-size: 0.75rem; font-weight: 800; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .back-link { text-align: center; margin-top: 1.5rem; display: block; text-decoration: none; color: var(--text-gray); font-size: 0.9rem; }
+        .message { padding: 10px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; text-align: center; display: none; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-area"><i class="fas fa-spider"></i></div>
+            <h2>Acesso Aranhas</h2>
+            <p>Agende sua aventura e participe do mural.</p>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Entrar</button>
+            <button class="tab-btn" onclick="switchTab('signup')">Criar Conta</button>
+        </div>
+
+        <div class="forms-wrapper">
+            
+            <form id="loginForm" class="auth-form active">
+                <div id="loginMsg" class="message"></div>
+                
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Seu e-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="btnLogin">Entrar</button>
+                
+                <div class="divider"><span>OU</span></div>
+                
+                <button type="button" class="google-btn" onclick="loginWithGoogle()">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+                    Continuar com Google
+                </button>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+                <div id="signupMsg" class="message"></div>
+
+                <div class="section-label">Dados de Acesso</div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Senha (mín 6 dígitos)" required minlength="6">
+                </div>
+
+                <div class="section-label">Seguro Aventura (Obrigatório)</div>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupName" placeholder="Nome Completo (Igual RG)" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="signupCPF" placeholder="CPF (000.000.000-00)" required maxlength="14">
+                </div>
+                
+                <div class="section-label">Comunidade</div>
+                <div class="input-group">
+                    <i class="fas fa-mask"></i>
+                    <input type="text" id="signupNickname" placeholder="Apelido para o Mural (Opcional)">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsCheck" required>
+                    <label for="termsCheck">
+                        Declaro que os dados acima são verdadeiros e autorizo o uso para emissão do Seguro Aventura obrigatório.
+                    </label>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="btnSignup">Concluir Cadastro</button>
+            </form>
+
+            <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Voltar para o site</a>
+        </div>
+    </div>
+
+   <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        // Lógica de Redirecionamento Inteligente
+        function getRedirectDestination() {
+            // Se tiver um agendamento pendente salvo, volta pra home
+            if (localStorage.getItem('pendingAgendaId')) {
+                return window.location.origin + '/index.html';
+            }
+            // Se não, vai pro painel do cliente
+            return window.location.origin + '/dashboard.html';
+        }
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.message').forEach(m => m.style.display = 'none');
+            if(tab === 'login') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+            }
+        }
+
+        const cpfInput = document.getElementById('signupCPF');
+        cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, "");
+            if(value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            e.target.value = value;
+        });
+
+        // --- GOOGLE LOGIN ---
+        window.loginWithGoogle = async () => {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: getRedirectDestination()
+                }
+            });
+            if (error) alert("Erro: " + error.message);
+        }
+
+        // --- LOGIN EMAIL ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const msgBox = document.getElementById('loginMsg');
+            const btn = document.getElementById('btnLogin');
+
+            btn.disabled = true; btn.textContent = 'Aguarde...';
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                msgBox.className = 'message error'; msgBox.innerText = 'Erro: Dados incorretos.'; msgBox.style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Entrar';
+            } else {
+                msgBox.className = 'message success'; msgBox.innerText = 'Sucesso! Redirecionando...'; msgBox.style.display = 'block';
+                setTimeout(() => window.location.href = getRedirectDestination(), 1000);
+            }
+        });
+
+        // --- CADASTRO EMAIL ---
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const fullName = document.getElementById('signupName').value;
+            const cpf = document.getElementById('signupCPF').value;
+            const nickname = document.getElementById('signupNickname').value || fullName.split(' ')[0]; 
+            const msgBox = document.getElementById('signupMsg');
+            const btn = document.getElementById('btnSignup');
+
+            if(!document.getElementById('termsCheck').checked) {
+                alert("Aceite os termos para continuar."); return;
+            }
+
+            btn.disabled = true; btn.textContent = 'Criando...';
+
+            const { data, error } = await supabase.auth.signUp({ email, password });
+
+            if (error) {
+                msgBox.className = 'message error'; msgBox.innerText = error.message; msgBox.style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Concluir';
+                return;
+            }
+
+            if (data.user) {
+                await supabase.from('profiles').insert([{
+                    id: data.user.id, full_name: fullName, cpf: cpf, nickname: nickname
+                }]);
+                msgBox.className = 'message success'; 
+                msgBox.innerText = 'Conta criada! Verifique seu e-mail.'; 
+                document.getElementById('signupForm').reset();
+                msgBox.style.display = 'block';
+            }
+            btn.disabled = false; btn.textContent = 'Concluir';
+        });
+    </script>
+</body>
+</html>

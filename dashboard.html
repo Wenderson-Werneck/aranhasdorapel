@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Minha Conta | Aranhas do Rapel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --dark: #1A202C;
+            --success: #27ae60;
+            --warning: #f6ad55;
+            --radius: 16px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f8fafc; color: var(--dark); padding-bottom: 90px; }
+        .container { width: 90%; max-width: 800px; margin: 0 auto; }
+
+        /* HEADER */
+        .profile-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #003e7a 100%);
+            color: white; padding: 3rem 1rem 4rem; border-radius: 0 0 30px 30px;
+            text-align: center; position: relative; margin-bottom: 3rem;
+            box-shadow: 0 10px 20px rgba(0,62,122,0.3);
+        }
+        .avatar-area {
+            width: 100px; height: 100px; background: white; border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: var(--secondary); overflow: hidden;
+        }
+        .avatar-area img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .user-email { font-size: 0.9rem; opacity: 0.8; }
+        .logout-btn {
+            position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white;
+            border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; backdrop-filter: blur(5px);
+        }
+
+        /* CARDS */
+        .dashboard-card {
+            background: white; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;
+            box-shadow: var(--shadow); position: relative; transition: transform 0.2s;
+        }
+        .card-title { font-size: 1.1rem; color: var(--secondary); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        
+        /* ALERTA */
+        .alert-box {
+            background: #fff5f5; border-left: 4px solid #fc8181; color: #c53030; padding: 1rem; 
+            border-radius: 8px; margin-top: -3rem; margin-bottom: 2rem; position: relative; z-index: 10;
+            box-shadow: var(--shadow); display: none;
+        }
+
+        /* BADGES REAIS (AVENTURAS) */
+        .badges-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px; text-align: center;
+        }
+        .badge-item {
+            position: relative; opacity: 0.5; filter: grayscale(100%); transition: 0.5s;
+        }
+        .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
+        
+        .badge-img {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            border: 3px solid #ddd; margin: 0 auto 5px; display: block;
+        }
+        .badge-item.unlocked .badge-img { border-color: var(--primary); box-shadow: 0 4px 10px rgba(232, 61, 138, 0.3); }
+        
+        .badge-name { font-size: 0.75rem; font-weight: 700; color: #666; display: block; line-height: 1.2;}
+        .badge-item.unlocked .badge-name { color: var(--secondary); }
+        
+        .check-icon {
+            position: absolute; top: 0; right: 10px; background: var(--success); color: white;
+            width: 24px; height: 24px; border-radius: 50%; display: none; 
+            align-items: center; justify-content: center; font-size: 0.8rem; border: 2px solid white;
+        }
+        .badge-item.unlocked .check-icon { display: flex; }
+
+        /* TABELA FORM */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.85rem; color: #718096; margin-bottom: 5px; font-weight: 600; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+        .save-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+
+        /* RESERVAS */
+        .booking-item { display: flex; align-items: center; gap: 15px; padding: 1rem; background: #f8fafc; border-radius: 12px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+        .booking-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .booking-info { flex: 1; }
+        .booking-title { font-weight: 700; font-size: 0.95rem; }
+        .booking-date { font-size: 0.8rem; color: #718096; }
+        .status-badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        .status-pendente { background: #fffaf0; color: #d69e2e; }
+        .status-confirmado { background: #f0fff4; color: #276749; }
+
+        /* NAV */
+        .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; display: flex; justify-content: space-around; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+        .app-nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; width: 25%; }
+        .app-nav-item.active { color: var(--primary); }
+        .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        
+        .page-loader { position: fixed; top:0; left:0; width:100%; height:100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+    </style>
+</head>
+<body>
+
+    <div id="pageLoader" class="page-loader">
+        <i class="fas fa-spider fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
+    </div>
+
+    <header class="profile-header">
+        <button class="logout-btn" id="logoutBtn">Sair</button>
+        <div class="avatar-area">
+            <i class="fas fa-user" id="avatarIcon"></i>
+            <img id="avatarImg" src="" style="display: none;">
+        </div>
+        <h1 class="user-name" id="displayName">...</h1>
+        <p class="user-email" id="displayEmail">...</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="insuranceAlert" class="alert-box">
+            <strong><i class="fas fa-exclamation-triangle"></i> Atenção</strong>
+            Complete seu cadastro (CPF e Nome) para ativar o Seguro Aventura.
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-title"><i class="fas fa-trophy"></i> Minhas Conquistas</div>
+            <div class="badges-grid" id="badgesGrid">
+                <p style="width: 100%; text-align: center; color: #999;">Carregando setores...</p>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-title"><i class="fas fa-ticket-alt"></i> Histórico de Reservas</div>
+            <div id="bookingsList"></div>
+        </div>
+
+        <div class="dashboard-card" id="dataCard">
+            <div class="card-title"><i class="fas fa-user-shield"></i> Dados Pessoais</div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label>CPF</label>
+                    <input type="text" id="cpf" required maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label>Apelido</label>
+                    <input type="text" id="nickname">
+                </div>
+                <button type="submit" class="save-btn" id="saveBtn">Salvar Dados</button>
+            </form>
+        </div>
+
+        <a href="index.html" style="display: block; text-align: center; margin-bottom: 2rem; text-decoration: none; color: var(--secondary); font-weight: bold;">Voltar para o Início</a>
+    </div>
+
+    <nav class="app-bottom-nav">
+        <a href="index.html#agenda" class="app-nav-item"><i class="fas fa-calendar-alt"></i><span>Agenda</span></a>
+        <a href="index.html#adventures" class="app-nav-item"><i class="fas fa-mountain"></i><span>Aventuras</span></a>
+        <a href="index.html#client-photos" class="app-nav-item"><i class="fas fa-camera"></i><span>Mural</span></a>
+        <a href="#" class="app-nav-item active"><i class="fas fa-user"></i><span>Conta</span></a>
+    </nav>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        let currentUser = null;
+
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            currentUser = session.user;
+            
+            await Promise.all([loadProfile(), loadBookings(), loadBadges()]);
+            document.getElementById('pageLoader').style.display = 'none';
+        }
+
+        // CARREGA PERFIL
+        async function loadProfile() {
+            document.getElementById('displayEmail').textContent = currentUser.email;
+            if (currentUser.user_metadata.avatar_url) {
+                document.getElementById('avatarIcon').style.display = 'none';
+                const img = document.getElementById('avatarImg');
+                img.src = currentUser.user_metadata.avatar_url; img.style.display = 'block';
+            }
+            const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            if (data) {
+                document.getElementById('fullName').value = data.full_name || '';
+                document.getElementById('cpf').value = data.cpf || '';
+                document.getElementById('nickname').value = data.nickname || '';
+                document.getElementById('displayName').textContent = data.nickname || data.full_name || 'Aventureiro';
+                if (!data.cpf || !data.full_name) document.getElementById('insuranceAlert').style.display = 'block';
+            }
+        }
+
+        // CARREGA CONQUISTAS (BADGES)
+        async function loadBadges() {
+            // 1. Pega todas as aventuras existentes (Possíveis Badges)
+            const { data: adventures } = await supabase.from('aventuras').select('id, title, image_url').order('title');
+            
+            // 2. Pega os badges que o usuário JÁ TEM
+            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
+            
+            // Cria um Set com os IDs conquistados para busca rápida
+            const unlockedIds = new Set(userBadges.map(b => b.adventure_id));
+            
+            const grid = document.getElementById('badgesGrid');
+            grid.innerHTML = '';
+
+            if (adventures) {
+                adventures.forEach(adv => {
+                    const isUnlocked = unlockedIds.has(adv.id);
+                    const statusClass = isUnlocked ? 'unlocked' : '';
+                    
+                    grid.innerHTML += `
+                        <div class="badge-item ${statusClass}">
+                            <div class="check-icon"><i class="fas fa-check"></i></div>
+                            <img src="${adv.image_url}" class="badge-img">
+                            <span class="badge-name">${adv.title}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // CARREGA RESERVAS
+        async function loadBookings() {
+            const list = document.getElementById('bookingsList');
+            const { data } = await supabase.from('bookings').select(`*, agenda (title, date_text, image_url)`).eq('user_id', currentUser.id).order('created_at', { ascending: false });
+
+            if (data && data.length > 0) {
+                list.innerHTML = '';
+                data.forEach(booking => {
+                    const agenda = booking.agenda;
+                    if(!agenda) return;
+                    const statusMap = {'pendente': 'Aguardando Pagto', 'confirmado': 'Confirmado', 'pago': 'Pago'};
+                    list.innerHTML += `
+                        <div class="booking-item">
+                            <img src="${agenda.image_url}" class="booking-img">
+                            <div class="booking-info">
+                                <div class="booking-title">${agenda.title}</div>
+                                <span class="booking-date">${agenda.date_text}</span>
+                            </div>
+                            <div class="status-badge status-${booking.status}">${statusMap[booking.status] || booking.status}</div>
+                        </div>`;
+                });
+            } else {
+                list.innerHTML = '<div style="text-align:center;padding:2rem;color:#999;">Nenhum agendamento ainda.</div>';
+            }
+        }
+
+        // FORMULARIO
+        const cpfInput = document.getElementById('cpf');
+        cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, "");
+            value = value.replace(/(\d{3})(\d)/, "$1.$2"); value = value.replace(/(\d{3})(\d)/, "$1.$2"); value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            e.target.value = value;
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = 'Salvando...';
+            const updates = { id: currentUser.id, full_name: document.getElementById('fullName').value, cpf: document.getElementById('cpf').value, nickname: document.getElementById('nickname').value, updated_at: new Date() };
+            const { error } = await supabase.from('profiles').upsert(updates);
+            if (!error) { alert('Salvo!'); location.reload(); } else { alert('Erro: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar Dados'; }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut(); window.location.href = 'index.html';
+        });
+
+        init();
+    </script>
+</body>
+</html>

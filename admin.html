@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Aranhas do Rapel</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --white: #ffffff;
+            --dark: #1A202C;
+            --danger: #e53e3e;
+            --success: #27ae60;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 0; padding-bottom: 80px; }
+        .container { width: 95%; max-width: 1200px; margin: 2rem auto; }
+        
+        h1, h2, h3 { color: var(--secondary); margin-bottom: 1rem; }
+        
+        button { 
+            background: var(--primary); color: white; border: none; padding: 12px 20px; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); filter: brightness(1.1); }
+        
+        button.danger { background: var(--danger); }
+        button.secondary { background: var(--secondary); }
+        button.success { background: var(--success); }
+        button.outline { background: transparent; border: 2px solid #ccc; color: #666; box-shadow: none; }
+
+        input, textarea, select {
+            width: 100%; padding: 12px; margin: 8px 0 16px 0;
+            border: 1px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; background: #fafafa;
+        }
+        
+        form { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        label { font-weight: 600; display: block; color: var(--secondary); font-size: 0.9rem; margin-top: 0.5rem;}
+        
+        .admin-layout { display: none; }
+        .auth-screen { 
+            text-align: center; padding: 3rem; background: var(--white); 
+            border-radius: var(--radius); box-shadow: var(--shadow); 
+            max-width: 400px; margin: 5rem auto; border-top: 5px solid var(--primary);
+        }
+        
+        .admin-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: white; padding: 1rem 2rem; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 2rem;
+        }
+        .user-badge { background: var(--light); padding: 5px 15px; border-radius: 20px; color: var(--secondary); font-weight: bold; font-size: 0.9rem; margin-right: 10px;}
+        
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); height: fit-content; }
+        
+        .item {
+            background: #fff; border-bottom: 1px solid #eee; padding: 1rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: background 0.2s;
+        }
+        .item:last-child { border-bottom: none; }
+        
+        .sortable-ghost { opacity: 0.4; background: #e3f2fd; }
+        .sortable-drag { cursor: grabbing; }
+        .agenda-sortable .item { cursor: grab; } 
+        .agenda-sortable .item:hover { background: #f9f9f9; }
+
+        .handle { color: #ccc; margin-right: 15px; cursor: grab; font-size: 1.2rem; display: flex; align-items: center; }
+        .item:hover .handle { color: var(--secondary); }
+
+        .item-info { display: flex; align-items: center; gap: 1rem; }
+        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .item-details { display: flex; flex-direction: column; }
+        .item-details strong { color: var(--dark); font-size: 1rem; }
+        
+        .item-actions { display: flex; gap: 5px; }
+        .item-actions button { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
+        
+        .link-badge { font-size: 0.7rem; background: #e0f7fa; color: #006064; padding: 2px 6px; border-radius: 4px; border: 1px solid #b2ebf2; margin-top: 4px; display: inline-block; }
+        .link-badge.missing { background: #fff3e0; color: #e65100; border-color: #ffe0b2; }
+        .price-badge { color: #27ae60; font-weight: bold; font-size: 0.85rem; margin-left: 5px; }
+
+        .loader { text-align: center; font-weight: 600; padding: 2rem; color: var(--primary); }
+
+        #saveOrderBar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--dark); color: white; padding: 15px 30px;
+            border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: none; align-items: center; gap: 15px; z-index: 9999;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { bottom: -100px; } to { bottom: 20px; } }
+
+        @media (max-width: 768px) {
+            .admin-grid { grid-template-columns: 1fr; }
+            .admin-header { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authScreen" class="auth-screen">
+        <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-spider"></i></div>
+        <h2>Admin Aranhas do Rapel</h2>
+        <form id="loginForm" style="box-shadow: none; padding: 0; border: none;">
+            <div><label for="loginEmail">Email</label><input type="email" id="loginEmail" required placeholder="admin@aranhas.com"></div>
+            <div><label for="loginPassword">Senha</label><input type="password" id="loginPassword" required placeholder="••••••"></div>
+            <button type="submit" style="width: 100%; margin-top: 1rem;">Entrar no Painel</button>
+            <p id="authError" style="color:var(--danger); display:none; margin-top: 10px; font-weight: bold;"></p>
+        </form>
+    </div>
+
+    <div id="adminLayout" class="admin-layout container">
+        <div class="admin-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-spider" style="font-size: 2rem; color: var(--primary);"></i>
+                <h1>Painel de Controle</h1>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span id="userEmail" class="user-badge"></span>
+                <button id="logoutButton" class="danger"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </div>
+
+        <section id="agendaAdmin">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fas fa-calendar-alt" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <h2 style="margin:0;">Gerenciar Agenda</h2>
+            </div>
+            
+            <div class="admin-grid">
+                <form id="agendaForm">
+                    <h3 id="agendaFormTitle">Adicionar Evento</h3>
+                    <input type="hidden" id="agendaId">
+                    
+                    <div><label>Título do Evento</label><input type="text" id="agendaTitle" placeholder="Ex: Rapel no Morro do Moreno" required></div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #bbdefb; margin-bottom: 15px;">
+                        <label for="agendaAdventureId" style="color: #0d47a1;"><i class="fas fa-link"></i> Vincular Aventura</label>
+                        <select id="agendaAdventureId"><option value="">-- Selecione uma aventura --</option></select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                        <div><label>Data e Hora</label><input type="text" id="agendaDate" placeholder="Ex: Domingo 23/11 - 08:30H" required></div>
+                        <div><label>Preço (R$)</label><input type="number" id="agendaPrice" placeholder="80.00" step="0.01" required></div>
+                    </div>
+
+                    <div><label>URL da Imagem</label><input type="text" id="agendaImage" placeholder="https://..." required></div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" style="flex: 1;">Salvar Evento</button>
+                        <button type="button" id="cancelEditAgenda" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="admin-list">
+                    <h3>Eventos Atuais (Arrastar para ordenar)</h3>
+                    <div id="agendaList" class="agenda-sortable loader">Carregando...</div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px dashed #ccc;">
+
+        <section id="aventurasAdmin">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fas fa-mountain" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <h2 style="margin:0;">Gerenciar Aventuras</h2>
+            </div>
+            <div class="admin-grid">
+                <form id="adventureForm">
+                    <h3 id="adventureFormTitle">Nova Aventura</h3>
+                    <input type="hidden" id="adventureId">
+                    <div><label>Título</label><input type="text" id="adventureTitle" required></div>
+                    <div><label>Subtítulo</label><input type="text" id="adventureSubtitle" required></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><label>Dificuldade</label>
+                            <select id="adventureDifficulty">
+                                <option value="facil">Fácil</option>
+                                <option value="facil-medio">Fácil-Médio</option>
+                                <option value="medio">Médio</option>
+                                <option value="medio-dificil">Médio-Difícil</option>
+                                <option value="dificil">Difícil</option>
+                            </select>
+                        </div>
+                        <div><label>Duração</label><input type="text" id="adventureDuration"></div>
+                    </div>
+                    <div><label>Descrição</label><textarea id="adventureDescription" rows="5" required></textarea></div>
+                    <div><label>Imagem (URL)</label><input type="text" id="adventureImage" required></div>
+                    <details style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+                        <summary style="cursor: pointer; font-weight: bold;">Campos Avançados</summary>
+                        <div style="margin-top: 15px;">
+                            <label>Detalhes (JSON)</label><textarea id="adventureDetails" rows="4">[]</textarea>
+                            <label>Galeria (URLs)</label><textarea id="adventureGallery" rows="4"></textarea>
+                        </div>
+                    </details>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="flex: 1;">Salvar</button>
+                        <button type="button" id="cancelEditAdventure" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list">
+                    <h3>Aventuras Cadastradas</h3>
+                    <div id="adventureList" class="loader">Carregando...</div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px dashed #ccc;">
+
+        <section id="muralAdmin">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fas fa-camera-retro" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <h2 style="margin:0;">Gerenciar Mural</h2>
+            </div>
+            <div class="admin-grid">
+                <form id="muralForm">
+                    <h3 id="muralFormTitle">Novo Relato</h3>
+                    <input type="hidden" id="muralId">
+                    <div><label>Local</label><input type="text" id="muralTitle" required></div>
+                    <div><label>Autor</label><input type="text" id="muralAuthor" required></div>
+                    <div><label>Depoimento</label><textarea id="muralQuote" rows="3" required></textarea></div>
+                    <div><label>Foto (URL)</label><input type="text" id="muralImage" required></div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" style="flex: 1;">Salvar</button>
+                        <button type="button" id="cancelEditMural" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list">
+                    <h3>Relatos</h3>
+                    <div id="muralList" class="loader">Carregando...</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="saveOrderBar">
+        <span><i class="fas fa-info-circle"></i> Você mudou a ordem da agenda.</span>
+        <button id="btnConfirmOrder" class="success">Salvar Nova Ordem</button>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        const authScreen = document.getElementById('authScreen');
+        const adminLayout = document.getElementById('adminLayout');
+        const loginForm = document.getElementById('loginForm');
+        const authError = document.getElementById('authError');
+        const userEmail = document.getElementById('userEmail');
+        const logoutButton = document.getElementById('logoutButton');
+
+        const agendaList = document.getElementById('agendaList');
+        const adventureList = document.getElementById('adventureList');
+        const muralList = document.getElementById('muralList');
+        const agendaForm = document.getElementById('agendaForm');
+        const adventureForm = document.getElementById('adventureForm');
+        const muralForm = document.getElementById('muralForm');
+        const agendaAdventureSelect = document.getElementById('agendaAdventureId');
+        const saveOrderBar = document.getElementById('saveOrderBar');
+        const btnConfirmOrder = document.getElementById('btnConfirmOrder');
+
+        let globalAdventures = [];
+
+        checkAuth();
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) { showAdminPage(session.user); } else { showLoginPage(); }
+        }
+
+        function showAdminPage(user) {
+            authScreen.style.display = 'none'; adminLayout.style.display = 'block'; userEmail.textContent = user.email; loadAllData();
+        }
+        function showLoginPage() { authScreen.style.display = 'block'; adminLayout.style.display = 'none'; }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); authError.style.display = 'none';
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) { authError.textContent = error.message; authError.style.display = 'block'; } 
+            else { showAdminPage(data.user); }
+        });
+
+        logoutButton.addEventListener('click', async () => { await supabase.auth.signOut(); showLoginPage(); });
+
+        async function loadAllData() {
+            await loadAdventuresAndPopulateSelect();
+            loadAdminItems('agenda', agendaList, createAgendaItem, 'display_order');
+            loadAdminItems('aventuras', adventureList, createAdventureItem);
+            loadAdminItems('mural', muralList, createMuralItem);
+        }
+
+        async function loadAdventuresAndPopulateSelect() {
+            const { data } = await supabase.from('aventuras').select('id, title').order('title');
+            if(data) {
+                globalAdventures = data;
+                agendaAdventureSelect.innerHTML = '<option value="">-- Sem vínculo --</option>';
+                data.forEach(adv => {
+                    const opt = document.createElement('option');
+                    opt.value = adv.id; opt.textContent = adv.title;
+                    agendaAdventureSelect.appendChild(opt);
+                });
+            }
+        }
+
+        async function loadAdminItems(tableName, listElement, createItemFn, sortColumn = 'created_at') {
+            listElement.innerHTML = '<div class="loader">Carregando...</div>';
+            const { data, error } = await supabase.from(tableName).select('*').order(sortColumn, { ascending: true });
+            if (error) { listElement.innerHTML = `<p style="color:var(--danger)">Erro: ${error.message}</p>`; return; }
+            listElement.innerHTML = '';
+            if (data.length === 0) listElement.innerHTML = '<p>Nenhum item.</p>';
+            data.forEach(item => listElement.appendChild(createItemFn(item)));
+            if(tableName === 'agenda') initSortable();
+        }
+
+        function initSortable() {
+            new Sortable(agendaList, {
+                animation: 150, handle: '.handle', ghostClass: 'sortable-ghost',
+                onEnd: function () { saveOrderBar.style.display = 'flex'; }
+            });
+        }
+
+        btnConfirmOrder.addEventListener('click', async () => {
+            btnConfirmOrder.textContent = "Salvando...";
+            const items = agendaList.querySelectorAll('.item');
+            const updates = [];
+            items.forEach((item, index) => {
+                const id = item.dataset.id;
+                updates.push(supabase.from('agenda').update({ display_order: index }).eq('id', id));
+            });
+            await Promise.all(updates);
+            btnConfirmOrder.textContent = "Salvar Nova Ordem"; saveOrderBar.style.display = 'none'; alert("Ordem atualizada!");
+        });
+
+        // --- CONCLUIR EVENTO & DAR BADGES ---
+        window.concludeEvent = async (agendaId, adventureId, eventTitle) => {
+            if (!adventureId || adventureId === 'null') {
+                alert("Este evento não está vinculado a um setor. Edite e vincule primeiro."); return;
+            }
+            if (!confirm(`Concluir "${eventTitle}" e dar BADGES para os participantes confirmados?`)) return;
+
+            // Busca participantes confirmados/pagos
+            const { data: bookings, error } = await supabase
+                .from('bookings')
+                .select('user_id')
+                .eq('agenda_id', agendaId)
+                .in('status', ['confirmado', 'pago']);
+
+            if (error) { alert("Erro ao buscar: " + error.message); return; }
+            if (!bookings || bookings.length === 0) { alert("Nenhum participante confirmado."); return; }
+
+            const badgesToInsert = bookings.map(b => ({ user_id: b.user_id, adventure_id: adventureId }));
+            const { error: insertError } = await supabase
+                .from('user_badges')
+                .upsert(badgesToInsert, { onConflict: 'user_id, adventure_id', ignoreDuplicates: true });
+
+            if (insertError) alert("Erro: " + insertError.message);
+            else alert(`Sucesso! ${bookings.length} badges distribuídos.`);
+        };
+
+        // --- ITENS DA LISTA ---
+        function createAgendaItem(item) {
+            const linkedAdv = globalAdventures.find(a => a.id === item.adventure_id);
+            const linkBadge = linkedAdv ? `<div class="link-badge"><i class="fas fa-link"></i> ${linkedAdv.title}</div>` : `<div class="link-badge missing">Sem vínculo</div>`;
+            const priceBadge = item.price ? `<span class="price-badge">R$ ${item.price}</span>` : '';
+            const btnConclude = `<button class="success" onclick="concludeEvent('${item.id}', '${item.adventure_id}', '${item.title}')" title="Concluir e Premiar"><i class="fas fa-medal"></i></button>`;
+
+            const el = document.createElement('div'); el.className = 'item'; el.dataset.id = item.id;
+            el.innerHTML = `
+                <div class="item-info">
+                    <div class="handle"><i class="fas fa-grip-vertical"></i></div>
+                    <img src="${item.image_url}">
+                    <div class="item-details"><strong>${item.title}</strong><span>${item.date_text}${priceBadge}</span>${linkBadge}</div>
+                </div>
+                <div class="item-actions">
+                    ${btnConclude}
+                    <button class="secondary" onclick="editItem('agenda', '${item.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="danger" onclick="deleteItem('agenda', '${item.id}')"><i class="fas fa-trash"></i></button>
+                </div>`;
+            return el;
+        }
+
+        function createAdventureItem(item) {
+            const el = document.createElement('div'); el.className = 'item';
+            el.innerHTML = `<div class="item-info"><img src="${item.image_url}"><div class="item-details"><strong>${item.title}</strong><span>${item.subtitle}</span></div></div><div class="item-actions"><button class="secondary" onclick="editItem('aventuras', '${item.id}')"><i class="fas fa-edit"></i></button><button class="danger" onclick="deleteItem('aventuras', '${item.id}')"><i class="fas fa-trash"></i></button></div>`;
+            return el;
+        }
+        function createMuralItem(item) {
+            const el = document.createElement('div'); el.className = 'item';
+            el.innerHTML = `<div class="item-info"><img src="${item.image_url}"><div class="item-details"><strong>${item.title}</strong><span>${item.author}</span></div></div><div class="item-actions"><button class="secondary" onclick="editItem('mural', '${item.id}')"><i class="fas fa-edit"></i></button><button class="danger" onclick="deleteItem('mural', '${item.id}')"><i class="fas fa-trash"></i></button></div>`;
+            return el;
+        }
+
+        window.deleteItem = async (table, id) => { if(confirm('Tem certeza?')) { await supabase.from(table).delete().eq('id', id); loadAllData(); } };
+
+        window.editItem = async (table, id) => {
+            const { data } = await supabase.from(table).select('*').eq('id', id).single();
+            if(!data) return;
+            
+            if(table === 'agenda') {
+                document.getElementById('agendaFormTitle').textContent = 'Editar Evento';
+                document.getElementById('agendaId').value = data.id;
+                document.getElementById('agendaTitle').value = data.title;
+                document.getElementById('agendaImage').value = data.image_url;
+                document.getElementById('agendaDate').value = data.date_text;
+                document.getElementById('agendaPrice').value = data.price || '';
+                document.getElementById('agendaAdventureId').value = data.adventure_id || "";
+                document.getElementById('cancelEditAgenda').style.display = 'inline-block';
+                document.getElementById('agendaAdmin').scrollIntoView({behavior: 'smooth'});
+            }
+            else if (table === 'aventuras') {
+                document.getElementById('adventureFormTitle').textContent = 'Editar Aventura';
+                document.getElementById('adventureId').value = data.id;
+                document.getElementById('adventureTitle').value = data.title;
+                document.getElementById('adventureSubtitle').value = data.subtitle;
+                document.getElementById('adventureImage').value = data.image_url;
+                document.getElementById('adventureDifficulty').value = data.difficulty;
+                document.getElementById('adventureDuration').value = data.duration;
+                document.getElementById('adventureDescription').value = data.description;
+                document.getElementById('adventureDetails').value = JSON.stringify(data.details, null, 2);
+                document.getElementById('adventureGallery').value = data.gallery_images ? data.gallery_images.join('\n') : '';
+                document.getElementById('cancelEditAdventure').style.display = 'inline-block';
+                document.getElementById('aventurasAdmin').scrollIntoView({behavior: 'smooth'});
+            }
+            else if (table === 'mural') {
+                document.getElementById('muralFormTitle').textContent = 'Editar Relato';
+                document.getElementById('muralId').value = data.id;
+                document.getElementById('muralTitle').value = data.title;
+                document.getElementById('muralImage').value = data.image_url;
+                document.getElementById('muralQuote').value = data.quote;
+                document.getElementById('muralAuthor').value = data.author;
+                document.getElementById('cancelEditMural').style.display = 'inline-block';
+                document.getElementById('muralAdmin').scrollIntoView({behavior: 'smooth'});
+            }
+        };
+
+        agendaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('agendaId').value;
+            const advId = document.getElementById('agendaAdventureId').value;
+            const agendaData = {
+                title: document.getElementById('agendaTitle').value,
+                image_url: document.getElementById('agendaImage').value,
+                date_text: document.getElementById('agendaDate').value,
+                price: document.getElementById('agendaPrice').value || 0, // Salva preço
+                adventure_id: advId ? advId : null
+            };
+            if (id) await supabase.from('agenda').update(agendaData).eq('id', id);
+            else await supabase.from('agenda').insert([agendaData]);
+            resetForm('agenda'); loadAdminItems('agenda', agendaList, createAgendaItem, 'display_order');
+        });
+
+        adventureForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('adventureId').value;
+            let detailsJson; try { detailsJson = JSON.parse(document.getElementById('adventureDetails').value); } catch { return alert("Erro JSON"); }
+            const galleryArray = document.getElementById('adventureGallery').value.split('\n').filter(u => u.trim());
+            const data = {
+                title: document.getElementById('adventureTitle').value, subtitle: document.getElementById('adventureSubtitle').value,
+                image_url: document.getElementById('adventureImage').value, difficulty: document.getElementById('adventureDifficulty').value,
+                duration: document.getElementById('adventureDuration').value, description: document.getElementById('adventureDescription').value,
+                details: detailsJson, gallery_images: galleryArray
+            };
+            if (id) await supabase.from('aventuras').update(data).eq('id', id); else await supabase.from('aventuras').insert([data]);
+            resetForm('adventure'); loadAllData();
+        });
+
+        muralForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('muralId').value;
+            const data = { title: document.getElementById('muralTitle').value, image_url: document.getElementById('muralImage').value, quote: document.getElementById('muralQuote').value, author: document.getElementById('muralAuthor').value };
+            if (id) await supabase.from('mural').update(data).eq('id', id); else await supabase.from('mural').insert([data]);
+            resetForm('mural'); loadAdminItems('mural', muralList, createMuralItem);
+        });
+
+        function resetForm(type) {
+            document.getElementById(`${type}Form`).reset();
+            document.getElementById(`${type}Id`).value = '';
+            document.getElementById(`${type}FormTitle`).textContent = 'Adicionar Novo';
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            document.getElementById(`cancelEdit${cap}`).style.display = 'none';
+        }
+        document.getElementById('cancelEditAgenda').onclick = () => resetForm('agenda');
+        document.getElementById('cancelEditAdventure').onclick = () => resetForm('adventure');
+        document.getElementById('cancelEditMural').onclick = () => resetForm('mural');
+    </script>
+</body>
+</html>

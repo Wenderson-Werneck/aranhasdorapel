@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Aranhas do Rapel | Aventuras no Espírito Santo</title>
+    <meta name="description" content="Viva a adrenalina do rapel com segurança total. Agenda de aventuras na Serra, Vila Velha e região.">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aranhasdorapel.com.br/">
+    <meta property="og:title" content="Aranhas do Rapel | Agenda de Aventuras">
+    <meta property="og:description" content="Segurança, Adrenalina e Conexão com a Natureza. Veja nossa agenda e garanta sua vaga.">
+    <meta property="og:image" content="social-share.jpg">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T08NL0VVP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4T08NL0VVP');
+    </script>
+
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --es-pink: #E83D8A;
+            --es-blue: #0055A4;
+            --es-white: #FFFFFF;
+            --primary: var(--es-pink);
+            --secondary: var(--es-pink);
+            --accent: var(--es-pink);
+            --light: #FDF2F8; 
+            --dark: #1A202C;
+            --success: #27ae60;
+            --whatsapp: #25D366;
+            --info-btn: #3498db;
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; padding-bottom: 80px; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+        /* --- FIX SWEETALERT (Z-INDEX) --- */
+        .swal2-container {
+            z-index: 9999 !important; /* Garante que fique acima de tudo */
+        }
+
+        header {
+            background: var(--primary); position: fixed; width: 100%; top: 0; z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 60px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .desktop-nav { display: flex; justify-content: center; align-items: center; width: 100%; }
+        .nav-links { display: flex; list-style: none; align-items: center; }
+        .nav-links li { margin: 0 1rem; position: relative; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; padding: 0.5rem 0; }
+        .nav-links .btn-login {
+            background-color: white; color: var(--primary) !important; padding: 0.5rem 1.5rem !important;
+            border-radius: 50px; transition: transform 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-flex; align-items: center; gap: 8px; 
+        }
+        .nav-links .btn-login:hover { transform: translateY(-2px); background-color: #fff0f5; }
+
+        .mobile-header-content { display: none; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
+        .header-brand { color: white; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .menu-toggle { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+
+        .mobile-sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: right 0.3s ease-out; display: flex; flex-direction: column; }
+        .mobile-sidebar.active { right: 0; }
+        .sidebar-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 60px; }
+        .close-sidebar { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .sidebar-content { padding: 1.5rem; overflow-y: auto; }
+        .sidebar-login-area { text-align: center; margin-bottom: 1.5rem; }
+        .btn-login-mobile { 
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            background: var(--primary); color: white; padding: 0.8rem; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: var(--shadow-lg); 
+        }
+        .sidebar-links { list-style: none; }
+        .sidebar-links li { margin-bottom: 1.2rem; }
+        .sidebar-links a { text-decoration: none; color: var(--dark); font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; }
+        .sidebar-links a i { width: 30px; color: var(--primary); text-align: center; margin-right: 10px; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        
+        .fixed-spider { position: fixed; top: -25px; left: 20px; width: 80px; z-index: 999; pointer-events: none; transition: top 0.3s; }
+        .fixed-spider::before { content: ''; display: block; width: 2px; height: 80px; background: rgba(255, 255, 255, 0.5); margin: 0 auto; }
+        .fixed-spider img { width: 100%; height: auto; }
+
+        section { padding: 4rem 0; scroll-margin-top: 110px; }
+        .section-title { text-align: center; margin-bottom: 3rem; }
+        .section-title h2 { font-size: 2.5rem; color: var(--primary); }
+        .section-title p { color: var(--dark); opacity: 0.8; }
+        .swipe-hint-text { display: none; }
+
+        .adventures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
+        .agenda-grid, .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2.5rem; }
+        
+        .agenda-item, .adventure-card, .photo-item {
+            border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); background: var(--es-white); cursor: pointer; position: relative;
+            border-bottom: 4px solid transparent; transition: transform 0.3s ease-out; width: 100%; display: flex; flex-direction: column;
+        }
+        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .agenda-img, .card-image img, .client-img { width: 100%; height: auto; display: block; object-fit: cover; }
+        .agenda-img { aspect-ratio: 4/5; }
+        .card-image { height: 250px; overflow: hidden; }
+        .card-image img { height: 100%; transition: transform 0.4s; }
+        .adventure-card:hover .card-image img { transform: scale(1.1); }
+        
+        .agenda-content, .card-content, .photo-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .agenda-content { text-align: center; }
+        .agenda-content h4, .card-content h3, .photo-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: auto; }
+        
+        .difficulty { padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; white-space: nowrap; }
+        .difficulty.facil { background: #e8f5e9; color: var(--success); }
+        .difficulty.medio { background: #fff3e0; color: #ff9800; }
+        .difficulty.dificil { background: #ffebee; color: #f44336; }
+        
+        .photo-upload { text-align: center; margin-top: 2rem; }
+        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); }
+        
+        .app-bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; justify-content: space-around; align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        .app-nav-item {
+            display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; width: 25%; transition: color 0.3s ease;
+        }
+        .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        .app-nav-item.active { color: var(--primary); }
+
+        /* MODAL */
+        .modal { 
+            display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: auto; padding: 1rem; 
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content { background: white; margin: auto; border-radius: 20px; width: 100%; max-width: 1000px; overflow: hidden; transform: scale(0.98); transition: transform 0.3s ease-out; }
+        .modal.active .modal-content { transform: scale(1); }
+        .close-modal { 
+            position: absolute; top: 25px; right: 30px; font-size: 2.2rem; color: white; cursor: pointer; z-index: 2001; 
+            background: rgba(0, 0, 0, 0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-header { position: relative; height: 450px; }
+        .modal-header::after { content:''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
+        .modal-header img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-header-content { position: absolute; bottom: 0; left: 0; right: 0; color: white; padding: 3rem; z-index: 2; }
+        .modal-header-content h2 { font-size: 3rem; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+        .modal-body { padding: 3rem; text-align: center; }
+        .modal-section { margin-bottom: 3rem; }
+        .modal-section h3 { font-size: 1.8rem; color: var(--primary); margin-bottom: 1.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
+        
+        .adventure-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .detail-item { display: flex; flex-direction: column; align-items: center; background: var(--light); padding: 1.2rem; border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--accent); }
+        .detail-icon { background: linear-gradient(135deg, var(--primary) 0%, #c21c66 100%); color: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+        .gallery-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; }
+        
+        /* MODAL AGENDA */
+        .agenda-modal-content { max-width: 90%; max-height: 95vh; display: flex; flex-direction: column; align-items: center; background: transparent; box-shadow: none; }
+        #agendaModalImage { 
+            width: 100%; height: auto; max-width: 550px; max-height: 75vh; 
+            object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-xl); 
+            display: block; margin: 0 auto;
+        }
+
+        .agenda-actions { 
+            display: flex; flex-direction: row; align-items: center; justify-content: center;
+            gap: 15px; margin-top: 15px; width: 100%;
+        }
+
+        /* BOTÕES (COM GAP) */
+        .btn-modal { 
+            display: inline-flex; align-items: center; justify-content: center; 
+            gap: 8px; 
+            padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; 
+            box-shadow: var(--shadow-lg); font-size: 0.9rem; transition: background 0.3s; cursor: pointer;
+            margin-top: 0; width: auto; border: none;
+        }
+        
+        .btn-reserve { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; }
+        .btn-reserve:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        .btn-whatsapp { background: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%); color: white; }
+        
+        .btn-sector { background: var(--info-btn); color: white; display: none; } 
+        .btn-sector:hover { background: #2980b9; }
+
+        /* FOOTER */
+        footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
+        .footer-logo-img { width: 180px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; }
+        .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .desktop-nav { display: none; } 
+            .mobile-header-content { display: flex; } 
+            .fixed-spider { display: none; }
+            .app-bottom-nav { display: flex; }
+            header { height: 50px; }
+            .container { width: 100%; max-width: 100%; padding: 0; }
+            .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
+            .section-title h2 { font-size: 2rem; }
+            section { padding: 2.5rem 0; scroll-margin-top: 120px; }
+            .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: flex; align-items: center; }
+            .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
+            @keyframes slideRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+            .agenda-grid, .adventures-grid, .photos-grid { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; padding-right: 40px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; align-items: stretch; }
+            .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
+            .agenda-item, .adventure-card, .photo-item { min-width: 80vw; width: 80vw; scroll-snap-align: center; margin-bottom: 15px; height: auto; }
+            .modal { align-items: center; padding: 1rem; }
+            .modal-content { border-radius: 20px; min-height: auto; transform: none; margin: 0; max-height: 85vh; overflow-y: auto; }
+            .agenda-modal-content { width: 100%; }
+            .modal-header { height: 250px; }
+            .modal-header-content h2 { font-size: 2rem; }
+            .modal-body { padding: 1.5rem; padding-bottom: 80px; }
+            .close-modal { position: fixed; top: 15px; right: 15px; width: 40px; height: 40px; font-size: 1.5rem; }
+            .agenda-actions { flex-direction: column; gap: 10px; }
+            .btn-modal { width: 100%; font-size: 1rem; }
+            #agendaModalImage { max-height: 65vh; } 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="fixed-spider">
+        <img src="aranha-logo.png" alt="Aranha">
+    </div>
+
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button id="closeSidebarBtn" class="close-sidebar">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-login-area">
+                <p>Bem-vindo, aventureiro!</p>
+                <a href="login.html" class="btn-login-mobile" id="mobileLoginBtn">
+                    <i class="fas fa-user"></i> Fazer Login
+                </a>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 1.5rem;">
+            <ul class="sidebar-links">
+                <li><a href="#agenda"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
+                <li><a href="#adventures"><i class="fas fa-mountain"></i> Aventuras</a></li>
+                <li><a href="#client-photos"><i class="fas fa-camera"></i> Mural</a></li>
+                <li><a href="#dicas"><i class="fas fa-lightbulb"></i> Dicas <span>Novo</span></a></li>
+                <li><a href="#" id="sidebarWhatsapp"><i class="fab fa-whatsapp"></i> Contato</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="app-bottom-nav">
+        <a href="#agenda" class="app-nav-item active">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Agenda</span>
+        </a>
+        <a href="#adventures" class="app-nav-item">
+            <i class="fas fa-mountain"></i>
+            <span>Aventuras</span>
+        </a>
+        <a href="#client-photos" class="app-nav-item">
+            <i class="fas fa-camera"></i>
+            <span>Mural</span>
+        </a>
+        <a href="#" id="mobileWhatsappBtn" class="app-nav-item">
+            <i class="fab fa-whatsapp"></i>
+            <span>Contato</span>
+        </a>
+    </nav>
+
+    <header id="mainHeader">
+        <div class="container">
+            <nav class="desktop-nav">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#agenda">Agenda</a></li>
+                    <li><a href="#adventures">Aventuras</a></li>
+                    <li><a href="#client-photos">Mural</a></li>
+                    <li><a href="#dicas">Dicas</a></li>
+                    <li><a href="login.html" class="btn-login" id="desktopLoginBtn"><i class="fas fa-user"></i> Entrar</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-header-content">
+                <div class="header-brand">Aranhas do Rapel</div>
+                <button id="mobileMenuBtn" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="agenda" id="agenda">
+        <div class="container">
+            <div class="section-title">
+                <h2>Agenda</h2>
+                <p>Confira as próximas saídas e garanta sua vaga!</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="agenda-grid" id="agendaGrid"></div>
+        </div>
+    </section>
+
+    <section class="adventures" id="adventures">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nossas Aventuras</h2>
+                <p>Descubra os locais incríveis onde vivemos as melhores experiências.</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="adventures-grid" id="adventuresGrid"></div>
+        </div>
+    </section>
+
+    <section class="client-photos" id="client-photos">
+        <div class="container">
+            <div class="section-title">
+                <h2>Mural dos Aranhas</h2>
+                <p>Momentos inesquecíveis de quem já se aventurou conosco.</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <div class="photos-grid" id="photosGrid"></div>
+            <div class="photo-upload">
+                <a href="#" class="btn-upload"><i class="fas fa-cloud-upload-alt"></i> Enviar Minha Foto</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="tips" id="dicas" style="background: white;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dicas de Rapel</h2>
+                <p>Prepare-se para sua aventura com nossas recomendações.</p>
+            </div>
+            <div style="text-align: center; padding: 2rem; background: var(--light); border-radius: 12px;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-hard-hat"></i> Segurança em Primeiro Lugar</h3>
+                <p>Em breve postaremos dicas exclusivas sobre equipamentos, vestimentas e preparação física!</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="adventureModal">
+        <div class="close-modal" id="closeModal">&times;</div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <img id="modalImage" src="" alt="">
+                <div class="modal-header-content">
+                    <h2 id="modalTitle"></h2>
+                    <p id="modalSubtitle"></p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>Detalhes da Aventura</h3>
+                    <div class="adventure-details" id="adventureDetails"></div>
+                </div>
+                <div class="modal-section">
+                    <h3>Descrição</h3>
+                    <p id="adventureDescription"></p>
+                </div>
+                <div class="modal-section">
+                    <h3>Galeria</h3>
+                    <div class="gallery" id="adventureGallery"></div>
+                </div>
+                <div class="modal-section">
+                    <a href="#" class="btn-modal btn-whatsapp" id="whatsappButton" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Saiba mais
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="agendaModal">
+        <div class="close-modal" id="closeAgendaModal">&times;</div>
+        <div class="agenda-modal-content">
+            <img id="agendaModalImage" src="" alt="">
+            <div class="agenda-actions">
+                <button class="btn-modal btn-reserve" id="btnReserveSpot">
+                    <i class="fas fa-ticket-alt"></i> Reservar Vaga
+                </button>
+                <a href="#" class="btn-modal btn-whatsapp" id="agendaModalButton" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Falar com Equipe
+                </a>
+                <a href="#" class="btn-modal btn-sector" id="agendaSectorBtn">
+                    <i class="fas fa-map-marked-alt"></i> Ver Setor
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <img src="social-share.jpg" alt="Logo Aranhas" class="footer-logo-img">
+                <p>Segurança, Adrenalina e Conexão com a Natureza.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/aranhas.rapel" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/aranhas.rapel/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@aranhasdorapel?_r=1&_t=ZS-91GP46a5JG3" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" id="footerWhatsapp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <p class="copyright">&copy; 2025 Aranhas do Rapel. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
+        const whatsappNumber = '5527995335559';
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        // Elementos
+        const adventuresGrid = document.getElementById('adventuresGrid');
+        const agendaGrid = document.getElementById('agendaGrid');
+        const photosGrid = document.getElementById('photosGrid');
+        const footerWhatsapp = document.getElementById('footerWhatsapp');
+        const mobileWhatsappBtn = document.getElementById('mobileWhatsappBtn');
+        const sidebarWhatsapp = document.getElementById('sidebarWhatsapp');
+        const advModal = document.getElementById('adventureModal');
+        const agModal = document.getElementById('agendaModal');
+        const agendaSectorBtn = document.getElementById('agendaSectorBtn');
+        const btnReserveSpot = document.getElementById('btnReserveSpot');
+
+        let allAdventures = [];
+        let currentUser = null;
+        let currentAgendaItem = null;
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+
+        function toggleSidebar() {
+            mobileSidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileSidebar.classList.contains('active') ? 'hidden' : 'auto';
+        }
+        if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
+        if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+        sidebarLinks.forEach(link => { link.addEventListener('click', toggleSidebar); });
+
+        const bottomNavItems = document.querySelectorAll('.app-nav-item');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            document.querySelectorAll('section').forEach(section => {
+                if (pageYOffset >= section.offsetTop - 300) current = section.getAttribute('id');
+            });
+            bottomNavItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').includes(current)) item.classList.add('active');
+            });
+        });
+
+        function openModal(modalElement) {
+            modalElement.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            history.pushState({ modalOpen: true }, "", window.location.href);
+        }
+
+        function closeModal(modalElement) {
+            modalElement.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.addEventListener('popstate', (event) => {
+            if (advModal.classList.contains('active')) closeModal(advModal);
+            if (agModal.classList.contains('active')) closeModal(agModal);
+            if (mobileSidebar.classList.contains('active')) toggleSidebar();
+        });
+
+        document.getElementById('closeModal').onclick = () => closeModal(advModal);
+        document.getElementById('closeAgendaModal').onclick = () => closeModal(agModal);
+
+        // --- LÓGICA DE PAGAMENTO (N8N) ---
+        async function processPayment(bookingId, amount, description) {
+            Swal.fire({
+                title: 'Gerando PIX...',
+                text: 'Aguarde enquanto conectamos com o Mercado Pago.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
+
+            // Dados que enviaremos para o n8n
+            const paymentData = {
+                transaction_amount: parseFloat(amount),
+                description: description,
+                payer: {
+                    email: currentUser.email,
+                    first_name: currentUser.user_metadata.full_name || "Aventureiro",
+                    // Idealmente, pegue o CPF da tabela 'profiles' aqui se tiver disponível
+                    // por enquanto, vamos enviar um genérico ou deixar o n8n tratar
+                    identification: { type: "CPF", number: "19119119100" } 
+                }
+            };
+
+            try {
+                // CHAMA O SEU SERVIDOR N8N (URL do Webhook que você criou)
+                const response = await fetch("https://api.aranhasdorapel.com.br/webhook/gerar-pix", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(paymentData)
+                });
+
+                const data = await response.json();
+
+                // Verifica se o Mercado Pago devolveu os dados do PIX
+                if (data && (data.status === 'pending' || data.status === 'created') && data.point_of_interaction) {
+                    const qrCode = data.point_of_interaction.transaction_data.qr_code;
+                    const qrCodeBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
+
+                    // Salva o ID do pagamento no banco
+                    await supabase.from('bookings').update({ payment_id: data.id.toString() }).eq('id', bookingId);
+
+                    // MOSTRA O PIX (QR Code e Copia e Cola)
+                    Swal.fire({
+                        title: 'Pagamento PIX',
+                        html: `
+                            <p>Valor: <strong>R$ ${amount}</strong></p>
+                            <img src="data:image/png;base64,${qrCodeBase64}" style="width:200px; margin: 10px auto; display:block;">
+                            <textarea id="pixCode" style="width:100%; height:60px; font-size:12px; margin-bottom:10px;" readonly>${qrCode}</textarea>
+                            <button onclick="copyPix()" class="swal2-confirm swal2-styled" style="background-color:#25D366; display:inline-block;">Copiar Código PIX</button>
+                            <p style="font-size:0.8rem; margin-top:10px;">Após pagar, clique em "Já Paguei".</p>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Já Paguei / Enviar Comprovante',
+                        cancelButtonText: 'Fechar',
+                        didOpen: () => {
+                            window.copyPix = () => {
+                                const copyText = document.getElementById("pixCode");
+                                copyText.select();
+                                document.execCommand("copy");
+                                Swal.showValidationMessage('Copiado!');
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const msg = `Olá! Fiz o pagamento do PIX para a reserva ${description}. Poderiam confirmar?`;
+                            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+                        }
+                    });
+
+                } else {
+                    throw new Error('Resposta inválida do servidor de pagamento.');
+                }
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Erro', 'Não foi possível gerar o PIX. Tente novamente ou chame no WhatsApp.', 'error');
+            }
+        }
+
+        // --- RESERVAR ---
+        btnReserveSpot.addEventListener('click', async () => {
+            if (!currentAgendaItem) return;
+
+            if (!currentUser) {
+                localStorage.setItem('pendingAgendaId', currentAgendaItem.id);
+                window.location.href = 'login.html';
+            } else {
+                const price = currentAgendaItem.price || 0;
+                const priceText = price > 0 ? `R$ ${price},00` : "Valor sob consulta";
+
+                Swal.fire({
+                    title: 'Reservar Vaga',
+                    html: `Evento: <b>${currentAgendaItem.title}</b><br>Data: ${currentAgendaItem.date_text}<br><br>Valor: <h2 style="color:#E83D8A">${priceText}</h2>`,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#E83D8A',
+                    confirmButtonText: 'Ir para Pagamento',
+                    cancelButtonText: 'Cancelar'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const { data: booking, error } = await supabase.from('bookings').insert([{
+                            user_id: currentUser.id,
+                            agenda_id: currentAgendaItem.id,
+                            status: 'pendente',
+                            amount: price
+                        }]).select().single();
+
+                        if (error) {
+                            Swal.fire('Erro', error.message, 'error');
+                        } else {
+                            closeModal(agModal);
+                            if (price > 0) {
+                                processPayment(booking.id, price, `Reserva: ${currentAgendaItem.title}`);
+                            } else {
+                                Swal.fire('Reserva Solicitada', 'Chame nossa equipe no WhatsApp para finalizar.', 'success');
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        async function loadAgenda() {
+            const { data, error } = await supabase.from('agenda').select('*').order('display_order', { ascending: true });
+            if (error) return console.error(error);
+            agendaGrid.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'agenda-item';
+                const priceTag = item.price ? `<span style="display:block; color:#27ae60; font-weight:bold; font-size:0.9rem; margin-top:5px;">R$ ${item.price}</span>` : '';
+                
+                card.innerHTML = `
+                    <img src="${item.image_url}" alt="${item.title}" class="agenda-img">
+                    <div class="agenda-content">
+                        <h4>${item.title}</h4>
+                        <p>${item.date_text}</p>
+                        ${priceTag}
+                    </div>
+                `;
+                card.addEventListener('click', () => openAgendaModal(item));
+                agendaGrid.appendChild(card);
+            });
+            checkPendingReservation(data);
+        }
+
+        function openAgendaModal(item) {
+            currentAgendaItem = item; 
+            document.getElementById('agendaModalImage').src = item.image_url;
+            document.getElementById('agendaModalButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Dúvida sobre: ' + item.title)}`;
+            const relatedAdventure = allAdventures.find(adv => adv.id === item.adventure_id);
+            if (relatedAdventure) {
+                agendaSectorBtn.style.display = 'inline-flex'; 
+                agendaSectorBtn.onclick = (e) => {
+                    e.preventDefault(); closeModal(agModal); 
+                    setTimeout(() => { openAdventureModal(relatedAdventure); }, 100);
+                };
+            } else { agendaSectorBtn.style.display = 'none'; }
+            openModal(agModal);
+        }
+
+        async function loadAdventures() {
+            const { data } = await supabase.from('aventuras').select('*').order('created_at', { ascending: false });
+            allAdventures = data || [];
+            adventuresGrid.innerHTML = '';
+            allAdventures.forEach(adv => {
+                const card = document.createElement('div'); card.className = 'adventure-card';
+                card.innerHTML = `<div class="card-image"><img src="${adv.image_url}"></div><div class="card-content"><h3>${adv.title}</h3><p>${adv.subtitle}</p><div class="card-meta"><span class="difficulty ${adv.difficulty}">${adv.difficulty}</span><div class="duration"><i class="far fa-clock"></i> ${adv.duration}</div></div></div>`;
+                card.addEventListener('click', () => openAdventureModal(adv)); adventuresGrid.appendChild(card);
+            });
+        }
+        function openAdventureModal(adv) {
+            document.getElementById('modalTitle').textContent = adv.title; document.getElementById('modalSubtitle').textContent = adv.subtitle; document.getElementById('modalImage').src = adv.image_url; document.getElementById('adventureDescription').textContent = adv.description; document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Detalhes sobre: ' + adv.title)}`;
+            const details = document.getElementById('adventureDetails'); details.innerHTML = '';
+            if(adv.details) adv.details.forEach(d => details.innerHTML += `<div class="detail-item"><div class="detail-icon"><i class="${d.icon}"></i></div><div class="detail-text"><h4>${d.label}</h4><p>${d.value}</p></div></div>`);
+            const gallery = document.getElementById('adventureGallery'); gallery.innerHTML = '';
+            (adv.gallery_images || [adv.image_url]).forEach(img => gallery.innerHTML += `<div class="gallery-item"><img src="${img}"></div>`);
+            openModal(advModal);
+        }
+        async function loadMural() {
+            const { data } = await supabase.from('mural').select('*').order('created_at', { ascending: false });
+            photosGrid.innerHTML = '';
+            if(data) data.forEach(item => {
+                const card = document.createElement('div'); card.className = 'photo-item';
+                card.innerHTML = `<img src="${item.image_url}" class="client-img"><div class="photo-content"><h4>${item.title}</h4><p>"${item.quote}"</p><small>- ${item.author}</small></div>`;
+                photosGrid.appendChild(card);
+            });
+        }
+        async function checkLoginState() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const isRedirectFromGoogle = window.location.hash && window.location.hash.includes('access_token');
+            if (session) {
+                currentUser = session.user;
+                if (isRedirectFromGoogle && !localStorage.getItem('pendingAgendaId')) { window.location.href = 'dashboard.html'; return; }
+                const dBtn = document.getElementById('desktopLoginBtn'); const mBtn = document.getElementById('mobileLoginBtn');
+                if(dBtn) { dBtn.href = 'dashboard.html'; dBtn.innerHTML = '<i class="fas fa-user-circle"></i> Minha Conta'; }
+                if(mBtn) { mBtn.href = 'dashboard.html'; mBtn.innerHTML = '<i class="fas fa-user-circle"></i> Acessar Painel'; }
+            }
+        }
+        function checkPendingReservation(agendaData) {
+            const pendingId = localStorage.getItem('pendingAgendaId');
+            if (pendingId && currentUser) {
+                const item = agendaData.find(i => i.id == pendingId);
+                if (item) { openAgendaModal(item); localStorage.removeItem('pendingAgendaId'); }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkLoginState(); await loadAdventures(); loadAgenda(); loadMural(); 
+            const waLink = `https://wa.me/${whatsappNumber}`; footerWhatsapp.href = waLink; mobileWhatsappBtn.href = waLink; if(sidebarWhatsapp) sidebarWhatsapp.href = waLink;
+        });
+    </script>
+</body>
+</html>
