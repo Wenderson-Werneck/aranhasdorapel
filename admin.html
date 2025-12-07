@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Aranhas do Rapel</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -251,13 +251,12 @@
         <button id="btnConfirmOrder" class="success">Salvar Nova Ordem</button>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+    <script>
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
 
-        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
-
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+        // Usa o cliente global do Supabase (Versão UMD estável)
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const authScreen = document.getElementById('authScreen');
         const adminLayout = document.getElementById('adminLayout');
@@ -356,7 +355,6 @@
             }
             if (!confirm(`Concluir "${eventTitle}" e dar BADGES para os participantes confirmados?`)) return;
 
-            // Busca participantes confirmados/pagos
             const { data: bookings, error } = await supabase
                 .from('bookings')
                 .select('user_id')

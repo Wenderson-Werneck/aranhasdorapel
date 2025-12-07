@@ -6,7 +6,8 @@
     <title>Minha Conta | Aranhas do Rapel</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 
     <style>
         :root {
@@ -99,6 +100,7 @@
         .status-badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
         .status-pendente { background: #fffaf0; color: #d69e2e; }
         .status-confirmado { background: #f0fff4; color: #276749; }
+        .status-pago { background: #e6fffa; color: #2c7a7b; }
 
         /* NAV */
         .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; display: flex; justify-content: space-around; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
@@ -173,12 +175,12 @@
         <a href="#" class="app-nav-item active"><i class="fas fa-user"></i><span>Conta</span></a>
     </nav>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co'
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE'
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+    <script>
+        const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
+        
+        // Inicialização Global
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUser = null;
 
@@ -218,7 +220,7 @@
             const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
             
             // Cria um Set com os IDs conquistados para busca rápida
-            const unlockedIds = new Set(userBadges.map(b => b.adventure_id));
+            const unlockedIds = new Set(userBadges ? userBadges.map(b => b.adventure_id) : []);
             
             const grid = document.getElementById('badgesGrid');
             grid.innerHTML = '';
