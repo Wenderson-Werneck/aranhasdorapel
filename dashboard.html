@@ -99,6 +99,11 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;
         }
         
+        /* INPUT DE RESGATE */
+        .redeem-box { display: flex; gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px dashed #ccc; }
+        .redeem-box input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; outline:none; }
+        .redeem-box button { background: var(--success); color: white; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
         /* GRID DE RESERVAS */
         .booking-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         .booking-card {
@@ -234,6 +239,15 @@
 
         <div id="section-badges" class="content-section">
             <h1 class="page-title">Mural de Conquistas</h1>
+            
+            <div class="card" style="background: #e3f2fd; border: 1px dashed #2196f3;">
+                <h3 style="color:var(--es-blue); margin-bottom:10px;">Tem um código?</h3>
+                <div class="redeem-box">
+                    <input type="text" id="redeemCode" placeholder="Cole seu código aqui (Ex: ARANHA-X9Y2)">
+                    <button onclick="redeemBadge()">RESGATAR</button>
+                </div>
+            </div>
+
             <div class="card">
                 <p style="text-align:center; color:#666; margin-bottom:20px;">Complete aventuras para desbloquear badges exclusivos!</p>
                 <div class="badges-grid" id="badgesGrid">
@@ -308,7 +322,6 @@
             
             // Atualiza Sidebar Desktop
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            // (Logica simples para desktop active state baseada no onclick)
             const desktopItems = document.querySelectorAll('.nav-item');
             if(sectionId === 'reservas') desktopItems[0].classList.add('active');
             if(sectionId === 'badges') desktopItems[1].classList.add('active');
@@ -349,7 +362,7 @@
                 document.getElementById('fullName').value = data.full_name || '';
                 document.getElementById('nickname').value = data.nickname || '';
                 document.getElementById('cpf').value = data.cpf || '';
-                document.getElementById('phone').value = data.phone || ''; // NOVO CAMPO
+                document.getElementById('phone').value = data.phone || ''; 
                 document.getElementById('sidebarName').textContent = data.nickname || data.full_name?.split(' ')[0] || 'Aventureiro';
             }
         }
@@ -398,10 +411,51 @@
             });
         }
 
+        // --- SISTEMA DE RESGATE ---
+        async function redeemBadge() {
+            const codeInput = document.getElementById('redeemCode');
+            const code = codeInput.value.trim().toUpperCase();
+
+            if(!code) return Swal.fire('Ops', 'Digite o código!', 'warning');
+
+            // 1. Busca código válido e não usado
+            const { data: codeData, error } = await supabase
+                .from('redeem_codes')
+                .select('*')
+                .eq('code', code)
+                .is('used_by', null)
+                .single();
+
+            if(!codeData) {
+                return Swal.fire('Inválido', 'Código não encontrado ou já utilizado.', 'error');
+            }
+
+            // 2. Marca como usado
+            const { error: updateError } = await supabase
+                .from('redeem_codes')
+                .update({ used_by: currentUser.id })
+                .eq('id', codeData.id);
+
+            if(updateError) return Swal.fire('Erro', 'Erro ao validar código.', 'error');
+
+            // 3. Insere Badge
+            await supabase.from('user_badges').upsert(
+                { user_id: currentUser.id, adventure_id: codeData.adventure_id },
+                { onConflict: 'user_id, adventure_id', ignoreDuplicates: true }
+            );
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Conquista Desbloqueada!',
+                text: 'Badge adicionado ao seu mural.',
+                timer: 3000
+            });
+            codeInput.value = '';
+            loadBadges();
+        }
+
         async function loadBadges() {
-            // Badges Possíveis
             const { data: adventures } = await supabase.from('aventuras').select('id, title, image_url').order('title');
-            // Badges Conquistados
             const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
             const unlockedIds = new Set(userBadges ? userBadges.map(b => b.adventure_id) : []);
 
@@ -441,7 +495,6 @@
             e.target.value = v;
         });
 
-        // --- SALVAR PERFIL ---
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSave');
@@ -453,7 +506,7 @@
                 full_name: document.getElementById('fullName').value,
                 nickname: document.getElementById('nickname').value,
                 cpf: document.getElementById('cpf').value,
-                phone: document.getElementById('phone').value, // SALVANDO O CELULAR
+                phone: document.getElementById('phone').value,
                 updated_at: new Date()
             };
 
