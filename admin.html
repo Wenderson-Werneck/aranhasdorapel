@@ -133,6 +133,28 @@
                 <button id="logoutButton" class="danger"><i class="fas fa-sign-out-alt"></i> Sair</button>
             </div>
         </div>
+        
+        <section id="manualBadgeSection" style="margin-bottom: 3rem; background: #e3f2fd; padding: 2rem; border-radius: 12px; border: 2px dashed #90caf9;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fas fa-hand-holding-heart" style="color: var(--secondary); font-size: 1.5rem;"></i>
+                <h2 style="margin:0; color: var(--secondary);">Entregar Badge Manualmente</h2>
+            </div>
+            <p style="margin-bottom: 1rem; font-size: 0.9rem;">Use para clientes avulsos ou correções. O cliente precisa ter cadastro no site.</p>
+            
+            <form id="manualBadgeForm" style="box-shadow: none; border: none; padding: 0; background: transparent; display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+                <div>
+                    <label>E-mail do Cliente</label>
+                    <input type="email" id="manualEmail" placeholder="cliente@email.com" required style="margin-bottom:0;">
+                </div>
+                <div>
+                    <label>Escolher Badge (Aventura)</label>
+                    <select id="manualBadgeSelect" required style="margin-bottom:0;"></select>
+                </div>
+                <button type="submit" class="success" style="height: 48px; margin-bottom: 0;">
+                    <i class="fas fa-check"></i> Entregar
+                </button>
+            </form>
+        </section>
 
         <section id="agendaAdmin">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
@@ -271,7 +293,11 @@
         const agendaForm = document.getElementById('agendaForm');
         const adventureForm = document.getElementById('adventureForm');
         const muralForm = document.getElementById('muralForm');
+        
+        // SELECTS
         const agendaAdventureSelect = document.getElementById('agendaAdventureId');
+        const manualBadgeSelect = document.getElementById('manualBadgeSelect');
+
         const saveOrderBar = document.getElementById('saveOrderBar');
         const btnConfirmOrder = document.getElementById('btnConfirmOrder');
 
@@ -300,24 +326,70 @@
         logoutButton.addEventListener('click', async () => { await supabase.auth.signOut(); showLoginPage(); });
 
         async function loadAllData() {
-            await loadAdventuresAndPopulateSelect();
+            await loadAdventuresAndPopulateSelects();
             loadAdminItems('agenda', agendaList, createAgendaItem, 'display_order');
             loadAdminItems('aventuras', adventureList, createAdventureItem);
             loadAdminItems('mural', muralList, createMuralItem);
         }
 
-        async function loadAdventuresAndPopulateSelect() {
+        async function loadAdventuresAndPopulateSelects() {
             const { data } = await supabase.from('aventuras').select('id, title').order('title');
             if(data) {
                 globalAdventures = data;
+                
+                // Popula select da Agenda
                 agendaAdventureSelect.innerHTML = '<option value="">-- Sem vínculo --</option>';
                 data.forEach(adv => {
                     const opt = document.createElement('option');
                     opt.value = adv.id; opt.textContent = adv.title;
                     agendaAdventureSelect.appendChild(opt);
                 });
+
+                // Popula select Manual
+                manualBadgeSelect.innerHTML = '<option value="">-- Escolha a Conquista --</option>';
+                data.forEach(adv => {
+                    const opt = document.createElement('option');
+                    opt.value = adv.id; opt.textContent = adv.title;
+                    manualBadgeSelect.appendChild(opt);
+                });
             }
         }
+
+        // --- ENTREGA MANUAL DE BADGE ---
+        document.getElementById('manualBadgeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('manualEmail').value.trim();
+            const advId = document.getElementById('manualBadgeSelect').value;
+
+            if(!advId) { alert("Selecione um Badge."); return; }
+
+            // 1. Busca ID do usuário pelo email
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .ilike('email', email) // ilike ignora maiuscula/minuscula
+                .single();
+
+            if(profileError || !profile) {
+                alert("Usuário não encontrado! Verifique se o e-mail está correto e se ele já se cadastrou no site.");
+                return;
+            }
+
+            if(!confirm(`Entregar badge para ${profile.full_name}?`)) return;
+
+            // 2. Insere Badge
+            const { error: insertError } = await supabase
+                .from('user_badges')
+                .upsert({ user_id: profile.id, adventure_id: advId }, { onConflict: 'user_id, adventure_id', ignoreDuplicates: true });
+
+            if(insertError) alert("Erro ao entregar: " + insertError.message);
+            else {
+                alert("Badge entregue com sucesso!");
+                document.getElementById('manualEmail').value = '';
+                document.getElementById('manualBadgeSelect').value = '';
+            }
+        });
+
 
         async function loadAdminItems(tableName, listElement, createItemFn, sortColumn = 'created_at') {
             listElement.innerHTML = '<div class="loader">Carregando...</div>';
@@ -457,7 +529,7 @@
                 title: document.getElementById('agendaTitle').value,
                 image_url: document.getElementById('agendaImage').value,
                 date_text: document.getElementById('agendaDate').value,
-                price: document.getElementById('agendaPrice').value || 0, // Salva preço
+                price: document.getElementById('agendaPrice').value || 0,
                 adventure_id: advId ? advId : null
             };
             if (id) await supabase.from('agenda').update(agendaData).eq('id', id);
