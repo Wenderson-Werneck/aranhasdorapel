@@ -59,6 +59,23 @@
         body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; padding-bottom: 80px; }
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
+        /* --- SCROLLBAR PERSONALIZADA (DESKTOP) --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary); /* Fica rosa ao passar o mouse */
+        }
+
         /* SKELETON LOADING */
         .skeleton {
             background: #eee;
@@ -134,7 +151,17 @@
             border-bottom: 4px solid transparent; transition: transform 0.3s ease-out; width: 100%; display: flex; flex-direction: column;
         }
         .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .agenda-img, .card-image img, .client-img { width: 100%; height: auto; display: block; object-fit: cover; }
+        
+        .agenda-img, .card-image img { width: 100%; height: auto; display: block; object-fit: cover; }
+        
+        /* MURAL: ESTILO INSTAGRAM (4:5 Retrato) */
+        .photo-item .client-img {
+            width: 100%;
+            aspect-ratio: 4/5; /* Formato Instagram Vertical */
+            object-fit: cover; /* Garante que preenche sem deformar */
+            display: block;
+        }
+
         .agenda-img { aspect-ratio: 4/5; }
         .card-image { height: 280px; overflow: hidden; }
         .card-image img { height: 100%; transition: transform 0.4s; }
@@ -224,8 +251,8 @@
         .btn-reserve { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; }
         .btn-reserve:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .btn-whatsapp { background: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%); color: white; }
-        .btn-sector { background: var(--info-btn); color: white; display: none; min-width: 150px; } 
-        .btn-sector:hover { background: #2980b9; transform: translateY(-2px); }
+        .btn-sector { background: var(--info-btn); color: white; display: none; } 
+        .btn-sector:hover { background: #2980b9; }
 
         footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
         .footer-logo-img { width: 180px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
@@ -246,7 +273,11 @@
             .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
             @keyframes slideRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
             .agenda-grid, .adventures-grid, .photos-grid { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; padding-right: 40px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; align-items: stretch; }
-            .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
+            
+            /* SCROLLBAR INVISÍVEL NO MOBILE */
+            .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar, .modal-content::-webkit-scrollbar { display: none; }
+            * { -ms-overflow-style: none; scrollbar-width: none; }
+
             .agenda-item, .adventure-card, .photo-item { min-width: 80vw; width: 80vw; scroll-snap-align: center; margin-bottom: 15px; height: auto; }
             .agenda-item:hover, .adventure-card:hover, .photo-item:hover { transform: none; }
             .modal { align-items: center; padding: 1rem; }
