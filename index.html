@@ -60,20 +60,21 @@
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
         /* --- SCROLLBAR PERSONALIZADA (DESKTOP) --- */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* Aplica apenas ao conteúdo do modal para não bugar o site todo */
+        .modal-content::-webkit-scrollbar {
+            width: 6px; /* Bem fininha */
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-            border-radius: 4px;
+        .modal-content::-webkit-scrollbar-track {
+            background: transparent; 
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #ccc; 
-            border-radius: 4px;
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #ddd; 
+            border-radius: 10px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary); /* Fica rosa ao passar o mouse */
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: var(--primary); /* Rosa ao passar o mouse */
         }
 
         /* SKELETON LOADING */
@@ -202,7 +203,8 @@
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { 
             background: white; margin: auto; border-radius: 20px; width: 100%; max-width: 1000px; 
-            max-height: 90vh; overflow-y: auto; 
+            max-height: 90vh; 
+            overflow-y: auto; /* Scroll acontece AQUI */
             transform: scale(0.98); transition: transform 0.3s ease-out; 
         }
         .modal.active .modal-content { transform: scale(1); }
@@ -216,7 +218,18 @@
         .modal-header::after { content:''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
         .modal-header img { width: 100%; height: 100%; object-fit: cover; }
         .modal-header-content { position: absolute; bottom: 0; left: 0; right: 0; color: white; padding: 3rem; z-index: 2; }
-        .modal-header-content h2 { font-size: 3rem; background: linear-gradient(135deg, #fff 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+        
+        /* TÍTULO DO POP-UP (Rosa Sólido e Sem Subtítulo) */
+        .modal-header-content h2 { 
+            font-size: 3rem; 
+            color: var(--primary); /* ROSA SÓLIDO */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* Sombra para leitura */
+            margin-bottom: 0; /* Remove margem inferior */
+        }
+        
+        /* Esconde subtítulo do modal */
+        #modalSubtitle { display: none !important; }
+
         .modal-body { padding: 3rem; text-align: center; }
         .modal-section { margin-bottom: 3rem; }
         .modal-section h3 { font-size: 1.8rem; color: var(--primary); margin-bottom: 1.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
@@ -419,7 +432,7 @@
                 <img id="modalImage" src="" alt="">
                 <div class="modal-header-content">
                     <h2 id="modalTitle"></h2>
-                    <p id="modalSubtitle"></p>
+                    <p id="modalSubtitle" style="display:none;"></p>
                 </div>
             </div>
             <div class="modal-body">
@@ -638,13 +651,13 @@
             openModal(agModal);
         }
 
-        // ABRE MODAL AVENTURA (Com botão "Reservar" condicional)
+        // ABRE MODAL AVENTURA (Com botão "Reservar" condicional e Sem Subtítulo)
         function openAdventureModal(adv) {
             // FIX SCROLL: Reseta o scroll para o topo ao abrir
             document.querySelector('#adventureModal .modal-content').scrollTop = 0;
 
             document.getElementById('modalTitle').textContent = adv.title;
-            document.getElementById('modalSubtitle').textContent = adv.subtitle;
+            // document.getElementById('modalSubtitle').textContent = adv.subtitle; (REMOVIDO)
             document.getElementById('modalImage').src = adv.image_url;
             document.getElementById('adventureDescription').textContent = adv.description;
             document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
