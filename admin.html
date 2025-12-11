@@ -11,43 +11,76 @@
     
     <style>
         :root {
-            --primary: #E83D8A; --secondary: #0055A4; --light: #FDF2F8; --white: #ffffff;
-            --dark: #1A202C; --danger: #e53e3e; --success: #27ae60; --radius: 12px;
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --white: #ffffff;
+            --dark: #1A202C;
+            --danger: #e53e3e;
+            --success: #27ae60;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding-bottom: 80px; }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 0; padding-bottom: 80px; }
         .container { width: 95%; max-width: 1200px; margin: 2rem auto; }
         
-        button { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        button { 
+            background: var(--primary); color: white; border: none; padding: 12px 20px; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
         button.danger { background: var(--danger); }
         button.secondary { background: var(--secondary); }
         button.success { background: var(--success); }
-        button.outline { background: transparent; border: 2px solid #ccc; color: #666; }
+        button.outline { background: transparent; border: 2px solid #ccc; color: #666; box-shadow: none; }
 
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 16px 0; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-        form { background: var(--white); padding: 2rem; border-radius: var(--radius); border-top: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
-        /* Upload Personalizado */
-        .upload-group { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
-        .upload-group input[type="text"] { margin-bottom: 0; flex: 1; }
-        .file-label {
-            background: #e3f2fd; color: var(--secondary); padding: 10px 15px; border-radius: 8px; 
-            cursor: pointer; font-size: 0.9rem; font-weight: bold; border: 1px dashed var(--secondary); display: flex; align-items: center; gap: 5px; white-space: nowrap;
+        input, textarea, select {
+            width: 100%; padding: 12px; margin: 8px 0 16px 0;
+            border: 1px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; background: #fafafa;
         }
-        .file-label:hover { background: #bbdefb; }
+        
+        form { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        label { font-weight: 600; display: block; color: var(--secondary); font-size: 0.9rem; margin-top: 0.5rem;}
+        
+        /* UPLOAD STYLE */
+        .upload-group { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; margin-top: 5px; }
+        
+        .status-indicator {
+            flex: 1;
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 15px; border-radius: 8px; font-size: 0.9rem;
+            background: #f1f5f9; border: 1px dashed #cbd5e1; color: #64748b;
+            transition: 0.3s;
+        }
+        .status-indicator.success {
+            background: #dcfce7; border-color: var(--success); color: var(--success); font-weight: bold;
+        }
+        .status-indicator i { font-size: 1.1rem; }
+
+        .file-label {
+            background: var(--secondary); color: white; padding: 10px 20px; border-radius: 50px; 
+            cursor: pointer; font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 8px; 
+            white-space: nowrap; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .file-label:hover { background: #003e7a; transform: translateY(-1px); }
         input[type="file"] { display: none; }
 
         .admin-layout { display: none; }
         .auth-screen { text-align: center; padding: 3rem; background: var(--white); max-width: 400px; margin: 5rem auto; border-top: 5px solid var(--primary); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 2rem; border-radius: var(--radius); margin-bottom: 2rem; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 2rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 2rem; }
         .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
-        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); }
+        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); height: fit-content; }
         .item { background: #fff; border-bottom: 1px solid #eee; padding: 1rem 0; display: flex; justify-content: space-between; align-items: center; }
         .item-info { display: flex; align-items: center; gap: 1rem; }
-        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .item-actions { display: flex; gap: 5px; }
+        .item-actions button { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
         .code-box { background: #2d3748; color: #48bb78; font-family: monospace; font-size: 2rem; padding: 20px; border-radius: 10px; text-align: center; letter-spacing: 5px; font-weight: bold; margin-top: 20px; display: none; border: 2px dashed #48bb78; }
         .loader { text-align: center; padding: 2rem; color: #888; }
-        
+
         @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -107,7 +140,10 @@
                     
                     <label>Imagem do Evento</label>
                     <div class="upload-group">
-                        <input type="text" id="agendaImage" placeholder="URL da imagem..." required readonly>
+                        <input type="hidden" id="agendaImage" required> <div id="agendaImageStatus" class="status-indicator">
+                            <i class="fas fa-image"></i> Aguardando imagem...
+                        </div>
+
                         <label class="file-label">
                             <i class="fas fa-cloud-upload-alt"></i> Upload
                             <input type="file" onchange="uploadImage(this, 'agendaImage')">
@@ -141,7 +177,10 @@
                     
                     <label>Imagem de Capa</label>
                     <div class="upload-group">
-                        <input type="text" id="adventureImage" placeholder="URL da capa..." required readonly>
+                        <input type="hidden" id="adventureImage" required>
+                        <div id="adventureImageStatus" class="status-indicator">
+                            <i class="fas fa-image"></i> Aguardando imagem...
+                        </div>
                         <label class="file-label">
                             <i class="fas fa-cloud-upload-alt"></i> Upload
                             <input type="file" onchange="uploadImage(this, 'adventureImage')">
@@ -171,7 +210,10 @@
                     
                     <label>Foto do Cliente</label>
                     <div class="upload-group">
-                        <input type="text" id="muralImage" placeholder="URL da foto..." required readonly>
+                        <input type="hidden" id="muralImage" required>
+                        <div id="muralImageStatus" class="status-indicator">
+                            <i class="fas fa-image"></i> Aguardando imagem...
+                        </div>
                         <label class="file-label">
                             <i class="fas fa-cloud-upload-alt"></i> Upload
                             <input type="file" onchange="uploadImage(this, 'muralImage')">
@@ -193,48 +235,60 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // FUNÇÃO DE UPLOAD MÁGICO 
+        // --- UPLOAD MÁGICO COM ÍCONE VERDINHO ---
         window.uploadImage = async (fileInput, targetInputId) => {
             const file = fileInput.files[0];
             if (!file) return;
 
-            const label = fileInput.parentElement;
-            const originalText = label.innerHTML;
-            label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-            label.style.pointerEvents = 'none';
+            const statusEl = document.getElementById(targetInputId + 'Status');
+            const originalStatus = statusEl.innerHTML;
+            
+            // Estado Carregando
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            statusEl.className = 'status-indicator'; // Reseta cor
 
             try {
                 // Nome único: admin/TIMESTAMP_nome.jpg
                 const fileName = `admin/${Date.now()}_${file.name.replace(/\s/g, '_')}`;
                 
                 const { data, error } = await supabase.storage
-                    .from('imagens') // Nome do Bucket que você criou
+                    .from('imagens')
                     .upload(fileName, file);
 
                 if (error) throw error;
 
-                // Pega URL pública
                 const { data: { publicUrl } } = supabase.storage
                     .from('imagens')
                     .getPublicUrl(fileName);
 
-                // Preenche o campo
+                // Salva Link no Input Escondido
                 document.getElementById(targetInputId).value = publicUrl;
 
+                // Sucesso Visual (Verdinho)
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Imagem Carregada!';
+                statusEl.classList.add('success');
+
             } catch (error) {
-                alert('Erro no upload: ' + error.message);
-            } finally {
-                label.innerHTML = '<i class="fas fa-check"></i> Pronto!';
-                setTimeout(() => {
-                    label.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload';
-                    label.style.pointerEvents = 'auto';
-                }, 2000);
+                alert('Erro: ' + error.message);
+                statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro no envio';
+                statusEl.style.color = 'var(--danger)';
             }
         };
 
-        // --- SISTEMA EXISTENTE (MANTIDO) ---
-        
-        // Elementos
+        // Helper para setar status ao editar
+        function setStatusGreen(id) {
+            const el = document.getElementById(id + 'Status');
+            el.innerHTML = '<i class="fas fa-check-circle"></i> Imagem Atual Salva';
+            el.classList.add('success');
+        }
+        function resetStatus(id) {
+            const el = document.getElementById(id + 'Status');
+            el.innerHTML = '<i class="fas fa-image"></i> Aguardando imagem...';
+            el.classList.remove('success');
+            el.style.color = '';
+        }
+
+        // --- SISTEMA PADRÃO ---
         const agendaList = document.getElementById('agendaList');
         const adventureList = document.getElementById('adventureList');
         const muralList = document.getElementById('muralList');
@@ -346,14 +400,22 @@
             const { data } = await supabase.from(table).select('*').eq('id', id).single();
             if(!data) return;
             if(table === 'agenda') {
-                document.getElementById('agendaId').value = data.id; document.getElementById('agendaTitle').value = data.title; document.getElementById('agendaDate').value = data.date_text; document.getElementById('agendaPrice').value = data.price; document.getElementById('agendaImage').value = data.image_url; document.getElementById('agendaAdventureId').value = data.adventure_id || ""; document.getElementById('agendaFormTitle').textContent = 'Editar Evento'; document.getElementById('cancelEditAgenda').style.display = 'inline-block'; document.getElementById('agendaAdmin').scrollIntoView({behavior:'smooth'});
+                document.getElementById('agendaId').value = data.id; document.getElementById('agendaTitle').value = data.title; document.getElementById('agendaDate').value = data.date_text; document.getElementById('agendaPrice').value = data.price; document.getElementById('agendaImage').value = data.image_url; setStatusGreen('agendaImage'); document.getElementById('agendaAdventureId').value = data.adventure_id || ""; document.getElementById('agendaFormTitle').textContent = 'Editar Evento'; document.getElementById('cancelEditAgenda').style.display = 'inline-block'; document.getElementById('agendaAdmin').scrollIntoView({behavior:'smooth'});
             } else if(table === 'aventuras') {
-                document.getElementById('adventureId').value = data.id; document.getElementById('adventureTitle').value = data.title; document.getElementById('adventureSubtitle').value = data.subtitle; document.getElementById('adventureDuration').value = data.duration; document.getElementById('adventureDescription').value = data.description; document.getElementById('adventureImage').value = data.image_url; document.getElementById('adventureDifficulty').value = data.difficulty; document.getElementById('adventureFormTitle').textContent = 'Editar Aventura'; document.getElementById('cancelEditAdventure').style.display = 'inline-block'; document.getElementById('aventurasAdmin').scrollIntoView({behavior:'smooth'});
+                document.getElementById('adventureId').value = data.id; document.getElementById('adventureTitle').value = data.title; document.getElementById('adventureSubtitle').value = data.subtitle; document.getElementById('adventureDuration').value = data.duration; document.getElementById('adventureDescription').value = data.description; document.getElementById('adventureImage').value = data.image_url; setStatusGreen('adventureImage'); document.getElementById('adventureDifficulty').value = data.difficulty; document.getElementById('adventureFormTitle').textContent = 'Editar Aventura'; document.getElementById('cancelEditAdventure').style.display = 'inline-block'; document.getElementById('aventurasAdmin').scrollIntoView({behavior:'smooth'});
             } else if(table === 'mural') {
-                document.getElementById('muralId').value = data.id; document.getElementById('muralTitle').value = data.title; document.getElementById('muralAuthor').value = data.author; document.getElementById('muralQuote').value = data.quote; document.getElementById('muralImage').value = data.image_url; document.getElementById('muralFormTitle').textContent = 'Editar Relato'; document.getElementById('cancelEditMural').style.display = 'inline-block'; document.getElementById('muralAdmin').scrollIntoView({behavior:'smooth'});
+                document.getElementById('muralId').value = data.id; document.getElementById('muralTitle').value = data.title; document.getElementById('muralAuthor').value = data.author; document.getElementById('muralQuote').value = data.quote; document.getElementById('muralImage').value = data.image_url; setStatusGreen('muralImage'); document.getElementById('muralFormTitle').textContent = 'Editar Relato'; document.getElementById('cancelEditMural').style.display = 'inline-block'; document.getElementById('muralAdmin').scrollIntoView({behavior:'smooth'});
             }
         }
-        function resetForm(type) { document.getElementById(type+'Form').reset(); document.getElementById(type+'Id').value = ''; document.getElementById(type+'FormTitle').textContent = type === 'agenda' ? 'Adicionar Evento' : (type === 'adventure' ? 'Nova Aventura' : 'Novo Relato'); const cap = type.charAt(0).toUpperCase() + type.slice(1); document.getElementById(`cancelEdit${cap}`).style.display = 'none'; }
+        function resetForm(type) { 
+            document.getElementById(type+'Form').reset(); 
+            document.getElementById(type+'Id').value = ''; 
+            resetStatus(type+'Image'); // Reseta o indicador visual
+            document.getElementById(type+'FormTitle').textContent = 'Adicionar Novo'; 
+            const cap = type.charAt(0).toUpperCase() + type.slice(1); 
+            document.getElementById(`cancelEdit${cap}`).style.display = 'none'; 
+        }
+        
         document.getElementById('cancelEditAgenda').onclick = () => resetForm('agenda'); document.getElementById('cancelEditAdventure').onclick = () => resetForm('adventure'); document.getElementById('cancelEditMural').onclick = () => resetForm('mural');
         async function updateOrder() { const items = agendaList.querySelectorAll('.item'); const updates = []; items.forEach((item, index) => { const id = item.dataset.id; if(id) updates.push(supabase.from('agenda').update({ display_order: index }).eq('id', id)); }); if(updates.length) await Promise.all(updates); }
     </script>
