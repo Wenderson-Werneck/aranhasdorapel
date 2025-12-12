@@ -6,16 +6,23 @@
     
     <title>Aranhas do Rapel | Aventuras no Espírito Santo</title>
     <meta name="description" content="Viva a adrenalina do rapel com segurança total. Agenda de aventuras na Serra, Vila Velha e região.">
-    <meta name="keywords" content="rapel, aventura, espirito santo, ecoturismo, escalada, turismo ES, morro do moreno, mestre alvaro">
-    <meta name="author" content="Aranhas do Rapel">
-    <meta name="robots" content="index, follow">
-
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://aranhasdorapel.com.br/">
     <meta property="og:title" content="Aranhas do Rapel | Bora se aventurar?">
     <meta property="og:description" content="Segurança, Adrenalina e Conexão com a Natureza.">
     <meta property="og:image" content="https://aranhasdorapel.com.br/social-share.jpg">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T08NL0VVP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4T08NL0VVP');
+    </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -29,269 +36,390 @@
             --es-white: #FFFFFF;
             --primary: var(--es-pink);
             --secondary: var(--es-pink);
+            --accent: var(--es-pink);
             --light: #FDF2F8; 
             --dark: #1A202C;
             --success: #27ae60;
-            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
-        body { background-color: var(--light); color: var(--dark); line-height: 1.6; padding-bottom: 80px; }
+        body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; padding-bottom: 80px; }
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
-        /* HEADER */
+        /* --- VISUAL POLIDO --- */
+        
+        /* Barra de Rolagem Personalizada (PC) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* HEADER MAIOR NO MOBILE */
         header {
             background: var(--primary); position: fixed; width: 100%; top: 0; z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 70px; /* Aumentei um pouco */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 70px; /* Aumentado */
             display: flex; align-items: center; justify-content: center;
         }
 
-        .desktop-nav { display: flex; width: 100%; justify-content: center; align-items: center; }
-        .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1rem; }
-        .btn-login { background: white; color: var(--primary) !important; padding: 8px 20px; border-radius: 50px; transition:0.3s; }
-        .btn-login:hover { transform: translateY(-2px); }
+        .desktop-nav { display: flex; justify-content: center; align-items: center; width: 100%; }
+        .nav-links { display: flex; list-style: none; align-items: center; }
+        .nav-links li { margin: 0 1rem; position: relative; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; padding: 0.5rem 0; }
+        .nav-links .btn-login {
+            background-color: white; color: var(--primary) !important; padding: 0.5rem 1.5rem !important;
+            border-radius: 50px; transition: transform 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-flex; align-items: center; gap: 8px; 
+        }
+        .nav-links .btn-login:hover { transform: translateY(-2px); background-color: #fff0f5; }
 
-        /* MOBILE HEADER */
-        .mobile-header-content { display: none; width: 100%; justify-content: center; align-items: center; position: relative; }
-        .header-brand { color: white; font-weight: 800; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
-        .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; position: absolute; right: 15px; }
+        .mobile-header-content { display: none; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
+        .header-brand { color: white; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
-        /* SEÇÕES */
-        section { padding: 4rem 0; scroll-margin-top: 90px; }
-        .section-title { text-align: center; margin-bottom: 2rem; }
-        .section-title h2 { color: var(--primary); font-size: 2.2rem; }
-        .section-title p { opacity: 0.8; }
+        .mobile-sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: right 0.3s ease-out; display: flex; flex-direction: column; }
+        .mobile-sidebar.active { right: 0; }
+        .sidebar-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 70px; }
+        .close-sidebar { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .sidebar-content { padding: 1.5rem; overflow-y: auto; }
+        .sidebar-login-area { text-align: center; margin-bottom: 1.5rem; }
+        .btn-login-mobile { 
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            background: var(--primary); color: white; padding: 0.8rem; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: var(--shadow-lg); 
+        }
+        .sidebar-links { list-style: none; }
+        .sidebar-links li { margin-bottom: 1.2rem; }
+        .sidebar-links a { text-decoration: none; color: var(--dark); font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; }
+        .sidebar-links a i { width: 30px; color: var(--primary); text-align: center; margin-right: 10px; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        
+        .fixed-spider { position: fixed; top: -25px; left: 20px; width: 80px; z-index: 999; pointer-events: none; transition: top 0.3s; }
+        .fixed-spider::before { content: ''; display: block; width: 2px; height: 80px; background: rgba(255, 255, 255, 0.5); margin: 0 auto; }
+        .fixed-spider img { width: 100%; height: auto; }
+
+        section { padding: 4rem 0; scroll-margin-top: 110px; }
+        .section-title { text-align: center; margin-bottom: 3rem; }
+        .section-title h2 { font-size: 2.5rem; color: var(--primary); }
+        .section-title p { color: var(--dark); opacity: 0.8; }
         .swipe-hint-text { display: none; }
 
-        /* GRIDS DE CARDS */
-        .agenda-grid, .adventures-grid, .photos-grid { 
-            display: grid; gap: 2rem; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-        }
-
-        /* CARD DESIGN */
-        .agenda-item, .adventure-card, .photo-item {
-            background: white; border-radius: 16px; overflow: hidden; 
-            box-shadow: var(--shadow); cursor: pointer; transition: transform 0.3s;
-            position: relative; border-bottom: 4px solid transparent;
-        }
-        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-
-        .card-image { height: 260px; overflow: hidden; }
-        .card-image img, .agenda-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .adventure-card:hover .card-image img { transform: scale(1.1); }
-        .agenda-img { aspect-ratio: 4/5; }
-
-        .card-content, .agenda-content, .photo-content { padding: 1.5rem; text-align: center; }
-        .card-content h3 { color: var(--primary); font-size: 1.4rem; margin-bottom: 0.5rem; text-align: left; }
-        .agenda-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        .adventures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
+        .agenda-grid, .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2.5rem; }
         
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; }
-        .difficulty { padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
-        .difficulty.facil { background: #e8f5e9; color: var(--success); }
-        .difficulty.medio { background: #fff3e0; color: #f57c00; }
-        .difficulty.dificil { background: #ffebee; color: #c62828; }
-
-        /* MURAL (INSTAGRAM STYLE) */
-        .photo-item .client-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
-        .photo-content h4 { color: var(--primary); font-size: 1.1rem; margin-bottom: 5px; }
-
-        /* BOTÃO UPLOAD */
-        .photo-upload { text-align: center; margin-top: 3rem; }
-        .btn-upload { 
-            background: var(--primary); color: white; padding: 15px 35px; border-radius: 50px; 
-            text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(232, 61, 138, 0.4); 
-            display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem;
+        .agenda-item, .adventure-card, .photo-item {
+            border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); background: var(--es-white); cursor: pointer; position: relative;
+            border-bottom: 4px solid transparent; transition: transform 0.3s ease-out; width: 100%; display: flex; flex-direction: column;
+        }
+        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        
+        .agenda-img, .card-image img { width: 100%; height: auto; display: block; object-fit: cover; }
+        .agenda-img { aspect-ratio: 4/5; }
+        .card-image { height: 280px; overflow: hidden; } /* Mais altura para foto */
+        .card-image img { height: 100%; transition: transform 0.4s; }
+        .adventure-card:hover .card-image img { transform: scale(1.1); }
+        
+        /* MURAL INSTAGRAM STYLE (VERTICAL) */
+        .photo-item .client-img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            display: block;
         }
 
-        /* MODAL (POP-UP) */
+        .agenda-content, .card-content, .photo-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .agenda-content { text-align: center; }
+        .agenda-content h4, .photo-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        
+        /* TÍTULO DO CARD (Corrigido para Rosa) */
+        .card-content h3 { color: var(--primary); margin-bottom: 0.2rem; font-size: 1.4rem; text-align: left; }
+        
+        .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: auto; }
+        
+        .difficulty { padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; white-space: nowrap; }
+        .difficulty.facil { background: #e8f5e9; color: var(--success); }
+        .difficulty.medio { background: #fff3e0; color: #ff9800; }
+        .difficulty.dificil { background: #ffebee; color: #f44336; }
+        
+        .photo-upload { text-align: center; margin-top: 2rem; }
+        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); transition:0.3s; }
+        .btn-upload:hover { transform: translateY(-2px); }
+
+        .app-bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; justify-content: space-around; align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        .app-nav-item {
+            display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; width: 25%; transition: color 0.3s ease;
+        }
+        .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        .app-nav-item.active { color: var(--primary); }
+
+        /* MODAL */
         .modal { 
-            display: flex; align-items: center; justify-content: center; 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); z-index: 2000; 
-            opacity: 0; visibility: hidden; transition: 0.3s; padding: 1rem;
+            display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: hidden; padding: 1rem; 
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .modal.active { opacity: 1; visibility: visible; }
-        
         .modal-content { 
-            background: white; width: 100%; max-width: 900px; border-radius: 20px; 
-            overflow: hidden; max-height: 90vh; overflow-y: auto; position: relative;
+            background: white; margin: auto; border-radius: 20px; width: 100%; max-width: 1000px; overflow-y: auto; 
+            max-height: 90vh; /* Limita altura */
+            transform: scale(0.98); transition: transform 0.3s ease-out; 
         }
-        
+        .modal.active .modal-content { transform: scale(1); }
         .close-modal { 
-            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); 
-            color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 1.5rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;
+            position: absolute; top: 25px; right: 30px; font-size: 2.2rem; color: white; cursor: pointer; z-index: 2001; 
+            background: rgba(0, 0, 0, 0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
-        .modal-header { position: relative; height: 400px; }
+        .modal-header { position: relative; height: 450px; }
+        .modal-header::after { content:''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
         .modal-header img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-header::after { content:''; position: absolute; bottom:0; left:0; width:100%; height:50%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); }
+        .modal-header-content { position: absolute; bottom: 0; left: 0; right: 0; color: white; padding: 3rem; z-index: 2; }
         
-        .modal-header-content { 
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 2.5rem; z-index: 2; 
-        }
+        /* TÍTULO DO POP-UP (Ajustado) */
         .modal-header-content h2 { 
+            font-size: 3rem; 
             color: var(--primary); /* ROSA SÓLIDO */
-            font-size: 2.8rem; margin: 0; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9); /* Sombra para leitura */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); 
+            margin-bottom: 0; 
         }
+        /* Esconde subtítulo no modal */
+        #modalSubtitle { display: none !important; }
 
-        .modal-body { padding: 2.5rem; }
-        .modal-section { margin-bottom: 2.5rem; }
-        .modal-section h3 { color: var(--primary); font-size: 1.6rem; margin-bottom: 1rem; border-bottom: 3px solid var(--es-pink); display: inline-block; }
-
-        .adventure-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
-        .detail-item { background: #f8f9fa; padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid #eee; }
-        .detail-icon { font-size: 1.5rem; color: var(--primary); margin-bottom: 5px; }
-
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-        .gallery-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; }
-
-        /* BOTÕES DO MODAL */
-        .modal-buttons-row { display: flex; gap: 15px; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+        .modal-body { padding: 3rem; text-align: center; }
+        .modal-section { margin-bottom: 3rem; }
+        .modal-section h3 { font-size: 1.8rem; color: var(--primary); margin-bottom: 1.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
+        
+        .adventure-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .detail-item { display: flex; flex-direction: column; align-items: center; background: var(--light); padding: 1.2rem; border-radius: 12px; box-shadow: var(--shadow-lg); border-left: 4px solid var(--accent); }
+        .detail-icon { background: linear-gradient(135deg, var(--primary) 0%, #c21c66 100%); color: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+        .gallery-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; }
+        
+        /* BOTÕES MODAL */
+        .modal-buttons-row {
+            display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 1rem; flex-wrap: wrap;
+        }
         .btn-modal { 
-            padding: 14px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; color: white; 
-            display: flex; align-items: center; gap: 10px; font-size: 1rem; min-width: 200px; justify-content: center;
+            display: inline-flex; align-items: center; justify-content: center; 
+            gap: 8px; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; 
+            box-shadow: var(--shadow-lg); font-size: 0.9rem; transition: background 0.3s; cursor: pointer;
+            width: auto; border: none; min-width: 180px;
         }
-        .btn-reserve { background: linear-gradient(45deg, #FF8008, #FFC837); }
-        .btn-whatsapp { background: #25D366; }
-        .btn-sector { background: #3498db; }
+        .btn-reserve { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; }
+        .btn-whatsapp { background: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%); color: white; }
+        .btn-sector { background: var(--info-btn); color: white; display: none; } 
 
         /* MODAL AGENDA */
-        .agenda-modal-content { max-width: 500px; background: transparent; box-shadow: none; text-align: center; }
-        #agendaModalImage { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
-        .agenda-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .agenda-modal-content { max-width: 90%; max-height: 95vh; display: flex; flex-direction: column; align-items: center; background: transparent; box-shadow: none; overflow-y: auto; }
+        #agendaModalImage { width: 100%; height: auto; max-width: 550px; max-height: 75vh; object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg); display: block; margin: 0 auto; }
+        .agenda-actions { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; margin-top: 15px; width: 100%; flex-wrap: wrap; }
 
-        /* SKELETON LOADING */
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .sk-card { height: 350px; background: white; padding: 15px; border-radius: 16px; display:flex; flex-direction:column; gap:10px; }
-        .sk-img { height: 200px; width: 100%; } .sk-txt { height: 20px; width: 70%; }
+        /* SKELETON */
+        .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shimmer linear infinite; border-radius: 5px; }
+        @keyframes shimmer { to { background-position-x: -200%; } }
+        .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; gap:10px; padding:15px; }
+        .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
 
-        /* MOBILE RESPONSIVE */
+        footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
+        .footer-logo-img { width: 180px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; }
+        .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
+
         @media (max-width: 768px) {
-            .desktop-nav { display: none; }
-            .mobile-header-content { display: flex; }
+            .desktop-nav { display: none; } 
+            .mobile-header-content { display: flex; } 
+            .fixed-spider { display: none; }
+            .app-bottom-nav { display: flex; }
             
-            header { height: 70px; } /* Mais altura pra não esconder o logo */
-            .header-brand { font-size: 1.2rem; }
+            /* Ajuste Header Mobile */
+            header { height: 70px; }
+            .header-brand { font-size: 1.3rem; }
+
+            .container { width: 100%; max-width: 100%; padding: 0; }
+            .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
+            .section-title h2 { font-size: 2rem; }
+            section { padding: 2.5rem 0; scroll-margin-top: 120px; }
+            .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: flex; align-items: center; }
+            .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
+            @keyframes slideRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
             
-            section { padding: 2rem 0; scroll-margin-top: 80px; }
-            
-            /* SCROLL HORIZONTAL MOBILE */
+            /* SCROLLBAR INVISIVEL NO MOBILE */
             .agenda-grid, .adventures-grid, .photos-grid { 
-                display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; 
-                scroll-snap-type: x mandatory; 
-                /* Esconde a barra de rolagem no mobile */
-                scrollbar-width: none; 
+                display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; padding-right: 40px; 
+                scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; 
+                scrollbar-width: none; /* Firefox */
             }
-            .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
-            
-            .agenda-item, .adventure-card, .photo-item { min-width: 85vw; scroll-snap-align: center; }
-            
-            .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--primary); text-align: right; padding-right: 20px; margin-bottom: 5px; font-weight: bold; }
-            .swipe-hint-text i { animation: slide 1s infinite; }
-            @keyframes slide { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+            .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; /* Chrome */ }
 
-            .modal-content { height: 100%; border-radius: 0; max-height: 100vh; }
+            .agenda-item, .adventure-card, .photo-item { min-width: 80vw; width: 80vw; scroll-snap-align: center; margin-bottom: 15px; height: auto; }
+            .agenda-item:hover, .adventure-card:hover, .photo-item:hover { transform: none; }
+            .modal { align-items: center; padding: 1rem; }
+            .modal-content { border-radius: 20px; min-height: auto; transform: none; margin: 0; max-height: 85vh; overflow-y: auto; }
+            .modal.active .modal-content { transform: none; }
+            .agenda-modal-content { width: 100%; }
             .modal-header { height: 250px; }
-            .modal-header-content h2 { font-size: 2.2rem; }
+            .modal-header-content h2 { font-size: 2rem; }
+            .modal-body { padding: 1.5rem; padding-bottom: 80px; }
+            .close-modal { position: fixed; top: 15px; right: 15px; width: 40px; height: 40px; font-size: 1.5rem; }
+            .agenda-actions { flex-direction: column; gap: 10px; }
+            .btn-whatsapp, .btn-sector, .btn-reserve { width: 100%; font-size: 1rem; }
+            #agendaModalImage { max-height: 65vh; } 
         }
-
-        /* BOTTOM NAV */
-        .app-bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; background: white; z-index: 999; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); justify-content: space-around; padding: 12px 0; }
-        @media (max-width: 768px) { .app-bottom-nav { display: flex; } }
-        .app-nav-item { color: #888; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
-        .app-nav-item i { font-size: 1.4rem; margin-bottom: 3px; }
-        .app-nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
+    
+    <div class="fixed-spider">
+        <img src="aranha-logo.png" alt="Aranha">
+    </div>
 
-    <header>
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button id="closeSidebarBtn" class="close-sidebar">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-login-area">
+                <p>Bem-vindo, aventureiro!</p>
+                <a href="login.html" class="btn-login-mobile" id="mobileLoginBtn">
+                    <i class="fas fa-user"></i> Fazer Login
+                </a>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 1.5rem;">
+            <ul class="sidebar-links">
+                <li><a href="#agenda"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
+                <li><a href="#adventures"><i class="fas fa-mountain"></i> Aventuras</a></li>
+                <li><a href="#client-photos"><i class="fas fa-camera"></i> Mural</a></li>
+                <li><a href="#dicas"><i class="fas fa-lightbulb"></i> Dicas <span>Novo</span></a></li>
+                <li><a href="#" id="sidebarWhatsapp"><i class="fab fa-whatsapp"></i> Contato</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="app-bottom-nav">
+        <a href="#agenda" class="app-nav-item active">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Agenda</span>
+        </a>
+        <a href="#adventures" class="app-nav-item">
+            <i class="fas fa-mountain"></i>
+            <span>Aventuras</span>
+        </a>
+        <a href="#client-photos" class="app-nav-item">
+            <i class="fas fa-camera"></i>
+            <span>Mural</span>
+        </a>
+        <a href="#" id="mobileWhatsappBtn" class="app-nav-item">
+            <i class="fab fa-whatsapp"></i>
+            <span>Contato</span>
+        </a>
+    </nav>
+
+    <header id="mainHeader">
         <div class="container">
             <nav class="desktop-nav">
-                <ul class="nav-links">
+                <ul class="nav-links" id="navLinks">
                     <li><a href="#agenda">Agenda</a></li>
                     <li><a href="#adventures">Aventuras</a></li>
                     <li><a href="#client-photos">Mural</a></li>
-                    <li><a href="login.html" class="btn-login" id="desktopLoginBtn">Entrar</a></li>
+                    <li><a href="#dicas">Dicas</a></li>
+                    <li><a href="login.html" class="btn-login" id="desktopLoginBtn"><i class="fas fa-user"></i> Entrar</a></li>
                 </ul>
             </nav>
             <div class="mobile-header-content">
                 <div class="header-brand">Aranhas do Rapel</div>
-                <button class="menu-toggle" onclick="location.href='dashboard.html'"><i class="fas fa-user-circle"></i></button>
+                <button id="mobileMenuBtn" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <section id="agenda">
+    <section class="agenda" id="agenda">
         <div class="container">
             <div class="section-title">
                 <h2>Agenda</h2>
-                <p>Próximas saídas confirmadas</p>
-                <div class="swipe-hint-text">Arraste <i class="fas fa-chevron-right"></i></div>
+                <p>Confira as próximas saídas e garanta sua vaga!</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
             </div>
-            <div id="agendaGrid" class="agenda-grid"></div>
+            <div class="agenda-grid" id="agendaGrid"></div>
         </div>
     </section>
 
-    <section id="adventures">
+    <section class="adventures" id="adventures">
         <div class="container">
             <div class="section-title">
-                <h2>Aventuras</h2>
-                <p>Nossos roteiros fixos</p>
-                <div class="swipe-hint-text">Arraste <i class="fas fa-chevron-right"></i></div>
+                <h2>Nossas Aventuras</h2>
+                <p>Descubra os locais incríveis onde vivemos as melhores experiências.</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
             </div>
-            <div id="adventuresGrid" class="adventures-grid"></div>
+            <div class="adventures-grid" id="adventuresGrid"></div>
         </div>
     </section>
-    
-    <section id="client-photos">
+
+    <section class="client-photos" id="client-photos">
         <div class="container">
             <div class="section-title">
-                <h2>Mural dos Clientes</h2>
-                <p>Momentos inesquecíveis</p>
-                <div class="swipe-hint-text">Arraste <i class="fas fa-chevron-right"></i></div>
+                <h2>Mural dos Aranhas</h2>
+                <p>Momentos inesquecíveis de quem já se aventurou conosco.</p>
+                <span class="swipe-hint-text">Arraste para o lado <i class="fas fa-chevron-right"></i></span>
             </div>
-            <div id="photosGrid" class="photos-grid"></div>
+            <div class="photos-grid" id="photosGrid"></div>
             <div class="photo-upload">
                 <a href="#" id="btnSendPhoto" class="btn-upload"><i class="fas fa-camera"></i> Enviar Minha Foto</a>
             </div>
         </div>
     </section>
 
+    <section class="tips" id="dicas" style="background: white;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dicas de Rapel</h2>
+                <p>Prepare-se para sua aventura com nossas recomendações.</p>
+            </div>
+            <div style="text-align: center; padding: 2rem; background: var(--light); border-radius: 12px;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-hard-hat"></i> Segurança em Primeiro Lugar</h3>
+                <p>Em breve postaremos dicas exclusivas sobre equipamentos, vestimentas e preparação física!</p>
+            </div>
+        </div>
+    </section>
+
     <div class="modal" id="adventureModal">
-        <div class="close-modal">&times;</div>
+        <div class="close-modal" id="closeModal">&times;</div>
         <div class="modal-content">
             <div class="modal-header">
-                <img id="modalImage">
+                <img id="modalImage" src="" alt="">
                 <div class="modal-header-content">
                     <h2 id="modalTitle"></h2>
-                    </div>
+                    <p id="modalSubtitle" style="display:none;"></p>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="modal-section">
-                    <h3>Detalhes</h3>
-                    <div id="adventureDetails" class="adventure-details"></div>
+                    <h3>Detalhes da Aventura</h3>
+                    <div class="adventure-details" id="adventureDetails"></div>
                 </div>
                 <div class="modal-section">
-                    <h3>Sobre o Roteiro</h3>
+                    <h3>Descrição</h3>
                     <p id="adventureDescription"></p>
                 </div>
                 <div class="modal-section">
                     <h3>Galeria</h3>
                     <div class="gallery" id="adventureGallery"></div>
                 </div>
-                <div class="modal-buttons-row">
-                    <a id="reserveButton" class="btn-modal btn-reserve" style="display:none;">
-                        <i class="fas fa-calendar-check"></i> Há Datas Disponíveis
+                <div class="modal-section modal-buttons-row">
+                    <a href="#" class="btn-modal btn-reserve" id="reserveButton" style="display:none;">
+                        <i class="fas fa-ticket-alt"></i> 📅 Há Datas Disponíveis
                     </a>
-                    <a id="whatsappButton" class="btn-modal btn-whatsapp" target="_blank">
-                        <i class="fab fa-whatsapp"></i> Saiba Mais
+                    
+                    <a href="#" class="btn-modal btn-whatsapp" id="whatsappButton" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Saiba mais
                     </a>
                 </div>
             </div>
@@ -301,114 +429,146 @@
     <div class="modal" id="agendaModal">
         <div class="close-modal" id="closeAgendaModal">&times;</div>
         <div class="agenda-modal-content">
-            <img id="agendaModalImage">
+            <img id="agendaModalImage" src="" alt="">
             <div class="agenda-actions">
-                <button id="btnReserveSpot" class="btn-modal btn-reserve">
+                <button class="btn-modal btn-reserve" id="btnReserveSpot">
                     <i class="fas fa-ticket-alt"></i> Reservar Vaga
                 </button>
-                <a id="agendaModalButton" class="btn-modal btn-whatsapp" target="_blank">
-                    <i class="fab fa-whatsapp"></i> Dúvidas
+                <a href="#" class="btn-modal btn-whatsapp" id="agendaModalButton" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Falar com Equipe
                 </a>
-                <a id="agendaSectorBtn" class="btn-modal btn-sector" style="display:none;">
+                <a href="#" class="btn-modal btn-sector" id="agendaSectorBtn">
                     <i class="fas fa-map-marked-alt"></i> Ver Setor
                 </a>
             </div>
         </div>
     </div>
 
-    <nav class="app-bottom-nav">
-        <a href="#agenda" class="app-nav-item active"><i class="fas fa-calendar-alt"></i> Agenda</a>
-        <a href="#adventures" class="app-nav-item"><i class="fas fa-mountain"></i> Aventuras</a>
-        <a href="#client-photos" class="app-nav-item"><i class="fas fa-camera"></i> Mural</a>
-        <a href="dashboard.html" class="app-nav-item"><i class="fas fa-user"></i> Conta</a>
-    </nav>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <img src="social-share.jpg" alt="Logo Aranhas" class="footer-logo-img">
+                <p>Segurança, Adrenalina e Conexão com a Natureza.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/aranhas.rapel" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/aranhas.rapel/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@aranhasdorapel?_r=1&_t=ZS-91GP46a5JG3" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" id="footerWhatsapp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <p class="copyright">&copy; 2025 Aranhas do Rapel. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
+        // CONFIGURAÇÕES
         const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
         const whatsappNumber = '5527995335559';
         const MP_PUBLIC_KEY = 'APP_USR-e0f74881-fec0-4f1a-9aaf-44313bd17b04';
 
+        // Inicialização
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const mp = new MercadoPago(MP_PUBLIC_KEY);
 
-        // --- SISTEMA DE SKELETON LOADING ---
-        const CACHE_KEY = 'aranhas_data_v2';
-        function showSkeletons() {
-            ['agendaGrid', 'adventuresGrid', 'photosGrid'].forEach(id => {
-                const el = document.getElementById(id);
-                el.innerHTML = '';
-                for(let i=0; i<3; i++) el.innerHTML += `<div class="sk-card skeleton"><div class="sk-img skeleton"></div><div class="sk-txt skeleton"></div></div>`;
-            });
-        }
+        // --- CACHE & SKELETON SETUP ---
+        const CACHE_KEY = 'aranhas_data_v1';
+        const CACHE_EXPIRY = 15 * 60 * 1000; // 15 Minutos
 
-        // --- CARREGAMENTO DE DADOS ---
-        let allAdventures = [], allAgenda = [], currentUser = null, currentAgendaItem = null;
-
-        async function loadData() {
-            showSkeletons();
-            
-            // 1. Verifica Login
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                const btn = document.getElementById('desktopLoginBtn');
-                if(btn) { btn.innerHTML = 'Minha Conta'; btn.href = 'dashboard.html'; }
-            }
-
-            // 2. Busca Dados (Paralelo)
-            const [advRes, agdRes, murRes] = await Promise.all([
-                supabase.from('aventuras').select('*').order('created_at', { ascending: false }),
-                supabase.from('agenda').select('*').order('display_order', { ascending: true }),
-                supabase.from('mural').select('*').eq('status', 'approved').order('created_at', { ascending: false })
-            ]);
-
-            allAdventures = advRes.data || [];
-            allAgenda = agdRes.data || [];
-            const muralData = murRes.data || [];
-
-            renderAdventures(allAdventures);
-            renderAgenda(allAgenda);
-            renderMural(muralData);
-        }
-
-        // --- RENDERIZADORES ---
-        function renderAdventures(items) {
-            const grid = document.getElementById('adventuresGrid');
-            grid.innerHTML = '';
-            items.forEach(adv => {
-                grid.innerHTML += `
-                <div class="adventure-card" onclick='openAdventureModal(${JSON.stringify(adv).replace(/'/g, "&#39;")})'>
-                    <div class="card-image"><img src="${adv.image_url}" loading="lazy"></div>
-                    <div class="card-content">
-                        <h3>${adv.title}</h3>
-                        <div class="card-meta">
-                            <span class="difficulty ${adv.difficulty}">${adv.difficulty}</span>
-                            <span><i class="far fa-clock"></i> ${adv.duration}</span>
-                        </div>
+        function renderSkeleton(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                container.innerHTML += `
+                <div class="sk-card skeleton">
+                    <div class="sk-img skeleton"></div>
+                    <div class="sk-content">
+                        <div class="sk-title skeleton"></div>
+                        <div class="sk-text skeleton"></div>
+                        <div class="sk-price skeleton"></div>
                     </div>
                 </div>`;
-            });
+            }
+        }
+
+        async function loadDataWithCache() {
+            // 1. Verifica Cache Local
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                const { timestamp, data } = JSON.parse(cached);
+                if (Date.now() - timestamp < CACHE_EXPIRY) {
+                    console.log("Usando Cache ⚡");
+                    renderAll(data);
+                    checkLoginState();
+                    return;
+                }
+            }
+
+            // 2. Se não tem cache, mostra Skeletons
+            renderSkeleton('agendaGrid', 4);
+            renderSkeleton('adventuresGrid', 4);
+            renderSkeleton('photosGrid', 4);
+
+            // 3. Busca Dados Reais (Paralelo)
+            try {
+                const [agendaRes, advRes, muralRes] = await Promise.all([
+                    supabase.from('agenda').select('*').order('display_order', { ascending: true }),
+                    supabase.from('aventuras').select('*').order('created_at', { ascending: false }),
+                    supabase.from('mural').select('*').order('created_at', { ascending: false })
+                ]);
+
+                const freshData = {
+                    agenda: agendaRes.data || [],
+                    adventures: advRes.data || [],
+                    mural: muralRes.data || []
+                };
+
+                // 4. Salva no Cache e Renderiza
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: freshData }));
+                renderAll(freshData);
+                checkLoginState();
+
+            } catch (error) {
+                console.error("Erro ao carregar:", error);
+            }
+        }
+
+        // --- RENDERIZAÇÃO ---
+        let allAdventures = [];
+        let allAgenda = []; // Para lógica do botão
+        let currentUser = null;
+        let currentAgendaItem = null;
+
+        function renderAll(data) {
+            allAdventures = data.adventures;
+            allAgenda = data.agenda; // Guarda agenda globalmente
+            renderAgenda(data.agenda);
+            renderAdventures(data.adventures);
+            renderMural(data.mural);
         }
 
         function renderAgenda(items) {
             const grid = document.getElementById('agendaGrid');
             grid.innerHTML = '';
             items.forEach(item => {
-                const price = item.price ? `R$ ${item.price}` : 'Consultar';
-                // Precisamos passar o objeto para a função, usamos um truque de JSON
-                // Mas para evitar problemas de aspas, vamos salvar em memória e usar ID
-                const el = document.createElement('div');
-                el.className = 'agenda-item';
-                el.innerHTML = `
-                    <img src="${item.image_url}" class="agenda-img" loading="lazy">
-                    <div class="agenda-content">
-                        <h4>${item.title}</h4>
-                        <p>${item.date_text}</p>
-                        <span style="color:var(--success);font-weight:bold">${price}</span>
-                    </div>`;
-                el.addEventListener('click', () => openAgendaModal(item));
-                grid.appendChild(el);
+                const card = document.createElement('div'); card.className = 'agenda-item';
+                const priceTag = item.price ? `<span style="display:block; color:#27ae60; font-weight:bold; font-size:0.9rem; margin-top:5px;">R$ ${item.price}</span>` : '';
+                card.innerHTML = `<img src="${item.image_url}" class="agenda-img" loading="lazy"><div class="agenda-content"><h4>${item.title}</h4><p>${item.date_text}</p>${priceTag}</div>`;
+                card.addEventListener('click', () => openAgendaModal(item));
+                grid.appendChild(card);
+            });
+            checkPendingReservation(items);
+        }
+
+        function renderAdventures(items) {
+            const grid = document.getElementById('adventuresGrid');
+            grid.innerHTML = '';
+            items.forEach(adv => {
+                const card = document.createElement('div'); card.className = 'adventure-card';
+                // SEM SUBTITULO
+                card.innerHTML = `<div class="card-image"><img src="${adv.image_url}" loading="lazy"></div><div class="card-content"><h3>${adv.title}</h3><div class="card-meta"><span class="difficulty ${adv.difficulty}">${adv.difficulty}</span><div class="duration"><i class="far fa-clock"></i> ${adv.duration}</div></div></div>`;
+                card.addEventListener('click', () => openAdventureModal(adv));
+                grid.appendChild(card);
             });
         }
 
@@ -416,119 +576,174 @@
             const grid = document.getElementById('photosGrid');
             grid.innerHTML = '';
             items.forEach(item => {
-                grid.innerHTML += `
-                <div class="photo-item">
-                    <img src="${item.image_url}" class="client-img" loading="lazy">
-                    <div class="photo-content">
-                        <h4>${item.title}</h4>
-                        <p>"${item.quote}"</p>
-                        <small>- ${item.author}</small>
-                    </div>
-                </div>`;
+                const card = document.createElement('div'); card.className = 'photo-item';
+                card.innerHTML = `<img src="${item.image_url}" class="client-img" loading="lazy"><div class="photo-content"><h4>${item.title}</h4><p>"${item.quote}"</p><small>- ${item.author}</small></div>`;
+                grid.appendChild(card);
             });
         }
 
-        // --- MODAIS ---
+        // --- FUNÇÕES DE LÓGICA (MODAIS, LOGIN, PAGAMENTO) ---
         const advModal = document.getElementById('adventureModal');
         const agModal = document.getElementById('agendaModal');
+        const btnReserveSpot = document.getElementById('btnReserveSpot');
+        const agendaSectorBtn = document.getElementById('agendaSectorBtn');
 
-        // Abre Aventura
-        window.openAdventureModal = (adv) => {
-            // Reset Scroll
-            advModal.querySelector('.modal-content').scrollTop = 0;
+        function openModal(el) { el.classList.add('active'); document.body.style.overflow = 'hidden'; history.pushState({modal:true}, "", location.href); }
+        function closeModal(el) { el.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        window.addEventListener('popstate', () => { closeModal(advModal); closeModal(agModal); });
+        document.getElementById('closeModal').onclick = () => closeModal(advModal);
+        document.getElementById('closeAgendaModal').onclick = () => closeModal(agModal);
 
-            document.getElementById('modalTitle').textContent = adv.title;
-            document.getElementById('modalImage').src = adv.image_url;
-            document.getElementById('adventureDescription').textContent = adv.description;
-            document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
-
-            // Botão Reservar (Condicional)
-            const hasEvent = allAgenda.find(ev => ev.adventure_id === adv.id);
-            const reserveBtn = document.getElementById('reserveButton');
-            
-            if(hasEvent) {
-                reserveBtn.style.display = 'flex';
-                reserveBtn.onclick = (e) => { e.preventDefault(); advModal.classList.remove('active'); setTimeout(()=>openAgendaModal(hasEvent), 100); };
-            } else {
-                reserveBtn.style.display = 'none';
-            }
-
-            // Detalhes
-            const det = document.getElementById('adventureDetails'); det.innerHTML = '';
-            if(adv.details) adv.details.forEach(d => det.innerHTML += `<div class="detail-item"><div class="detail-icon"><i class="${d.icon}"></i></div><h4>${d.label}</h4><p>${d.value}</p></div>`);
-            
-            // Galeria
-            const gal = document.getElementById('adventureGallery'); gal.innerHTML = '';
-            (adv.gallery_images||[adv.image_url]).forEach(img => gal.innerHTML += `<div class="gallery-item"><img src="${img}"></div>`);
-
-            advModal.classList.add('active');
-        };
-
-        // Abre Agenda
+        // ABRE MODAL AGENDA
         function openAgendaModal(item) {
             currentAgendaItem = item;
             document.getElementById('agendaModalImage').src = item.image_url;
             document.getElementById('agendaModalButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Dúvida: '+item.title)}`;
             
-            // Botão Ver Setor
-            const sectorBtn = document.getElementById('agendaSectorBtn');
+            // Botão "Ver Setor"
             const related = allAdventures.find(a => a.id === item.adventure_id);
-            
             if(related) {
-                sectorBtn.style.display = 'flex';
-                sectorBtn.onclick = (e) => { e.preventDefault(); agModal.classList.remove('active'); setTimeout(()=>openAdventureModal(related), 100); };
+                agendaSectorBtn.style.display = 'inline-flex';
+                agendaSectorBtn.onclick = (e) => { e.preventDefault(); closeModal(agModal); setTimeout(() => openAdventureModal(related), 100); };
             } else {
-                sectorBtn.style.display = 'none';
+                agendaSectorBtn.style.display = 'none';
             }
-            
-            agModal.classList.add('active');
+            openModal(agModal);
         }
 
-        // Fechar Modais
-        document.querySelectorAll('.close-modal').forEach(b => b.onclick = () => {
-            advModal.classList.remove('active');
-            agModal.classList.remove('active');
+        // ABRE MODAL AVENTURA
+        function openAdventureModal(adv) {
+            // Reset Scroll
+            document.querySelector('#adventureModal .modal-content').scrollTop = 0;
+
+            document.getElementById('modalTitle').textContent = adv.title;
+            // document.getElementById('modalSubtitle').textContent = adv.subtitle; (REMOVIDO)
+            document.getElementById('modalImage').src = adv.image_url;
+            document.getElementById('adventureDescription').textContent = adv.description;
+            document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
+            
+            // LÓGICA BOTÃO RESERVA
+            const activeEvent = allAgenda.find(item => item.adventure_id === adv.id);
+            const reserveBtn = document.getElementById('reserveButton');
+
+            if (activeEvent) {
+                reserveBtn.style.display = 'inline-flex';
+                reserveBtn.onclick = (e) => {
+                    e.preventDefault();
+                    closeModal(advModal);
+                    setTimeout(() => openAgendaModal(activeEvent), 100);
+                };
+            } else {
+                reserveBtn.style.display = 'none';
+            }
+
+            const det = document.getElementById('adventureDetails'); det.innerHTML = '';
+            if(adv.details) adv.details.forEach(d => det.innerHTML += `<div class="detail-item"><div class="detail-icon"><i class="${d.icon}"></i></div><div class="detail-text"><h4>${d.label}</h4><p>${d.value}</p></div></div>`);
+            
+            const gal = document.getElementById('adventureGallery'); gal.innerHTML = '';
+            (adv.gallery_images||[adv.image_url]).forEach(img => gal.innerHTML += `<div class="gallery-item"><img src="${img}"></div>`);
+            
+            openModal(advModal);
+        }
+
+        async function checkLoginState() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const isRedirect = location.hash && location.hash.includes('access_token');
+            if (session) {
+                currentUser = session.user;
+                if(isRedirect && !localStorage.getItem('pendingAgendaId')) { location.href = 'dashboard.html'; return; }
+                const dBtn = document.getElementById('desktopLoginBtn'); 
+                const mBtn = document.getElementById('mobileLoginBtn');
+                if(dBtn) { dBtn.href = 'dashboard.html'; dBtn.innerHTML = '<i class="fas fa-user-circle"></i> Minha Conta'; }
+                if(mBtn) { mBtn.href = 'dashboard.html'; mBtn.innerHTML = '<i class="fas fa-user-circle"></i> Painel'; }
+            }
+        }
+
+        function checkPendingReservation(agendaItems) {
+            const pid = localStorage.getItem('pendingAgendaId');
+            if(pid && currentUser) {
+                const item = agendaItems.find(i => i.id == pid);
+                if(item) { openAgendaModal(item); localStorage.removeItem('pendingAgendaId'); }
+            }
+        }
+
+        // PAGAMENTO
+        btnReserveSpot.addEventListener('click', async () => {
+            if(!currentUser) { localStorage.setItem('pendingAgendaId', currentAgendaItem.id); location.href = 'login.html'; return; }
+            
+            const price = currentAgendaItem.price || 0;
+            const title = `Reserva: ${currentAgendaItem.title}`;
+            
+            Swal.fire({
+                title: 'Confirmar Reserva',
+                html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${price}</b>`,
+                showCancelButton: true, confirmButtonText: 'Pagar PIX', confirmButtonColor: '#E83D8A'
+            }).then(async (res) => {
+                if(res.isConfirmed) {
+                    const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: price }]).select().single();
+                    processPayment(booking.id, price, title);
+                }
+            });
         });
 
-        // --- BOTÃO ENVIAR FOTO ---
-        document.getElementById('btnSendPhoto').addEventListener('click', (e) => {
+        async function processPayment(id, amount, desc) {
+            Swal.fire({ title: 'Gerando PIX...', didOpen: () => Swal.showLoading() });
+            try {
+                const res = await fetch("https://api.aranhasdorapel.com.br/webhook/gerar-pix", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ transaction_amount: parseFloat(amount), description: desc, payer: { email: currentUser.email, first_name: "Cliente", identification: { type: "CPF", number: "19119119100" } } })
+                });
+                const data = await res.json();
+                if(data.point_of_interaction) {
+                    await supabase.from('bookings').update({ payment_id: data.id.toString() }).eq('id', id);
+                    const qr = data.point_of_interaction.transaction_data.qr_code;
+                    const b64 = data.point_of_interaction.transaction_data.qr_code_base64;
+                    Swal.fire({
+                        title: 'Pagamento PIX',
+                        html: `<img src="data:image/png;base64,${b64}" style="width:200px;display:block;margin:auto"><textarea id="pix" style="width:100%;margin-top:10px" readonly>${qr}</textarea><button onclick="document.getElementById('pix').select();document.execCommand('copy');" class="swal2-confirm swal2-styled" style="background:#25D366;margin-top:10px">Copiar Código</button>`
+                    }).then(() => window.open(`https://wa.me/${whatsappNumber}?text=Paguei a reserva ${desc}`, '_blank'));
+                } else throw new Error();
+            } catch { Swal.fire('Erro', 'Tente novamente.', 'error'); }
+        }
+
+        // LÓGICA DO BOTÃO "ENVIAR FOTO" (REDICIONAMENTO INTELIGENTE)
+        document.getElementById('btnSendPhoto').addEventListener('click', async (e) => {
             e.preventDefault();
-            if(currentUser) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                // Se já estiver logado, vai direto pro estúdio
                 window.location.href = 'dashboard.html?section=estudio';
             } else {
+                // Se não, salva a intenção e vai pro login
                 localStorage.setItem('redirectAfterLogin', 'dashboard.html?section=estudio');
                 Swal.fire({
-                    title: 'Login Necessário',
-                    text: 'Entre na sua conta para postar e ganhar conquistas!',
+                    title: 'Faça Login',
+                    text: 'Para postar no mural e ganhar pontos, você precisa entrar na sua conta.',
                     icon: 'info',
-                    confirmButtonText: 'Entrar',
+                    confirmButtonText: 'Entrar Agora',
                     confirmButtonColor: '#E83D8A'
                 }).then(() => window.location.href = 'login.html');
             }
         });
 
-        // --- PAGAMENTO (Simplificado) ---
-        document.getElementById('btnReserveSpot').addEventListener('click', () => {
-            if(!currentUser) {
-                localStorage.setItem('pendingAgendaId', currentAgendaItem.id);
-                window.location.href = 'login.html';
-                return;
-            }
-            // Lógica de pagamento (PIX) mantida igual, só chamar a função processPayment...
-            // (Para economizar espaço, assumo que você manteve a função processPayment do código anterior)
-            Swal.fire('Reservar', 'Iniciando pagamento...', 'info');
-        });
-
-        // Sidebar Mobile
+        // SIDEBAR
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const closeBtn = document.getElementById('closeSidebarBtn');
         const sidebar = document.getElementById('mobileSidebar');
         const overlay = document.getElementById('sidebarOverlay');
         function toggleSidebar() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
-        document.querySelector('.menu-toggle').onclick = toggleSidebar;
-        document.querySelector('.close-sidebar').onclick = toggleSidebar;
-        overlay.onclick = toggleSidebar;
+        if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+        if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
+        if(overlay) overlay.addEventListener('click', toggleSidebar);
 
-        // Iniciar
-        document.addEventListener('DOMContentLoaded', loadData);
+        // LINKS WHATSAPP
+        const waLink = `https://wa.me/${whatsappNumber}`;
+        document.getElementById('footerWhatsapp').href = waLink;
+        document.getElementById('mobileWhatsappBtn').href = waLink;
+        document.getElementById('sidebarWhatsapp').href = waLink;
+
+        // INICIAR
+        document.addEventListener('DOMContentLoaded', loadDataWithCache);
 
     </script>
 </body>
