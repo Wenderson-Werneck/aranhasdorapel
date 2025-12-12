@@ -4,167 +4,493 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Aranhas do Rapel</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #E83D8A; --secondary: #0055A4; --light: #FDF2F8; --dark: #1A202C; --danger: #e53e3e; --success: #27ae60; --radius: 12px; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding-bottom: 80px; }
+        :root {
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --white: #ffffff;
+            --dark: #1A202C;
+            --danger: #e53e3e;
+            --success: #27ae60;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 0; padding-bottom: 80px; }
         .container { width: 95%; max-width: 1200px; margin: 2rem auto; }
-        button { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        
+        h1, h2, h3 { color: var(--secondary); margin-bottom: 1rem; }
+        
+        button { 
+            background: var(--primary); color: white; border: none; padding: 10px 20px; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 8px;
+        }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        button.danger { background: var(--danger); } button.success { background: var(--success); } button.secondary { background: var(--secondary); }
-        input, textarea, select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; }
-        .admin-layout { display: none; }
-        .auth-screen { text-align: center; padding: 3rem; background: white; max-width: 400px; margin: 5rem auto; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 2rem; border-radius: var(--radius); margin-bottom: 2rem; }
         
+        button.danger { background: var(--danger); }
+        button.secondary { background: var(--secondary); }
+        button.success { background: var(--success); }
+        button.outline { background: transparent; border: 2px solid #ccc; color: #666; box-shadow: none; }
+
+        input, textarea, select {
+            width: 100%; padding: 12px; margin: 8px 0 16px 0;
+            border: 1px solid #ddd; border-radius: 8px;
+            box-sizing: border-box; background: #fafafa;
+        }
+        
+        form { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--primary); margin-bottom: 2rem; }
+        label { font-weight: 600; display: block; color: var(--secondary); font-size: 0.9rem; margin-top: 0.5rem;}
+        
+        /* UPLOAD PERSONALIZADO */
+        .upload-group { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; margin-top: 5px; }
+        
+        .status-indicator {
+            flex: 1; display: flex; align-items: center; gap: 10px;
+            padding: 10px 15px; border-radius: 8px; font-size: 0.9rem;
+            background: #f1f5f9; border: 1px dashed #cbd5e1; color: #64748b;
+            transition: 0.3s;
+        }
+        .status-indicator.success {
+            background: #dcfce7; border-color: var(--success); color: var(--success); font-weight: bold;
+        }
+        .file-label {
+            background: var(--secondary); color: white; padding: 10px 20px; border-radius: 50px; 
+            cursor: pointer; font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 8px; 
+            white-space: nowrap; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .file-label:hover { background: #003e7a; transform: translateY(-1px); }
+        input[type="file"] { display: none; }
+
         /* LISTAS */
-        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 2rem; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+        .admin-layout { display: none; }
+        .auth-screen { 
+            text-align: center; padding: 3rem; background: var(--white); 
+            border-radius: var(--radius); box-shadow: var(--shadow); 
+            max-width: 400px; margin: 5rem auto; border-top: 5px solid var(--primary);
+        }
+        
+        .admin-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: white; padding: 1rem 2rem; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 2rem;
+        }
+        
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); height: fit-content; }
+        
+        .item {
+            background: #fff; border-bottom: 1px solid #eee; padding: 1rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
         .item:last-child { border-bottom: none; }
+        .item.pending { background-color: #fff9db; border-left: 4px solid #ffc107; padding-left: 10px; }
+        
         .item-info { display: flex; align-items: center; gap: 1rem; }
-        .item-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: zoom-in; }
+        
         .item-actions { display: flex; gap: 5px; }
-        
-        /* DESTAQUE PENDENTE */
-        .item.pending { background-color: #fff8e1; border-left: 4px solid #ffc107; }
-        
-        .code-box { background: #2d3748; color: #48bb78; font-family: monospace; font-size: 1.5rem; padding: 15px; border-radius: 8px; text-align: center; display: none; margin-top:10px; }
+        .item-actions button { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
+
+        .code-box {
+            background: #2d3748; color: #48bb78; font-family: monospace;
+            font-size: 2rem; padding: 20px; border-radius: 10px; text-align: center;
+            letter-spacing: 5px; font-weight: bold; margin-top: 20px; display: none;
+            border: 2px dashed #48bb78;
+        }
+
+        .loader { text-align: center; padding: 2rem; color: #888; }
+
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div id="authScreen" class="auth-screen">
+        <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-spider"></i></div>
         <h2>Admin Acesso</h2>
-        <form id="loginForm">
+        <form id="loginForm" style="box-shadow: none; padding: 0; border: none; margin:0;">
             <input type="email" id="loginEmail" placeholder="Email" required>
             <input type="password" id="loginPassword" placeholder="Senha" required>
-            <button type="submit" style="width:100%">Entrar</button>
+            <button type="submit" style="width:100%; margin-top:1rem;">Entrar</button>
         </form>
     </div>
 
     <div id="adminLayout" class="admin-layout container">
-        <div class="admin-header"><h1>Painel de Controle</h1><button onclick="logout()" class="danger">Sair</button></div>
-
-        <section>
-            <h2 style="color:var(--secondary)"><i class="fas fa-camera-retro"></i> Moderação do Mural</h2>
-            
-            <div class="admin-list">
-                <h3 style="color:#e67e22; border-bottom:1px solid #eee; padding-bottom:10px;">⏳ Pendentes de Aprovação</h3>
-                <div id="pendingMuralList"><p>Nenhuma foto pendente.</p></div>
+        <div class="admin-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-spider" style="font-size: 2rem; color: var(--primary);"></i>
+                <h1>Painel de Controle</h1>
             </div>
-
-            <div class="admin-list">
-                <h3 style="color:var(--success); border-bottom:1px solid #eee; padding-bottom:10px;">✅ No Ar (Site Principal)</h3>
-                <div id="activeMuralList"><p>Carregando...</p></div>
-            </div>
-        </section>
-
-        <hr style="margin:3rem 0; border:0; border-top:1px dashed #ccc;">
-
-        <section>
-            <h2>Gerar Código de Badge</h2>
-            <div style="background:white; padding:1.5rem; border-radius:12px;">
-                <div style="display:flex; gap:10px;">
-                    <select id="manualBadgeSelect"><option>Carregando...</option></select>
-                    <button onclick="generateCode()" class="success">Gerar</button>
-                </div>
-                <div id="generatedCodeDisplay" class="code-box"></div>
-            </div>
-        </section>
-        
+            <button id="logoutButton" class="danger"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
+
+        <section>
+            <h2 style="color:var(--secondary)"><i class="fas fa-images"></i> Moderação do Mural</h2>
+            
+            <div class="admin-grid">
+                <form id="muralForm">
+                    <h3 id="muralFormTitle">Postar Manualmente</h3>
+                    <input type="hidden" id="muralId">
+                    <input type="text" id="muralTitle" placeholder="Local" required>
+                    <input type="text" id="muralAuthor" placeholder="Autor" required>
+                    <textarea id="muralQuote" rows="3" placeholder="Legenda" required></textarea>
+                    
+                    <label>Foto</label>
+                    <div class="upload-group">
+                        <input type="hidden" id="muralImage" required>
+                        <div id="muralImageStatus" class="status-indicator"><i class="fas fa-image"></i> Aguardando...</div>
+                        <label class="file-label">Upload <input type="file" onchange="uploadImage(this, 'muralImage')"></label>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="flex: 1;">Salvar</button>
+                        <button type="button" id="cancelEditMural" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="admin-list">
+                    <h4 style="color:#e67e22; border-bottom:2px solid #eee; padding-bottom:10px; margin-top:0;">⏳ Pendentes de Aprovação</h4>
+                    <div id="pendingMuralList"><p style="color:#999">Nenhuma foto pendente.</p></div>
+                    
+                    <h4 style="color:var(--success); margin-top:30px; border-bottom:2px solid #eee; padding-bottom:10px;">✅ No Ar (Site)</h4>
+                    <div id="muralList" class="loader">Carregando...</div>
+                </div>
+            </div>
+        </section>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px dashed #ccc;">
+        
+        <section style="background: #e3f2fd; padding: 2rem; border-radius: 12px; border: 2px dashed #90caf9;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fas fa-magic" style="color: var(--secondary); font-size: 1.5rem;"></i>
+                <h2 style="margin:0; color: var(--secondary);">Gerar Código de Resgate</h2>
+            </div>
+            
+            <form id="codeGenForm" style="box-shadow: none; border: none; padding: 0; background: transparent; margin:0;">
+                <div style="display: flex; gap: 10px; align-items: flex-end;">
+                    <div style="flex: 1;">
+                        <label>Escolher Aventura (Badge)</label>
+                        <select id="manualBadgeSelect" required style="margin-bottom:0;"></select>
+                    </div>
+                    <button type="submit" class="success" style="height: 48px; margin-bottom: 0;">
+                        <i class="fas fa-bolt"></i> Gerar
+                    </button>
+                </div>
+            </form>
+            <div id="generatedCodeDisplay" class="code-box"></div>
+        </section>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px dashed #ccc;">
+
+        <section id="agendaAdmin">
+            <h2>Gerenciar Agenda</h2>
+            <div class="admin-grid">
+                <form id="agendaForm">
+                    <h3 id="agendaFormTitle">Adicionar Evento</h3>
+                    <input type="hidden" id="agendaId">
+                    <input type="text" id="agendaTitle" placeholder="Título" required>
+                    <div style="background: #f0f4f8; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                        <label style="margin-top:0"><i class="fas fa-link"></i> Vincular Aventura</label>
+                        <select id="agendaAdventureId" style="margin-bottom:0"><option value="">-- Selecione --</option></select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                        <input type="text" id="agendaDate" placeholder="Data (Ex: 20/10 - 08h)" required>
+                        <input type="number" id="agendaPrice" placeholder="R$ 0.00" step="0.01" required>
+                    </div>
+                    
+                    <label>Imagem</label>
+                    <div class="upload-group">
+                        <input type="hidden" id="agendaImage" required>
+                        <div id="agendaImageStatus" class="status-indicator"><i class="fas fa-image"></i> Aguardando...</div>
+                        <label class="file-label">Upload <input type="file" onchange="uploadImage(this, 'agendaImage')"></label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="flex: 1;">Salvar</button>
+                        <button type="button" id="cancelEditAgenda" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list"><div id="agendaList" class="loader">Carregando...</div></div>
+            </div>
+        </section>
+
+        <hr style="margin: 3rem 0; border: 0; border-top: 1px dashed #ccc;">
+
+        <section id="aventurasAdmin">
+            <h2>Gerenciar Aventuras</h2>
+            <div class="admin-grid">
+                <form id="adventureForm">
+                    <h3 id="adventureFormTitle">Nova Aventura</h3>
+                    <input type="hidden" id="adventureId">
+                    <div><label>Título</label><input type="text" id="adventureTitle" required></div>
+                    <div><label>Subtítulo</label><input type="text" id="adventureSubtitle" required></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><label>Dificuldade</label><select id="adventureDifficulty"><option value="facil">Fácil</option><option value="medio">Médio</option><option value="dificil">Difícil</option></select></div>
+                        <div><label>Duração</label><input type="text" id="adventureDuration"></div>
+                    </div>
+                    <div><label>Descrição</label><textarea id="adventureDescription" rows="3" required></textarea></div>
+                    
+                    <label>Capa</label>
+                    <div class="upload-group">
+                        <input type="hidden" id="adventureImage" required>
+                        <div id="adventureImageStatus" class="status-indicator"><i class="fas fa-image"></i> Aguardando...</div>
+                        <label class="file-label">Upload <input type="file" onchange="uploadImage(this, 'adventureImage')"></label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top:10px;">
+                        <button type="submit" style="flex: 1;">Salvar</button>
+                        <button type="button" id="cancelEditAdventure" class="outline" style="display:none;">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list"><div id="adventureList" class="loader">Carregando...</div></div>
+            </div>
+        </section>
+    </div>
 
     <script>
         const SUPABASE_URL = 'https://rfgijfpokictktdrenbl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // AUTH
-        checkAuth();
-        async function checkAuth() { const {data:{session}} = await supabase.auth.getSession(); if(session){ document.getElementById('authScreen').style.display='none'; document.getElementById('adminLayout').style.display='block'; loadAllData(); } }
-        document.getElementById('loginForm').addEventListener('submit', async(e)=>{ e.preventDefault(); const {error} = await supabase.auth.signInWithPassword({email:document.getElementById('loginEmail').value, password:document.getElementById('loginPassword').value}); if(!error) location.reload(); else alert(error.message); });
-        window.logout = async()=>{ await supabase.auth.signOut(); location.reload(); };
+        // --- UPLOAD VISUAL ---
+        window.uploadImage = async (input, id) => {
+            const file = input.files[0];
+            if (!file) return;
 
-        // DATA LOADING
-        async function loadAllData() {
-            loadBadgesSelect();
+            const statusEl = document.getElementById(id + 'Status');
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            statusEl.className = 'status-indicator';
+
+            try {
+                const fileName = `admin/${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+                const { error } = await supabase.storage.from('imagens').upload(fileName, file);
+                if (error) throw error;
+
+                const { data } = supabase.storage.from('imagens').getPublicUrl(fileName);
+                document.getElementById(id).value = data.publicUrl;
+
+                statusEl.innerHTML = '<i class="fas fa-check"></i> Imagem Carregada!';
+                statusEl.classList.add('success');
+            } catch (e) {
+                alert('Erro: ' + e.message);
+                statusEl.innerHTML = 'Erro no envio';
+            }
+        };
+
+        function setStatusGreen(id) {
+            const el = document.getElementById(id + 'Status');
+            if(el) {
+                el.innerHTML = '<i class="fas fa-check"></i> Imagem Atual Salva';
+                el.classList.add('success');
+            }
+        }
+        
+        function resetStatus(id) {
+            const el = document.getElementById(id + 'Status');
+            if(el) {
+                el.innerHTML = '<i class="fas fa-image"></i> Aguardando imagem...';
+                el.classList.remove('success');
+            }
+        }
+
+        // --- AUTH & LOAD ---
+        const agendaList = document.getElementById('agendaList');
+        const adventureList = document.getElementById('adventureList');
+        const muralList = document.getElementById('muralList');
+        const pendingList = document.getElementById('pendingMuralList');
+        
+        const manualBadgeSelect = document.getElementById('manualBadgeSelect');
+        const agendaAdventureSelect = document.getElementById('agendaAdventureId');
+        const codeDisplay = document.getElementById('generatedCodeDisplay');
+
+        checkAuth();
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) { 
+                document.getElementById('authScreen').style.display = 'none'; 
+                document.getElementById('adminLayout').style.display = 'block'; 
+                loadData(); 
+            }
+        }
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.auth.signInWithPassword({ 
+                email: document.getElementById('loginEmail').value, 
+                password: document.getElementById('loginPassword').value 
+            });
+            if (!error) location.reload();
+            else alert(error.message);
+        });
+        document.getElementById('logoutButton').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
+
+        async function loadData() {
+            // Carrega selects
+            const { data: advs } = await supabase.from('aventuras').select('*').order('title');
+            if(advs) {
+                manualBadgeSelect.innerHTML = '<option value="">-- Selecione --</option>';
+                agendaAdventureSelect.innerHTML = '<option value="">-- Selecione --</option>';
+                advs.forEach(a => {
+                    const opt = `<option value="${a.id}">${a.title}</option>`;
+                    manualBadgeSelect.innerHTML += opt;
+                    agendaAdventureSelect.innerHTML += opt;
+                });
+                renderAdventures(advs);
+            }
+            loadAgenda();
             loadMuralData();
         }
 
+        // --- MURAL MODERATION ---
         async function loadMuralData() {
-            // Busca TUDO (sem filtro de status, pois o admin vê tudo)
-            const { data, error } = await supabase.from('mural').select('*').order('created_at', {ascending:false});
+            const { data } = await supabase.from('mural').select('*').order('created_at', { ascending: false });
             
-            const pendingDiv = document.getElementById('pendingMuralList');
-            const activeDiv = document.getElementById('activeMuralList');
-            pendingDiv.innerHTML = ''; activeDiv.innerHTML = '';
-
+            pendingList.innerHTML = '';
+            muralList.innerHTML = '';
+            
             if(data) {
                 let hasPending = false;
                 data.forEach(item => {
-                    // HTML do Item
                     const html = `
                         <div class="item ${item.status === 'pending' ? 'pending' : ''}">
                             <div class="item-info">
-                                <img src="${item.image_url}" onclick="window.open('${item.image_url}')" style="cursor:zoom-in">
+                                <img src="${item.image_url}" onclick="window.open('${item.image_url}')">
                                 <div>
-                                    <strong>${item.author}</strong> <span style="font-size:0.8rem; color:#666">(${item.title})</span><br>
-                                    <small>"${item.quote}"</small>
+                                    <strong>${item.author}</strong> - ${item.title}<br>
+                                    <small>${item.quote}</small>
                                 </div>
                             </div>
                             <div class="item-actions">
                                 ${item.status === 'pending' 
-                                    ? `<button class="success" onclick="approve('${item.id}')" title="Aprovar"><i class="fas fa-check"></i></button>
-                                       <button class="danger" onclick="remove('${item.id}')" title="Rejeitar"><i class="fas fa-times"></i></button>` 
-                                    : `<button class="danger" onclick="remove('${item.id}')" title="Remover do Site"><i class="fas fa-trash"></i></button>`
+                                    ? `<button class="success" onclick="approveMural('${item.id}')" title="Aprovar"><i class="fas fa-check"></i></button>
+                                       <button class="danger" onclick="deleteMural('${item.id}')" title="Rejeitar"><i class="fas fa-times"></i></button>`
+                                    : `<button class="secondary" onclick="editItem('mural', '${item.id}')"><i class="fas fa-edit"></i></button>
+                                       <button class="danger" onclick="deleteMural('${item.id}')" title="Remover"><i class="fas fa-trash"></i></button>`
                                 }
                             </div>
                         </div>`;
-
+                    
                     if(item.status === 'pending') {
-                        pendingDiv.innerHTML += html;
+                        pendingList.innerHTML += html;
                         hasPending = true;
-                    } else if(item.status === 'approved') {
-                        activeDiv.innerHTML += html;
+                    } else {
+                        muralList.innerHTML += html;
                     }
                 });
-                if(!hasPending) pendingDiv.innerHTML = '<p style="color:#999">Nada pendente.</p>';
+                if(!hasPending) pendingList.innerHTML = '<p style="color:#aaa;">Nenhuma pendente.</p>';
             }
         }
 
-        // AÇÕES DE CONTROLE
-        window.approve = async (id) => {
-            if(confirm('Aprovar esta foto? Ela aparecerá no site.')) {
+        window.approveMural = async (id) => {
+            if(confirm('Aprovar post?')) {
                 await supabase.from('mural').update({ status: 'approved' }).eq('id', id);
                 loadMuralData();
             }
         };
-
-        window.remove = async (id) => {
-            if(confirm('Tem certeza? Isso apagará a postagem.')) {
+        window.deleteMural = async (id) => {
+            if(confirm('Apagar post?')) {
                 await supabase.from('mural').delete().eq('id', id);
                 loadMuralData();
             }
         };
 
-        // EXTRAS (Badges)
-        async function loadBadgesSelect() {
-            const { data } = await supabase.from('aventuras').select('id, title');
-            const sel = document.getElementById('manualBadgeSelect');
-            sel.innerHTML = '';
-            data.forEach(b => sel.innerHTML += `<option value="${b.id}">${b.title}</option>`);
+        // --- RENDERERS ---
+        function renderAdventures(data) {
+            adventureList.innerHTML = '';
+            data.forEach(item => {
+                adventureList.innerHTML += `<div class="item"><div class="item-info"><img src="${item.image_url}"><div><strong>${item.title}</strong><br><small>${item.subtitle}</small></div></div><div class="item-actions"><button class="secondary" onclick="editItem('aventuras', '${item.id}')"><i class="fas fa-edit"></i></button><button class="danger" onclick="deleteItem('aventuras', '${item.id}')"><i class="fas fa-trash"></i></button></div></div>`;
+            });
         }
-        window.generateCode = async () => {
-            const id = document.getElementById('manualBadgeSelect').value;
-            const code = `ARANHA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
-            await supabase.from('redeem_codes').insert([{code, adventure_id:id}]);
-            document.getElementById('generatedCodeDisplay').style.display='block';
-            document.getElementById('generatedCodeDisplay').innerText = code;
-        };
 
+        async function loadAgenda() {
+            const { data } = await supabase.from('agenda').select('*').order('display_order');
+            agendaList.innerHTML = '';
+            if(data) {
+                data.forEach(item => {
+                    const el = document.createElement('div'); el.className = 'item';
+                    el.dataset.id = item.id;
+                    el.innerHTML = `<div class="item-info"><div class="handle" style="cursor:grab;margin-right:10px;color:#ccc"><i class="fas fa-grip-vertical"></i></div><img src="${item.image_url}"><div><strong>${item.title}</strong><br><small>${item.date_text}</small></div></div><div class="item-actions"><button class="secondary" onclick="editItem('agenda', '${item.id}')"><i class="fas fa-edit"></i></button><button class="danger" onclick="deleteItem('agenda', '${item.id}')"><i class="fas fa-trash"></i></button></div>`;
+                    agendaList.appendChild(el);
+                });
+                new Sortable(agendaList, { animation: 150, handle: '.handle', onEnd: updateOrder });
+            }
+        }
+
+        // --- ACTIONS ---
+        window.deleteItem = async (table, id) => { if(confirm('Apagar?')) { await supabase.from(table).delete().eq('id', id); loadData(); } }
+
+        window.editItem = async (table, id) => {
+            const { data } = await supabase.from(table).select('*').eq('id', id).single();
+            if(!data) return;
+            if(table === 'agenda') {
+                document.getElementById('agendaId').value = data.id; document.getElementById('agendaTitle').value = data.title; document.getElementById('agendaDate').value = data.date_text; document.getElementById('agendaPrice').value = data.price; document.getElementById('agendaImage').value = data.image_url; setStatusGreen('agendaImage'); document.getElementById('agendaAdventureId').value = data.adventure_id || ""; document.getElementById('agendaFormTitle').textContent = 'Editar Evento'; document.getElementById('cancelEditAgenda').style.display = 'inline-block'; document.getElementById('agendaAdmin').scrollIntoView({behavior:'smooth'});
+            } else if(table === 'aventuras') {
+                document.getElementById('adventureId').value = data.id; document.getElementById('adventureTitle').value = data.title; document.getElementById('adventureSubtitle').value = data.subtitle; document.getElementById('adventureDuration').value = data.duration; document.getElementById('adventureDescription').value = data.description; document.getElementById('adventureImage').value = data.image_url; setStatusGreen('adventureImage'); document.getElementById('adventureDifficulty').value = data.difficulty; document.getElementById('adventureFormTitle').textContent = 'Editar Aventura'; document.getElementById('cancelEditAdventure').style.display = 'inline-block'; document.getElementById('aventurasAdmin').scrollIntoView({behavior:'smooth'});
+            } else if(table === 'mural') {
+                document.getElementById('muralId').value = data.id; document.getElementById('muralTitle').value = data.title; document.getElementById('muralAuthor').value = data.author; document.getElementById('muralQuote').value = data.quote; document.getElementById('muralImage').value = data.image_url; setStatusGreen('muralImage'); document.getElementById('muralFormTitle').textContent = 'Editar Relato'; document.getElementById('cancelEditMural').style.display = 'inline-block'; 
+            }
+        }
+
+        // GENERATOR
+        document.getElementById('codeGenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const advId = manualBadgeSelect.value;
+            if(!advId) return alert('Selecione uma aventura');
+            const code = `ARANHA-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+            const { error } = await supabase.from('redeem_codes').insert([{ code: code, adventure_id: advId }]);
+            if(error) alert('Erro: ' + error.message);
+            else { codeDisplay.style.display = 'block'; codeDisplay.innerHTML = `${code} <br><small style="font-size:12px; color:#fff;">Copie e envie para o cliente</small>`; }
+        });
+
+        // FORMS
+        document.getElementById('agendaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('agendaId').value;
+            const data = { title: document.getElementById('agendaTitle').value, adventure_id: document.getElementById('agendaAdventureId').value || null, date_text: document.getElementById('agendaDate').value, price: document.getElementById('agendaPrice').value, image_url: document.getElementById('agendaImage').value };
+            if(id) await supabase.from('agenda').update(data).eq('id', id); else await supabase.from('agenda').insert([data]);
+            resetForm('agenda'); loadAgenda();
+        });
+        document.getElementById('adventureForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('adventureId').value;
+            const data = { title: document.getElementById('adventureTitle').value, subtitle: document.getElementById('adventureSubtitle').value, difficulty: document.getElementById('adventureDifficulty').value, duration: document.getElementById('adventureDuration').value, description: document.getElementById('adventureDescription').value, image_url: document.getElementById('adventureImage').value };
+            if(id) await supabase.from('aventuras').update(data).eq('id', id); else await supabase.from('aventuras').insert([data]);
+            resetForm('adventure'); loadData();
+        });
+        document.getElementById('muralForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('muralId').value;
+            const data = { title: document.getElementById('muralTitle').value, author: document.getElementById('muralAuthor').value, quote: document.getElementById('muralQuote').value, image_url: document.getElementById('muralImage').value, status: 'approved' };
+            if(id) await supabase.from('mural').update(data).eq('id', id); else await supabase.from('mural').insert([data]);
+            resetForm('mural'); loadMuralData();
+        });
+
+        function resetForm(type) {
+            document.getElementById(type+'Form').reset();
+            document.getElementById(type+'Id').value = '';
+            resetStatus(type+'Image');
+            document.getElementById(type+'FormTitle').textContent = type === 'agenda' ? 'Adicionar Evento' : (type === 'adventure' ? 'Nova Aventura' : 'Postar Manualmente');
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            document.getElementById(`cancelEdit${cap}`).style.display = 'none';
+        }
+        document.getElementById('cancelEditAgenda').onclick = () => resetForm('agenda');
+        document.getElementById('cancelEditAdventure').onclick = () => resetForm('adventure');
+        document.getElementById('cancelEditMural').onclick = () => resetForm('mural');
+
+        async function updateOrder() {
+            const items = agendaList.querySelectorAll('.item');
+            const updates = [];
+            items.forEach((item, index) => {
+                const id = item.dataset.id;
+                if(id) updates.push(supabase.from('agenda').update({ display_order: index }).eq('id', id));
+            });
+            if(updates.length) await Promise.all(updates);
+        }
     </script>
 </body>
 </html>
