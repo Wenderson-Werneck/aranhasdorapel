@@ -7,15 +7,8 @@
     <title>Aranhas do Rapel | Aventuras no Espírito Santo</title>
     <meta name="description" content="Viva a adrenalina do rapel com segurança total. Agenda de aventuras na Serra, Vila Velha e região.">
     
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://aranhasdorapel.com.br/">
-    <meta property="og:title" content="Aranhas do Rapel | Bora se aventurar?">
-    <meta property="og:description" content="Segurança, Adrenalina e Conexão com a Natureza.">
-    <meta property="og:image" content="https://aranhasdorapel.com.br/social-share.jpg">
-
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="manifest" href="/site.webmanifest">
-
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T08NL0VVP"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -35,10 +28,10 @@
             --es-blue: #0055A4;
             --es-white: #FFFFFF;
             --primary: var(--es-pink);
-            --secondary: var(--es-pink);
             --light: #FDF2F8; 
             --dark: #1A202C;
             --success: #27ae60;
+            --whatsapp: #25D366;
             --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
@@ -47,16 +40,17 @@
         body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; padding-bottom: 80px; }
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
-        /* HEADER (PC) */
+        /* HEADER */
         header {
             background: var(--primary); position: fixed; width: 100%; top: 0; z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 70px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 60px; /* Altura original */
             display: flex; align-items: center; justify-content: center;
         }
 
-        .desktop-nav { display: flex; width: 100%; justify-content: center; align-items: center; }
-        .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; }
+        .desktop-nav { display: flex; justify-content: center; align-items: center; width: 100%; }
+        .nav-links { display: flex; list-style: none; align-items: center; }
+        .nav-links li { margin: 0 1rem; position: relative; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; padding: 0.5rem 0; }
         .nav-links .btn-login {
             background-color: white; color: var(--primary) !important; padding: 0.5rem 1.5rem !important;
             border-radius: 50px; transition: transform 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -64,13 +58,14 @@
         }
         .nav-links .btn-login:hover { transform: translateY(-2px); background-color: #fff0f5; }
 
+        /* MOBILE HEADER */
         .mobile-header-content { display: none; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
-        .header-brand { color: white; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-        .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+        .header-brand { color: white; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .menu-toggle { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
         .mobile-sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: right 0.3s ease-out; display: flex; flex-direction: column; }
         .mobile-sidebar.active { right: 0; }
-        .sidebar-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 70px; }
+        .sidebar-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 60px; }
         .close-sidebar { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
         .sidebar-content { padding: 1.5rem; overflow-y: auto; }
         .sidebar-login-area { text-align: center; margin-bottom: 1.5rem; }
@@ -82,6 +77,9 @@
         .sidebar-links li { margin-bottom: 1.2rem; }
         .sidebar-links a { text-decoration: none; color: var(--dark); font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; }
         .sidebar-links a i { width: 30px; color: var(--primary); text-align: center; margin-right: 10px; }
+        /* CORREÇÃO DO TEXTO "NOVO" */
+        .badge-new { background: var(--success); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; text-transform: uppercase; }
+        
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
         
@@ -89,7 +87,7 @@
         .fixed-spider::before { content: ''; display: block; width: 2px; height: 80px; background: rgba(255, 255, 255, 0.5); margin: 0 auto; }
         .fixed-spider img { width: 100%; height: auto; }
 
-        section { padding: 4rem 0; scroll-margin-top: 110px; }
+        section { padding: 4rem 0; scroll-margin-top: 80px; }
         .section-title { text-align: center; margin-bottom: 3rem; }
         .section-title h2 { font-size: 2.5rem; color: var(--primary); }
         .section-title p { color: var(--dark); opacity: 0.8; }
@@ -98,15 +96,17 @@
         .adventures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
         .agenda-grid, .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2.5rem; }
         
+        /* CARD ORIGINAL RESTAURADO (Sem bordas coloridas ou efeitos extras) */
         .agenda-item, .adventure-card, .photo-item {
-            border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); background: var(--es-white); cursor: pointer; position: relative;
-            border-bottom: 4px solid transparent; transition: transform 0.3s ease-out; width: 100%; display: flex; flex-direction: column;
+            border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); 
+            background: var(--es-white); cursor: pointer; position: relative;
+            transition: transform 0.3s ease-out; width: 100%; display: flex; flex-direction: column;
         }
-        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); }
         
         .agenda-img, .card-image img { width: 100%; height: auto; display: block; object-fit: cover; }
         .agenda-img { aspect-ratio: 4/5; }
-        .card-image { height: 280px; overflow: hidden; }
+        .card-image { height: 250px; overflow: hidden; }
         .card-image img { height: 100%; transition: transform 0.4s; }
         .adventure-card:hover .card-image img { transform: scale(1.1); }
         
@@ -117,7 +117,8 @@
         .agenda-content { text-align: center; }
         .agenda-content h4, .photo-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
         
-        .card-content h3 { color: var(--primary); margin-bottom: 0.2rem; font-size: 1.4rem; text-align: left; }
+        /* TÍTULO DO CARD (Rosa Sólido) */
+        .card-content h3 { color: var(--primary); margin-bottom: 0.2rem; font-size: 1.3rem; text-align: left; }
         
         .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: auto; }
         
@@ -127,9 +128,8 @@
         .difficulty.dificil { background: #ffebee; color: #f44336; }
         
         .photo-upload { text-align: center; margin-top: 2rem; }
-        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); transition:0.3s; }
-        .btn-upload:hover { transform: translateY(-2px); }
-
+        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); }
+        
         .app-bottom-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000; justify-content: space-around; align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom));
@@ -183,7 +183,7 @@
         .agenda-modal-content { max-width: 90%; max-height: 95vh; display: flex; flex-direction: column; align-items: center; background: transparent; box-shadow: none; overflow-y: auto; }
         #agendaModalImage { 
             width: 100%; height: auto; max-width: 550px; max-height: 75vh; 
-            object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg); 
+            object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-xl); 
             display: block; margin: 0 auto;
         }
         .agenda-actions { 
@@ -191,21 +191,36 @@
             gap: 15px; margin-top: 15px; width: 100%; flex-wrap: wrap;
         }
         
-        /* BOTÕES MODAL CORRIGIDOS */
+        /* --- CORREÇÃO DOS BOTÕES INVISÍVEIS --- */
         .modal-buttons-row {
             display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 1rem; flex-wrap: wrap;
         }
 
-        .btn-modal { 
+        /* Usando a.btn-modal para ser específico e sobrescrever qualquer estilo de link padrão */
+        a.btn-modal, button.btn-modal { 
             display: inline-flex; align-items: center; justify-content: center; 
-            gap: 8px; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; 
-            box-shadow: var(--shadow-lg); font-size: 0.9rem; transition: background 0.3s; cursor: pointer;
-            width: auto; border: none; min-width: 180px; color: white !important; opacity: 1 !important;
+            gap: 8px; padding: 1rem 2rem; border-radius: 50px; text-decoration: none !important; font-weight: 700; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 0.9rem; transition: transform 0.3s; cursor: pointer;
+            width: auto; border: none; min-width: 180px;
+            color: white !important; /* Texto Branco Sempre */
+            opacity: 1 !important;
+            visibility: visible !important;
         }
-        /* Importante para garantir a cor */
-        .btn-reserve { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important; }
-        .btn-whatsapp { background: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%) !important; }
-        .btn-sector { background: var(--info-btn) !important; display: none; } 
+        
+        /* Cores Forçadas */
+        .btn-reserve { 
+            background-color: #e67e22; /* Fallback */
+            background-image: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important; 
+        }
+        .btn-whatsapp { 
+            background-color: #25D366; /* Fallback */
+            background-image: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important; 
+        }
+        .btn-sector { 
+            background-color: #3498db; /* Fallback */
+            background-image: none !important;
+            display: none; /* JS controla a visibilidade (block/flex) */
+        } 
         
         .btn-reserve:hover, .btn-whatsapp:hover, .btn-sector:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
@@ -214,40 +229,27 @@
         .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; }
         .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; }
 
-        /* SCROLLBAR DESKTOP */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
         /* SKELETON */
         .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shimmer linear infinite; border-radius: 5px; }
         @keyframes shimmer { to { background-position-x: -200%; } }
         .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; padding:15px; gap:10px; }
         .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
 
-        /* MOBILE ADJUSTS */
         @media (max-width: 768px) {
             .desktop-nav { display: none; } 
             .mobile-header-content { display: flex; } 
             .fixed-spider { display: none; }
             .app-bottom-nav { display: flex; }
-            
-            /* HEADER MENOR */
-            header { height: 55px; } 
-            .header-brand { font-size: 1.1rem; }
-            .menu-toggle { font-size: 1.3rem; }
-
+            header { height: 60px; } /* Ajuste de altura */
             .container { width: 100%; max-width: 100%; padding: 0; }
             .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
             .section-title h2 { font-size: 2rem; }
-            section { padding: 2.5rem 0; scroll-margin-top: 65px; }
-            
+            section { padding: 2.5rem 0; scroll-margin-top: 70px; }
             .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: flex; align-items: center; }
             .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
             @keyframes slideRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
             
-            /* SCROLLBAR OFF */
+            /* SCROLLBAR NATIVA MOBILE (INVISÍVEL MAS FUNCIONAL) */
             .agenda-grid, .adventures-grid, .photos-grid { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; padding-right: 40px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
             
@@ -290,7 +292,7 @@
                 <li><a href="#agenda"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
                 <li><a href="#adventures"><i class="fas fa-mountain"></i> Aventuras</a></li>
                 <li><a href="#client-photos"><i class="fas fa-camera"></i> Mural</a></li>
-                <li><a href="#dicas"><i class="fas fa-lightbulb"></i> Dicas <span>Novo</span></a></li>
+                <li><a href="#dicas"><i class="fas fa-lightbulb"></i> Dicas &nbsp;<span class="badge-new">Novo</span></a></li>
                 <li><a href="#" id="sidebarWhatsapp"><i class="fab fa-whatsapp"></i> Contato</a></li>
             </ul>
         </div>
@@ -392,7 +394,7 @@
                 <img id="modalImage" src="" alt="">
                 <div class="modal-header-content">
                     <h2 id="modalTitle"></h2>
-                    <p id="modalSubtitle" style="display:none;"></p>
+                    <p id="modalSubtitle" style="display:none !important;"></p>
                 </div>
             </div>
             <div class="modal-body">
@@ -409,7 +411,7 @@
                     <div class="gallery" id="adventureGallery"></div>
                 </div>
                 <div class="modal-section modal-buttons-row">
-                    <a href="#" class="btn-modal btn-reserve" id="reserveButton" style="display:none;">
+                    <a href="#" class="btn-modal btn-reserve" id="reserveButton" style="display:none !important;">
                         <i class="fas fa-ticket-alt"></i> 📅 Há Datas Disponíveis
                     </a>
                     
@@ -432,7 +434,7 @@
                 <a href="#" class="btn-modal btn-whatsapp" id="agendaModalButton" target="_blank">
                     <i class="fab fa-whatsapp"></i> Falar com Equipe
                 </a>
-                <a href="#" class="btn-modal btn-sector" id="agendaSectorBtn">
+                <a href="#" class="btn-modal btn-sector" id="agendaSectorBtn" style="display:none !important;">
                     <i class="fas fa-map-marked-alt"></i> Ver Setor
                 </a>
             </div>
@@ -530,13 +532,13 @@
 
         // --- RENDERIZAÇÃO ---
         let allAdventures = [];
-        let allAgenda = []; 
+        let allAgenda = []; // Armazena a agenda globalmente para consulta
         let currentUser = null;
         let currentAgendaItem = null;
 
         function renderAll(data) {
             allAdventures = data.adventures;
-            allAgenda = data.agenda; 
+            allAgenda = data.agenda; // Salva para uso na lógica do botão
             renderAgenda(data.agenda);
             renderAdventures(data.adventures);
             renderMural(data.mural);
@@ -588,7 +590,7 @@
         document.getElementById('closeModal').onclick = () => closeModal(advModal);
         document.getElementById('closeAgendaModal').onclick = () => closeModal(agModal);
 
-        // ABRE MODAL AGENDA (Com botão "Ver Setor" restaurado)
+        // ABRE MODAL AGENDA (Com botão "Ver Setor")
         function openAgendaModal(item) {
             currentAgendaItem = item;
             document.getElementById('agendaModalImage').src = item.image_url;
@@ -598,14 +600,14 @@
             const related = allAdventures.find(a => a.id === item.adventure_id);
             if(related) {
                 agendaSectorBtn.style.display = 'inline-flex';
-                // Fecha Agenda -> Abre Aventura
+                // IMPORTANTE: !important no CSS garante a visibilidade, aqui só alternamos display
                 agendaSectorBtn.onclick = (e) => { 
                     e.preventDefault(); 
                     closeModal(agModal); 
                     setTimeout(() => openAdventureModal(related), 100); 
                 };
             } else {
-                agendaSectorBtn.style.display = 'none';
+                agendaSectorBtn.style.setProperty('display', 'none', 'important');
             }
             openModal(agModal);
         }
@@ -616,7 +618,7 @@
             document.querySelector('#adventureModal .modal-content').scrollTop = 0;
 
             document.getElementById('modalTitle').textContent = adv.title;
-            // document.getElementById('modalSubtitle').textContent = adv.subtitle; (REMOVIDO)
+            // Subtítulo removido
             document.getElementById('modalImage').src = adv.image_url;
             document.getElementById('adventureDescription').textContent = adv.description;
             document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
@@ -636,7 +638,7 @@
                 };
             } else {
                 // SE NÃO TEM: Esconde botão de reserva
-                reserveBtn.style.display = 'none';
+                reserveBtn.style.setProperty('display', 'none', 'important');
             }
 
             const det = document.getElementById('adventureDetails'); det.innerHTML = '';
@@ -669,15 +671,12 @@
             }
         }
 
-        // LÓGICA DO BOTÃO "ENVIAR FOTO" (REDICIONAMENTO INTELIGENTE)
-        document.getElementById('btnSendPhoto').addEventListener('click', async (e) => {
+        // REDIRECIONAR FOTO
+        document.getElementById('btnSendPhoto').addEventListener('click', (e) => {
             e.preventDefault();
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                // Se já estiver logado, vai direto pro estúdio
+            if(currentUser) {
                 window.location.href = 'dashboard.html?section=estudio';
             } else {
-                // Se não, salva a intenção e vai pro login
                 localStorage.setItem('redirectAfterLogin', 'dashboard.html?section=estudio');
                 Swal.fire({
                     title: 'Faça Login',
