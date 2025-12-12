@@ -13,7 +13,7 @@
 
     <style>
         :root {
-            /* Identidade Visual Aranhas */
+            /* Identidade Visual */
             --es-pink: #E83D8A;
             --es-blue: #0055A4;
             --es-white: #FFFFFF;
@@ -32,7 +32,7 @@
             min-height: 100vh;
         }
 
-        /* --- SIDEBAR (MENU LATERAL DESKTOP) --- */
+        /* --- SIDEBAR (PC) --- */
         .sidebar {
             width: var(--sidebar-width);
             background: linear-gradient(180deg, var(--es-blue) 0%, #003e7a 100%);
@@ -83,13 +83,14 @@
             flex: 1;
             margin-left: var(--sidebar-width);
             padding: 2rem 3rem;
+            padding-bottom: 100px; /* Espaço para menu mobile */
         }
 
         .header-mobile { display: none; } 
 
         h1.page-title { font-size: 1.8rem; color: var(--es-blue); margin-bottom: 2rem; border-left: 5px solid var(--es-pink); padding-left: 15px; }
 
-        /* CARDS GERAIS */
+        /* SEÇÕES */
         .content-section { display: none; animation: fadeIn 0.4s ease; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -99,74 +100,83 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;
         }
         
-        /* INPUT DE RESGATE */
+        /* ESTÚDIO (CANVAS) */
+        .canvas-container {
+            position: relative; width: 100%; max-width: 100%;
+            margin: 0 auto 20px; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #eee;
+            display: flex; justify-content: center; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlZWVlZWUiIHN0cm9rZS13aWR0aD0iMSI+PHBhdGggZD0iTTAgMGwyMCAyME0yMCAwbC0yMCAyMCIvPjwvc3ZnPg==');
+        }
+        canvas { width: 100%; height: auto; display: block; }
+        
+        .badge-selector {
+            display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;
+        }
+        .badge-option {
+            min-width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ddd;
+            cursor: pointer; opacity: 0.5; transition: 0.3s; position: relative;
+        }
+        .badge-option.selected { border-color: var(--es-pink); opacity: 1; transform: scale(1.1); box-shadow: 0 4px 10px rgba(232, 61, 138, 0.3); }
+        .badge-option img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        /* INPUTS */
+        .upload-group { text-align: center; margin-bottom: 20px; border: 2px dashed #ddd; padding: 30px; border-radius: 12px; transition:0.3s; }
+        .upload-group:hover { border-color: var(--es-pink); background: #fff0f5; }
+        
         .redeem-box { display: flex; gap: 10px; margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .redeem-box input { flex: 1; padding: 10px; border: 1px solid #eee; border-radius: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; outline:none; }
         .redeem-box button { background: var(--success); color: white; border: none; padding: 0 25px; border-radius: 5px; cursor: pointer; font-weight: bold; transition:0.3s; }
-        .redeem-box button:hover { background: #219150; }
 
-        /* GRID DE RESERVAS */
+        /* GRIDS */
         .booking-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         .booking-card {
             background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee;
             transition: transform 0.2s; position: relative;
         }
-        .booking-card:hover { transform: translateY(-3px); border-color: var(--es-pink); }
         .booking-img { height: 140px; width: 100%; object-fit: cover; }
         .booking-body { padding: 1.2rem; }
-        .booking-date { color: #888; font-size: 0.85rem; display: block; margin-bottom: 5px; }
-        .booking-title { font-weight: 700; color: var(--dark); font-size: 1.1rem; margin-bottom: 10px; }
-        .status-badge {
-            display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-        }
-        .st-pendente { background: #fff8e1; color: #f57c00; }
-        .st-confirmado { background: #e8f5e9; color: #2e7d32; }
-        .st-pago { background: #e0f7fa; color: #006064; }
-
-        /* GRID DE BADGES */
-        .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px; text-align: center; }
-        .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; position: relative; }
+        
+        .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; text-align: center; }
+        .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; }
         .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
-        .badge-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #ddd; object-fit: cover; margin-bottom: 8px; }
+        .badge-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #ddd; object-fit: cover; margin: 0 auto 5px; }
         .badge-item.unlocked .badge-img { border-color: var(--es-pink); box-shadow: 0 0 15px rgba(232, 61, 138, 0.2); }
-        .badge-name { font-size: 0.8rem; font-weight: 600; color: var(--dark); }
 
-        /* FORMULÁRIO DE DADOS */
+        /* FORM */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #555; margin-bottom: 5px; }
-        .form-group input {
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; outline: none; transition: 0.3s;
-        }
-        .form-group input:focus { border-color: var(--es-pink); }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; outline: none; transition: 0.3s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--es-pink); }
         .form-full { grid-column: 1 / -1; }
         
         .btn-save {
             background: var(--es-pink); color: white; border: none; padding: 12px 30px;
             border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s;
-            display: inline-flex; align-items: center; gap: 8px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-save:hover { background: #c21c66; transform: translateY(-2px); }
 
         .loader-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- MOBILE RESPONSIVE --- */
+        /* --- MOBILE --- */
         @media (max-width: 768px) {
-            body { flex-direction: column; padding-bottom: 80px; }
+            body { flex-direction: column; }
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 1.5rem; }
+            .main-content { margin-left: 0; padding: 1.5rem; padding-bottom: 100px; }
             
             .header-mobile {
                 display: flex; justify-content: space-between; align-items: center;
-                padding-bottom: 1.5rem; border-bottom: 1px solid #eee; margin-bottom: 1.5rem;
+                /* AUMENTADO ESPAÇAMENTO PARA NÃO FICAR COLADO */
+                padding: 1.5rem 0.5rem; 
+                border-bottom: 1px solid #eee; margin-bottom: 1.5rem;
+                background: white; position: sticky; top: 0; z-index: 90;
             }
-            .header-mobile h2 { font-size: 1.2rem; color: var(--es-blue); font-weight: 800; text-transform: uppercase;}
+            .header-mobile h2 { font-size: 1.4rem; color: var(--es-blue); font-weight: 800; text-transform: uppercase; margin: 0; }
             
             .form-grid { grid-template-columns: 1fr; }
-            h1.page-title { font-size: 1.5rem; }
+            h1.page-title { font-size: 1.5rem; margin-top: 10px; }
 
             /* Bottom Nav Mobile */
             .bottom-nav {
@@ -176,14 +186,12 @@
             }
             .nav-btn-mobile {
                 border: none; background: none; display: flex; flex-direction: column; align-items: center;
-                color: #999; font-size: 0.7rem; font-weight: 600; width: 25%;
+                color: #999; font-size: 0.7rem; font-weight: 600; width: 20%;
             }
             .nav-btn-mobile i { font-size: 1.4rem; margin-bottom: 4px; }
             .nav-btn-mobile.active { color: var(--es-pink); }
         }
-        @media (min-width: 769px) {
-            .bottom-nav { display: none; }
-        }
+        @media (min-width: 769px) { .bottom-nav { display: none; } }
     </style>
 </head>
 <body>
@@ -193,36 +201,19 @@
     </div>
 
     <aside class="sidebar">
-        <div class="brand">
-            <i class="fas fa-spider"></i> Aranhas
-        </div>
-        
+        <div class="brand"><i class="fas fa-spider"></i> Aranhas</div>
         <div class="user-mini-profile">
             <img src="" id="sidebarAvatar" class="user-avatar" alt="User">
-            <div class="user-info">
-                <div id="sidebarName">Carregando...</div>
-                <span>Aventureiro</span>
-            </div>
+            <div class="user-info"><div id="sidebarName">...</div><span>Aventureiro</span></div>
         </div>
-
         <ul class="nav-menu">
-            <li class="nav-item active" onclick="showSection('reservas')">
-                <i class="fas fa-ticket-alt"></i> Minhas Reservas
-            </li>
-            <li class="nav-item" onclick="showSection('badges')">
-                <i class="fas fa-medal"></i> Conquistas
-            </li>
-            <li class="nav-item" onclick="showSection('perfil')">
-                <i class="fas fa-user-cog"></i> Meus Dados
-            </li>
-            <li class="nav-item" onclick="window.location.href='index.html'">
-                <i class="fas fa-home"></i> Voltar ao Site
-            </li>
+            <li class="nav-item active" onclick="showSection('reservas')"><i class="fas fa-ticket-alt"></i> Minhas Reservas</li>
+            <li class="nav-item" onclick="showSection('badges')"><i class="fas fa-medal"></i> Conquistas</li>
+            <li class="nav-item" onclick="showSection('estudio')"><i class="fas fa-camera-retro"></i> Criar Post</li>
+            <li class="nav-item" onclick="showSection('perfil')"><i class="fas fa-user-cog"></i> Meus Dados</li>
+            <li class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-home"></i> Voltar ao Site</li>
         </ul>
-
-        <div class="logout-btn" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i> Sair da Conta
-        </div>
+        <div class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair da Conta</div>
     </aside>
 
     <main class="main-content">
@@ -234,59 +225,76 @@
 
         <div id="section-reservas" class="content-section active">
             <h1 class="page-title">Histórico de Aventuras</h1>
-            <div class="booking-list" id="bookingsList">
-                </div>
+            <div class="booking-list" id="bookingsList"></div>
         </div>
 
         <div id="section-badges" class="content-section">
             <h1 class="page-title">Mural de Conquistas</h1>
-            
             <div class="card" style="background: #e3f2fd; border: 1px dashed #90caf9;">
                 <h3 style="color:var(--es-blue); margin-bottom:10px; font-size:1.1rem;"><i class="fas fa-ticket-alt"></i> Resgatar Código</h3>
                 <div class="redeem-box">
-                    <input type="text" id="redeemCode" placeholder="Cole seu código aqui (Ex: ARANHA-X9Y2)">
+                    <input type="text" id="redeemCode" placeholder="Cole seu código aqui (Ex: ARANHA-X9)">
                     <button onclick="redeemBadge()">RESGATAR</button>
                 </div>
-                <p style="font-size:0.8rem; color:#666;">Recebeu um código da equipe? Digite aqui para liberar sua medalha.</p>
             </div>
-
             <div class="card">
-                <p style="text-align:center; color:#666; margin-bottom:20px;">Complete aventuras para desbloquear badges exclusivos!</p>
-                <div class="badges-grid" id="badgesGrid">
+                <div class="badges-grid" id="badgesGrid"></div>
+            </div>
+        </div>
+
+        <div id="section-estudio" class="content-section">
+            <h1 class="page-title">Estúdio de Criação</h1>
+            
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <div class="upload-group" id="uploadStep">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:3rem; color:#ddd; margin-bottom:15px;"></i>
+                    <p style="color:#666; margin-bottom:15px;">Escolha sua melhor foto para postar no mural.</p>
+                    <label for="photoInput" class="btn-save" style="cursor: pointer; display: inline-block;">
+                        <i class="fas fa-images"></i> Escolher da Galeria
+                    </label>
+                    <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="loadCanvas(this)">
+                </div>
+
+                <div id="editorArea" style="display: none;">
+                    <div class="canvas-container">
+                        <canvas id="photoCanvas"></canvas>
                     </div>
+
+                    <h4 style="margin-bottom: 10px; color: var(--es-blue);">1. Escolha uma Conquista para Estampar:</h4>
+                    <div class="badge-selector" id="badgeSelector">
+                        </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 10px; color: var(--es-blue);">2. Detalhes:</h4>
+                        <div class="form-group">
+                            <input type="text" id="postTitle" placeholder="Onde foi? (Ex: Morro do Moreno)" maxlength="30">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="postQuote" rows="3" placeholder="Escreva uma legenda curta..." maxlength="100"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button onclick="resetEditor()" class="btn-save" style="background:#ddd; color:#555; flex:1;">Cancelar</button>
+                        <button onclick="submitPost()" class="btn-save" style="flex:2;"><i class="fas fa-paper-plane"></i> Enviar para Análise</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="section-perfil" class="content-section">
-            <h1 class="page-title">Meus Dados Pessoais</h1>
+            <h1 class="page-title">Meus Dados</h1>
             <div class="card" style="max-width: 700px;">
                 <form id="profileForm">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Nome Completo (Para o Seguro)</label>
-                            <input type="text" id="fullName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Apelido (Como quer ser chamado)</label>
-                            <input type="text" id="nickname">
-                        </div>
-                        <div class="form-group">
-                            <label>CPF (Apenas números)</label>
-                            <input type="text" id="cpf" required maxlength="14" placeholder="000.000.000-00">
-                        </div>
-                        <div class="form-group">
-                            <label>Celular / WhatsApp</label>
-                            <input type="text" id="phone" placeholder="(27) 99999-9999" maxlength="15">
-                        </div>
-                        <div class="form-group form-full">
-                            <label>E-mail (Não alterável)</label>
-                            <input type="text" id="email" disabled style="background:#f9f9f9; color:#999;">
-                        </div>
+                        <div class="form-group"><label>Nome Completo</label><input type="text" id="fullName" required></div>
+                        <div class="form-group"><label>Apelido</label><input type="text" id="nickname"></div>
+                        <div class="form-group"><label>CPF</label><input type="text" id="cpf" required></div>
+                        <div class="form-group"><label>Celular</label><input type="text" id="phone"></div>
+                        <div class="form-group form-full"><label>E-mail</label><input type="text" id="email" disabled style="background:#f9f9f9;"></div>
                     </div>
                     <div style="margin-top:20px; text-align:right;">
-                        <button type="submit" class="btn-save" id="btnSave">
-                            <i class="fas fa-save"></i> Salvar Alterações
-                        </button>
+                        <button type="submit" class="btn-save" id="btnSave"><i class="fas fa-save"></i> Salvar</button>
                     </div>
                 </form>
             </div>
@@ -294,18 +302,11 @@
     </main>
 
     <nav class="bottom-nav">
-        <button class="nav-btn-mobile active" onclick="showSection('reservas', this)">
-            <i class="fas fa-ticket-alt"></i> Reservas
-        </button>
-        <button class="nav-btn-mobile" onclick="showSection('badges', this)">
-            <i class="fas fa-medal"></i> Badges
-        </button>
-        <button class="nav-btn-mobile" onclick="showSection('perfil', this)">
-            <i class="fas fa-user"></i> Perfil
-        </button>
-        <button class="nav-btn-mobile" onclick="window.location.href='index.html'">
-            <i class="fas fa-home"></i> Início
-        </button>
+        <button class="nav-btn-mobile active" onclick="showSection('reservas', this)"><i class="fas fa-ticket-alt"></i> Reservas</button>
+        <button class="nav-btn-mobile" onclick="showSection('badges', this)"><i class="fas fa-medal"></i> Badges</button>
+        <button class="nav-btn-mobile" onclick="showSection('estudio', this)"><i class="fas fa-camera"></i> Criar</button>
+        <button class="nav-btn-mobile" onclick="showSection('perfil', this)"><i class="fas fa-user"></i> Perfil</button>
+        <button class="nav-btn-mobile" onclick="window.location.href='index.html'"><i class="fas fa-home"></i> Início</button>
     </nav>
 
     <script>
@@ -314,23 +315,23 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUser = null;
+        let currentImage = null;
+        let selectedBadgeUrl = null;
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
 
-        // --- NAVEGAÇÃO ENTRE ABAS ---
+        // --- NAVEGAÇÃO ---
         window.showSection = (sectionId, mobileBtn) => {
-            // Esconde todas as seções
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-            // Mostra a selecionada
             document.getElementById('section-' + sectionId).classList.add('active');
             
-            // Atualiza Sidebar Desktop
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            // Lógica simples para desktop active state
             const desktopItems = document.querySelectorAll('.nav-item');
             if(sectionId === 'reservas') desktopItems[0].classList.add('active');
             if(sectionId === 'badges') desktopItems[1].classList.add('active');
-            if(sectionId === 'perfil') desktopItems[2].classList.add('active');
+            if(sectionId === 'estudio') desktopItems[2].classList.add('active');
+            if(sectionId === 'perfil') desktopItems[3].classList.add('active');
 
-            // Atualiza Mobile
             if(mobileBtn) {
                 document.querySelectorAll('.nav-btn-mobile').forEach(el => el.classList.remove('active'));
                 mobileBtn.classList.add('active');
@@ -339,234 +340,204 @@
 
         async function init() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+            if (!session) { location.href = 'login.html'; return; }
             currentUser = session.user;
-
+            
             await loadUserData();
             await loadBookings();
             await loadBadges();
             
+            // Check URL param for redirect (ex: coming from index 'Enviar Foto')
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('section') === 'estudio') {
+                showSection('estudio', document.querySelectorAll('.nav-btn-mobile')[2]);
+            }
+
             document.getElementById('loader').style.display = 'none';
         }
 
+        // --- ESTÚDIO DE CRIAÇÃO ---
+        window.loadCanvas = (input) => {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    canvas.width = 1080; 
+                    canvas.height = (img.height / img.width) * 1080;
+                    currentImage = img;
+                    draw();
+                    document.getElementById('uploadStep').style.display = 'none';
+                    document.getElementById('editorArea').style.display = 'block';
+                    loadUserBadgesForEditor();
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        async function loadUserBadgesForEditor() {
+            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id, aventuras(image_url)').eq('user_id', currentUser.id);
+            const container = document.getElementById('badgeSelector');
+            container.innerHTML = '<div class="badge-option selected" onclick="selectBadge(null, this)"><div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px;color:#aaa;"><i class="fas fa-ban"></i></div></div>';
+            if(userBadges) {
+                userBadges.forEach(b => {
+                    container.innerHTML += `<div class="badge-option" onclick="selectBadge('${b.aventuras.image_url}', this)"><img src="${b.aventuras.image_url}"></div>`;
+                });
+            }
+        }
+
+        window.selectBadge = (url, el) => {
+            selectedBadgeUrl = url;
+            document.querySelectorAll('.badge-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            draw();
+        }
+
+        function draw() {
+            if(!currentImage) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            if(selectedBadgeUrl) {
+                const badgeImg = new Image();
+                badgeImg.onload = function() {
+                    const size = canvas.width * 0.20; // 20% da largura
+                    const x = canvas.width - size - 40;
+                    const y = canvas.height - size - 40;
+                    ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 10;
+                    ctx.drawImage(badgeImg, x, y, size, size);
+                    ctx.shadowBlur = 0;
+                }
+                badgeImg.src = selectedBadgeUrl;
+            }
+        }
+
+        window.resetEditor = () => {
+            currentImage = null; selectedBadgeUrl = null;
+            document.getElementById('uploadStep').style.display = 'block';
+            document.getElementById('editorArea').style.display = 'none';
+            document.getElementById('photoInput').value = '';
+        }
+
+        window.submitPost = async () => {
+            const title = document.getElementById('postTitle').value;
+            const quote = document.getElementById('postQuote').value;
+            if(!title || !quote) return Swal.fire('Ops', 'Preencha o local e a legenda!', 'warning');
+
+            Swal.fire({ title: 'Enviando...', didOpen: () => Swal.showLoading() });
+
+            canvas.toBlob(async (blob) => {
+                const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
+                const { error: uploadError } = await supabase.storage.from('imagens').upload(fileName, blob);
+                if(uploadError) return Swal.fire('Erro', 'Falha no upload.', 'error');
+
+                const { data: { publicUrl } } = supabase.storage.from('imagens').getPublicUrl(fileName);
+
+                const { error: dbError } = await supabase.from('mural').insert([{
+                    user_id: currentUser.id,
+                    title: title,
+                    quote: quote,
+                    author: currentUser.user_metadata.full_name || 'Aventureiro',
+                    image_url: publicUrl,
+                    status: 'pending' // Pendente de aprovação
+                }]);
+
+                if(dbError) Swal.fire('Erro', dbError.message, 'error');
+                else {
+                    Swal.fire('Enviado!', 'Sua foto foi para análise. Em breve no mural!', 'success');
+                    resetEditor();
+                    showSection('reservas');
+                }
+            }, 'image/jpeg', 0.85);
+        }
+
+        // --- DADOS DO USUÁRIO ---
         async function loadUserData() {
-            // Preenche dados básicos
             document.getElementById('email').value = currentUser.email;
-            
-            // Avatar
-            const avatarUrl = currentUser.user_metadata.avatar_url || 'https://ui-avatars.com/api/?name='+currentUser.email+'&background=E83D8A&color=fff';
+            const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
             document.getElementById('sidebarAvatar').src = avatarUrl;
             document.getElementById('mobileAvatar').src = avatarUrl;
 
-            // Busca perfil completo
             const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-            
             if (data) {
                 document.getElementById('fullName').value = data.full_name || '';
                 document.getElementById('nickname').value = data.nickname || '';
                 document.getElementById('cpf').value = data.cpf || '';
-                document.getElementById('phone').value = data.phone || ''; // NOVO CAMPO
+                document.getElementById('phone').value = data.phone || ''; 
                 document.getElementById('sidebarName').textContent = data.nickname || data.full_name?.split(' ')[0] || 'Aventureiro';
             }
         }
 
         async function loadBookings() {
             const list = document.getElementById('bookingsList');
-            const { data } = await supabase
-                .from('bookings')
-                .select(`*, agenda (title, date_text, image_url)`)
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
-
+            const { data } = await supabase.from('bookings').select(`*, agenda (title, date_text, image_url)`).eq('user_id', currentUser.id).order('created_at', { ascending: false });
             if (!data || data.length === 0) {
-                list.innerHTML = `<div class="card" style="grid-column: 1/-1; text-align:center; padding:3rem;">
-                    <i class="fas fa-wind" style="font-size:3rem; color:#ddd; margin-bottom:1rem;"></i>
-                    <p>Você ainda não tem reservas.</p>
-                    <button onclick="window.location.href='index.html#agenda'" class="btn-save" style="margin-top:10px;">Ver Agenda</button>
-                </div>`;
+                list.innerHTML = `<div class="card" style="grid-column: 1/-1; text-align:center; padding:3rem;"><p>Nenhuma reserva.</p></div>`;
                 return;
             }
-
             list.innerHTML = '';
-            data.forEach(booking => {
-                const agenda = booking.agenda;
-                if(!agenda) return;
-                
-                const statusMap = {
-                    'pendente': '<span class="status-badge st-pendente">Aguardando Pagto</span>',
-                    'confirmado': '<span class="status-badge st-confirmado">Confirmado</span>',
-                    'pago': '<span class="status-badge st-pago">Pago</span>'
-                };
-
-                list.innerHTML += `
-                    <div class="booking-card">
-                        <img src="${agenda.image_url}" class="booking-img">
-                        <div class="booking-body">
-                            <span class="booking-date"><i class="far fa-calendar"></i> ${agenda.date_text}</span>
-                            <div class="booking-title">${agenda.title}</div>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                ${statusMap[booking.status] || booking.status}
-                                <small>R$ ${booking.amount}</small>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            data.forEach(b => {
+                if(!b.agenda) return;
+                const st = {'pendente':'st-pendente','confirmado':'st-confirmado','pago':'st-pago'}[b.status] || '';
+                list.innerHTML += `<div class="booking-card"><img src="${b.agenda.image_url}" class="booking-img"><div class="booking-body"><span class="booking-date">${b.agenda.date_text}</span><div class="booking-title">${b.agenda.title}</div><span class="status-badge ${st}">${b.status}</span></div></div>`;
             });
         }
 
-        // --- SISTEMA DE RESGATE BLINDADO (SINGLE USE) ---
+        async function loadBadges() {
+            const { data: advs } = await supabase.from('aventuras').select('id, title, image_url').order('title');
+            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
+            const unlockedIds = new Set(userBadges ? userBadges.map(b => b.adventure_id) : []);
+            const grid = document.getElementById('badgesGrid');
+            grid.innerHTML = '';
+            if(advs) {
+                advs.forEach(adv => {
+                    const unlocked = unlockedIds.has(adv.id);
+                    grid.innerHTML += `<div class="badge-item ${unlocked ? 'unlocked' : ''}"><img src="${adv.image_url}" class="badge-img"><div class="badge-name">${adv.title}</div></div>`;
+                });
+            }
+        }
+
         async function redeemBadge() {
             const codeInput = document.getElementById('redeemCode');
             const btn = document.querySelector('.redeem-box button');
             const code = codeInput.value.trim().toUpperCase();
-
             if(!code) return Swal.fire('Ops', 'Digite o código!', 'warning');
-
-            btn.disabled = true; 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-            try {
-                // 1. Verifica se o código existe e está livre
-                const { data: codeData, error: fetchError } = await supabase
-                    .from('redeem_codes')
-                    .select('*')
-                    .eq('code', code)
-                    .single();
-
-                if (fetchError || !codeData) {
-                    throw new Error('Código inexistente ou inválido.');
-                }
-
-                if (codeData.used_by) {
-                    throw new Error('Este código já foi resgatado.');
-                }
-
-                // 2. Tenta "Travar" o código (Atomic Update)
-                // O filtro .is('used_by', null) garante que se alguém usou 1ms antes, falha.
-                const { data: updatedData, error: updateError } = await supabase
-                    .from('redeem_codes')
-                    .update({ used_by: currentUser.id })
-                    .eq('id', codeData.id)
-                    .is('used_by', null)
-                    .select();
-
-                // Se não retornou dados, a trava falhou
-                if (updateError || !updatedData || updatedData.length === 0) {
-                    throw new Error('Erro ao resgatar. Código já utilizado.');
-                }
-
-                // 3. Insere Badge
-                const { error: badgeError } = await supabase
-                    .from('user_badges')
-                    .upsert(
-                        { user_id: currentUser.id, adventure_id: codeData.adventure_id },
-                        { onConflict: 'user_id, adventure_id', ignoreDuplicates: true }
-                    );
-
-                if (badgeError) throw badgeError;
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Conquista Desbloqueada!',
-                    text: 'O badge foi adicionado ao seu mural.',
-                    confirmButtonColor: '#E83D8A'
-                });
-                
-                codeInput.value = '';
-                loadBadges(); // Atualiza a tela
-
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Falha',
-                    text: error.message,
-                    confirmButtonColor: '#333'
-                });
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'RESGATAR';
-            }
-        }
-
-        async function loadBadges() {
-            const { data: adventures } = await supabase.from('aventuras').select('id, title, image_url').order('title');
-            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
-            const unlockedIds = new Set(userBadges ? userBadges.map(b => b.adventure_id) : []);
-
-            const grid = document.getElementById('badgesGrid');
-            grid.innerHTML = '';
             
-            if(adventures) {
-                adventures.forEach(adv => {
-                    const isUnlocked = unlockedIds.has(adv.id);
-                    grid.innerHTML += `
-                        <div class="badge-item ${isUnlocked ? 'unlocked' : ''}">
-                            <img src="${adv.image_url}" class="badge-img">
-                            <div class="badge-name">${adv.title}</div>
-                            ${isUnlocked ? '<i class="fas fa-check-circle" style="color:var(--success); margin-top:5px;"></i>' : '<i class="fas fa-lock" style="font-size:0.8rem; margin-top:5px; color:#ccc;"></i>'}
-                        </div>
-                    `;
-                });
-            }
+            btn.disabled = true; btn.innerHTML = '...';
+            try {
+                const { data: codeData, error: fetchError } = await supabase.from('redeem_codes').select('*').eq('code', code).single();
+                if (fetchError || !codeData) throw new Error('Código inválido.');
+                if (codeData.used_by) throw new Error('Código já usado.');
+
+                const { data: updated, error: updateError } = await supabase.from('redeem_codes').update({ used_by: currentUser.id }).eq('id', codeData.id).is('used_by', null).select();
+                if (updateError || !updated || updated.length === 0) throw new Error('Erro ao resgatar.');
+
+                await supabase.from('user_badges').upsert({ user_id: currentUser.id, adventure_id: codeData.adventure_id }, { onConflict: 'user_id, adventure_id', ignoreDuplicates: true });
+                Swal.fire('Parabéns!', 'Conquista desbloqueada!', 'success');
+                codeInput.value = '';
+                loadBadges();
+            } catch (error) { Swal.fire('Erro', error.message, 'error'); } 
+            finally { btn.disabled = false; btn.innerHTML = 'RESGATAR'; }
         }
 
-        // --- MÁSCARAS DE INPUT ---
+        // --- MÁSCARAS E SAVES ---
         const cpfInput = document.getElementById('cpf');
         const phoneInput = document.getElementById('phone');
+        cpfInput.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, "").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2"); });
+        phoneInput.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d)(\d{4})$/, "$1-$2"); });
 
-        cpfInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\D/g, "");
-            v = v.replace(/(\d{3})(\d)/, "$1.$2");
-            v = v.replace(/(\d{3})(\d)/, "$1.$2");
-            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-            e.target.value = v;
-        });
-
-        phoneInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\D/g, "");
-            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-            e.target.value = v;
-        });
-
-        // --- SALVAR PERFIL ---
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSave');
-            const originalText = btn.innerHTML;
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-
-            const updates = {
-                id: currentUser.id,
-                full_name: document.getElementById('fullName').value,
-                nickname: document.getElementById('nickname').value,
-                cpf: document.getElementById('cpf').value,
-                phone: document.getElementById('phone').value, // SALVANDO O CELULAR
-                updated_at: new Date()
-            };
-
+            btn.disabled = true; btn.innerHTML = '...';
+            const updates = { id: currentUser.id, full_name: document.getElementById('fullName').value, nickname: document.getElementById('nickname').value, cpf: document.getElementById('cpf').value, phone: document.getElementById('phone').value, updated_at: new Date() };
             const { error } = await supabase.from('profiles').upsert(updates);
-
-            if (error) {
-                Swal.fire('Erro', error.message, 'error');
-            } else {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Dados Atualizados!',
-                    text: 'Suas informações foram salvas com sucesso.',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-                document.getElementById('sidebarName').textContent = updates.nickname || updates.full_name.split(' ')[0];
-            }
-            btn.disabled = false; btn.innerHTML = originalText;
+            if (error) Swal.fire('Erro', error.message, 'error'); else Swal.fire({ icon: 'success', title: 'Salvo!', timer: 1500, showConfirmButton: false });
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Salvar';
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = 'index.html';
-        });
-
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); location.href = 'index.html'; });
         init();
     </script>
 </body>
