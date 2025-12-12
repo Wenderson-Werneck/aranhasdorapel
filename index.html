@@ -44,7 +44,7 @@
             line-height: 1.6; 
             overflow-x: hidden; 
             padding-bottom: 80px; 
-            padding-top: 70px; /* Garante que o conteúdo comece abaixo do header */
+            padding-top: 70px; 
         }
         
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
@@ -93,7 +93,6 @@
         .fixed-spider::before { content: ''; display: block; width: 2px; height: 80px; background: rgba(255, 255, 255, 0.5); margin: 0 auto; }
         .fixed-spider img { width: 100%; height: auto; }
 
-        /* Ajuste do Scroll para não esconder títulos */
         section { padding: 3rem 0; scroll-margin-top: 80px; }
         .section-title { text-align: center; margin-bottom: 3rem; }
         .section-title h2 { font-size: 2.5rem; color: var(--primary); }
@@ -117,14 +116,12 @@
         .card-image img { height: 100%; transition: transform 0.4s; }
         .adventure-card:hover .card-image img { transform: scale(1.1); }
         
-        /* MURAL: 4:5 Instagram */
         .photo-item .client-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
 
         .agenda-content, .card-content, .photo-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
         .agenda-content { text-align: center; }
         .agenda-content h4, .photo-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
         
-        /* TÍTULO DO CARD (Rosa Sólido) */
         .card-content h3 { color: var(--primary); margin-bottom: 0.2rem; font-size: 1.3rem; text-align: left; }
         
         .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: auto; }
@@ -135,19 +132,28 @@
         .difficulty.dificil { background: #ffebee; color: #f44336; }
         
         .photo-upload { text-align: center; margin-top: 2rem; }
-        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); }
-        
-        /* FIX: CORREÇÃO DO Z-INDEX DO SWEETALERT (PIX) */
-        /* Garante que o alerta do PIX apareça por cima do Modal */
-        .swal2-container { z-index: 10000 !important; }
+        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); transition:0.3s; }
+        .btn-upload:hover { transform: translateY(-2px); }
 
-        /* MODAL */
+        /* MODAL E CORREÇÃO DO BUG INVISÍVEL */
         .modal { 
             display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: hidden; padding: 1rem; 
-            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+            
+            /* ESTADOS DE VISIBILIDADE */
+            opacity: 0; 
+            visibility: hidden; 
+            pointer-events: none; /* CRÍTICO: ISSO IMPEDE O BLOQUEIO QUANDO INVISÍVEL */
+            
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .modal.active { opacity: 1; visibility: visible; }
+        
+        .modal.active { 
+            opacity: 1; 
+            visibility: visible; 
+            pointer-events: auto; /* Reativa os cliques quando visível */
+        }
+
         .modal-content { 
             background: white; margin: auto; border-radius: 20px; width: 100%; max-width: 1000px; 
             max-height: 90vh; overflow-y: auto; 
@@ -164,10 +170,7 @@
         .modal-header::after { content:''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
         .modal-header img { width: 100%; height: 100%; object-fit: cover; }
         .modal-header-content { position: absolute; bottom: 0; left: 0; right: 0; color: white; padding: 3rem; z-index: 2; }
-        
-        .modal-header-content h2 { 
-            font-size: 3rem; color: var(--primary); text-shadow: 2px 2px 4px rgba(0,0,0,0.8); margin-bottom: 0; 
-        }
+        .modal-header-content h2 { font-size: 3rem; color: var(--primary); text-shadow: 2px 2px 4px rgba(0,0,0,0.8); margin-bottom: 0; }
         #modalSubtitle { display: none !important; }
 
         .modal-body { padding: 3rem; text-align: center; }
@@ -181,21 +184,11 @@
         .gallery-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; }
         
         .agenda-modal-content { max-width: 90%; max-height: 95vh; display: flex; flex-direction: column; align-items: center; background: transparent; box-shadow: none; overflow-y: auto; }
-        #agendaModalImage { 
-            width: 100%; height: auto; max-width: 550px; max-height: 75vh; 
-            object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg); 
-            display: block; margin: 0 auto;
-        }
-        .agenda-actions { 
-            display: flex; flex-direction: row; align-items: center; justify-content: center;
-            gap: 15px; margin-top: 15px; width: 100%; flex-wrap: wrap;
-        }
+        #agendaModalImage { width: 100%; height: auto; max-width: 550px; max-height: 75vh; object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg); display: block; margin: 0 auto; }
+        .agenda-actions { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; margin-top: 15px; width: 100%; flex-wrap: wrap; }
         
         /* BOTÕES MODAL CORRIGIDOS */
-        .modal-buttons-row {
-            display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 1rem; flex-wrap: wrap;
-        }
-
+        .modal-buttons-row { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
         .btn-modal { 
             display: flex; align-items: center; justify-content: center; 
             gap: 8px; padding: 1rem 2rem; border-radius: 50px; text-decoration: none !important; font-weight: 700; 
@@ -204,56 +197,21 @@
             color: white !important; opacity: 1 !important; visibility: visible !important;
             position: relative; z-index: 10;
         }
-        
-        /* CORES FORÇADAS (!important para evitar transparência) */
-        .btn-reserve { 
-            background-color: #e67e22; 
-            background-image: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important; 
-        }
-        .btn-whatsapp { 
-            background-color: #25D366; 
-            background-image: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%) !important; 
-        }
-        .btn-sector { 
-            background-color: #3498db; 
-            background-image: none !important;
-            display: none; 
-        } 
-        
+        .btn-reserve { background-color: #e67e22; background-image: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important; }
+        .btn-whatsapp { background-color: #25D366; background-image: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%) !important; }
+        .btn-sector { background-color: #3498db; background-image: none !important; display: none; } 
         .btn-reserve:hover, .btn-whatsapp:hover, .btn-sector:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
         footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
         .footer-logo-img { width: 180px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
-        /* FOOTER SOCIAL LINKS */
         .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; position: relative; z-index: 5; }
-        .social-links a { 
-            width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; color: white !important; 
-            text-decoration: none; cursor: pointer; pointer-events: auto; /* Garante clique */
-        }
-
-        /* SCROLLBAR DESKTOP */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; text-decoration: none; cursor: pointer; pointer-events: auto; }
 
         /* SKELETON */
         .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shimmer linear infinite; border-radius: 5px; }
         @keyframes shimmer { to { background-position-x: -200%; } }
         .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; padding:15px; gap:10px; }
         .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
-
-        .app-bottom-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000; justify-content: space-around; align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom));
-        }
-        .app-nav-item {
-            display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; width: 25%; transition: color 0.3s ease;
-        }
-        .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
-        .app-nav-item.active { color: var(--primary); }
 
         /* MOBILE ADJUSTS */
         @media (max-width: 768px) {
@@ -262,7 +220,6 @@
             .fixed-spider { display: none; }
             .app-bottom-nav { display: flex; }
             
-            /* HEADER MENOR */
             header { height: 60px; } 
             .header-brand { font-size: 1.2rem; }
             .menu-toggle { font-size: 1.4rem; }
@@ -270,13 +227,12 @@
             .container { width: 100%; max-width: 100%; padding: 0; }
             .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
             .section-title h2 { font-size: 2rem; }
-            section { padding: 2.5rem 0; scroll-margin-top: 70px; } /* Ajuste Scroll Mobile */
+            section { padding: 2.5rem 0; scroll-margin-top: 70px; }
             
             .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: flex; align-items: center; }
             .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
             @keyframes slideRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
             
-            /* SCROLLBAR OFF */
             .agenda-grid, .adventures-grid, .photos-grid { display: flex; overflow-x: auto; gap: 1rem; padding: 10px 20px; padding-right: 40px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
             
@@ -711,21 +667,21 @@
             }
         });
 
-        // PAGAMENTO (CORRIGIDO PARA CANCELAR)
+        // PAGAMENTO (BOTÃO ENVIAR CONFIRMAÇÃO)
         btnReserveSpot.addEventListener('click', async () => {
             if(!currentUser) { localStorage.setItem('pendingAgendaId', currentAgendaItem.id); location.href = 'login.html'; return; }
             
+            const price = currentAgendaItem.price || 0;
+            const title = `Reserva: ${currentAgendaItem.title}`;
+            
             Swal.fire({
                 title: 'Confirmar Reserva',
-                html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${currentAgendaItem.price}</b>`,
-                showCancelButton: true, 
-                confirmButtonText: 'Pagar PIX', 
-                cancelButtonText: 'Cancelar', // TRADUZIDO
-                confirmButtonColor: '#E83D8A'
+                html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${price}</b>`,
+                showCancelButton: true, confirmButtonText: 'Pagar PIX', confirmButtonColor: '#E83D8A', cancelButtonText: 'Cancelar'
             }).then(async (res) => {
                 if(res.isConfirmed) {
-                    const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: currentAgendaItem.price }]).select().single();
-                    processPayment(booking.id, currentAgendaItem.price, `Reserva: ${currentAgendaItem.title}`);
+                    const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: price }]).select().single();
+                    processPayment(booking.id, price, title);
                 }
             });
         });
@@ -735,7 +691,7 @@
             try {
                 const res = await fetch("https://api.aranhasdorapel.com.br/webhook/gerar-pix", {
                     method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ transaction_amount: parseFloat(amount), description: desc, payer: { email: currentUser.email, first_name: "Cliente" } })
+                    body: JSON.stringify({ transaction_amount: parseFloat(amount), description: desc, payer: { email: currentUser.email, first_name: "Cliente", identification: { type: "CPF", number: "19119119100" } } })
                 });
                 const data = await res.json();
                 if(data.point_of_interaction) {
@@ -747,8 +703,13 @@
                         html: `<img src="data:image/png;base64,${b64}" style="width:200px;display:block;margin:auto"><textarea id="pix" style="width:100%;margin-top:10px" readonly>${qr}</textarea><button onclick="document.getElementById('pix').select();document.execCommand('copy');" class="swal2-confirm swal2-styled" style="background:#25D366;margin-top:10px">Copiar Código</button>`,
                         showCancelButton: true,
                         cancelButtonText: 'Fechar',
-                        showConfirmButton: false
-                    }).then(() => window.open(`https://wa.me/${whatsappNumber}?text=Paguei a reserva ${desc}`, '_blank'));
+                        confirmButtonText: '<i class="fab fa-whatsapp"></i> Enviar Comprovante',
+                        confirmButtonColor: '#25D366'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open(`https://wa.me/${whatsappNumber}?text=Olá! Acabei de pagar a reserva: ${desc}`, '_blank');
+                        }
+                    });
                 } else throw new Error();
             } catch { Swal.fire('Erro', 'Tente novamente.', 'error'); }
         }
