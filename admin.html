@@ -10,44 +10,80 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #E83D8A; --secondary: #0055A4; --light: #FDF2F8; --white: #ffffff; --dark: #1A202C; --danger: #e53e3e; --success: #27ae60; --radius: 12px; }
+        :root {
+            --primary: #E83D8A;
+            --secondary: #0055A4;
+            --light: #FDF2F8;
+            --white: #ffffff;
+            --dark: #1A202C;
+            --danger: #e53e3e;
+            --success: #27ae60;
+            --radius: 12px;
+        }
+
         body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding-bottom: 80px; }
         .container { width: 95%; max-width: 1200px; margin: 2rem auto; }
         
-        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        button.danger { background: var(--danger); } button.secondary { background: var(--secondary); } button.success { background: var(--success); }
+        h1, h2, h3 { color: var(--secondary); margin-bottom: 1rem; }
         
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0 16px 0; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-        form { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid var(--primary); margin-bottom: 2rem; }
+        button { 
+            background: var(--primary); color: white; border: none; padding: 10px 20px; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; 
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button.danger { background: var(--danger); }
+        button.secondary { background: var(--secondary); }
+        button.success { background: var(--success); }
+        button.outline { background: transparent; border: 2px solid #ccc; color: #666; }
+
+        input, textarea, select {
+            width: 100%; padding: 12px; margin: 8px 0 16px 0;
+            border: 1px solid #ddd; border-radius: 8px;
+            background: #fafafa; box-sizing: border-box;
+        }
+        
+        form { background: var(--white); padding: 2rem; border-radius: var(--radius); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); margin-bottom: 2rem; }
         label { font-weight: 600; display: block; color: var(--secondary); font-size: 0.9rem; margin-top: 0.5rem;}
         
+        /* UPLOAD VISUAL */
         .upload-group { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; margin-top: 5px; }
         .status-indicator { flex: 1; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; background: #f1f5f9; border: 1px dashed #cbd5e1; color: #64748b; }
         .status-indicator.success { background: #dcfce7; border-color: var(--success); color: var(--success); font-weight: bold; }
-        .file-label { background: var(--secondary); color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .file-label { background: var(--secondary); color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: bold; white-space: nowrap; }
         input[type="file"] { display: none; }
 
+        /* LISTAS E LAYOUT */
         .admin-layout { display: none; }
-        .auth-screen { text-align: center; padding: 3rem; background: var(--white); border-radius: var(--radius); max-width: 400px; margin: 5rem auto; border-top: 5px solid var(--primary); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 2rem; border-radius: var(--radius); margin-bottom: 2rem; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+        .auth-screen { text-align: center; padding: 3rem; background: var(--white); border-radius: var(--radius); max-width: 400px; margin: 5rem auto; border-top: 5px solid var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* BADGE MANAGER STYLE */
-        .badge-preview { width: 100px; height: 100px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; margin: 10px auto; border-radius: 12px; background: #eee; }
-        .badge-preview img { width: 100%; height: 100%; object-fit: contain; }
-
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 2rem; border-radius: var(--radius); margin-bottom: 2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; margin-bottom: 3rem; }
+        .admin-list { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
         .item { background: #fff; border-bottom: 1px solid #eee; padding: 1rem 0; display: flex; justify-content: space-between; align-items: center; }
+        .item:last-child { border-bottom: none; }
         .item-info { display: flex; align-items: center; gap: 1rem; }
-        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
-        .code-box { background: #2d3748; color: #48bb78; font-family: monospace; font-size: 1.5rem; padding: 15px; border-radius: 8px; text-align: center; display: none; margin-top:10px; }
+        .item-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; cursor: zoom-in; }
+        .item-actions { display: flex; gap: 5px; }
+        
+        /* BADGE PREVIEW */
+        .badge-preview-box { width: 120px; height: 120px; border: 2px dashed #ddd; border-radius: 12px; margin: 10px auto; display: flex; align-items: center; justify-content: center; background: #f9f9f9; }
+        .badge-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        .code-box { background: #2d3748; color: #48bb78; font-family: monospace; font-size: 1.5rem; padding: 15px; border-radius: 8px; text-align: center; display: none; margin-top:10px; border: 2px dashed #48bb78; }
+        .loader { text-align: center; padding: 2rem; color: #888; }
+
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div id="authScreen" class="auth-screen">
-        <h2 style="color:var(--primary)">Admin Acesso</h2>
-        <form id="loginForm" style="box-shadow: none; padding: 0; border: none;">
+        <h2 style="color:var(--primary)">Acesso Restrito</h2>
+        <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Área exclusiva para administradores.</p>
+        <form id="loginForm" style="box-shadow: none; padding: 0; border: none; margin:0;">
             <input type="email" id="loginEmail" placeholder="Email" required>
             <input type="password" id="loginPassword" placeholder="Senha" required>
             <button type="submit" style="width:100%; margin-top:1rem;">Entrar</button>
@@ -56,65 +92,124 @@
 
     <div id="adminLayout" class="admin-layout container">
         <div class="admin-header">
-            <h1><i class="fas fa-spider" style="color:var(--primary)"></i> Painel Admin</h1>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-spider" style="font-size:1.5rem; color:var(--primary);"></i>
+                <h1 style="margin:0; font-size:1.5rem;">Painel Admin</h1>
+            </div>
             <button id="logoutButton" class="danger">Sair</button>
         </div>
 
         <section style="background: #fff0f5; padding: 2rem; border-radius: 12px; border: 2px solid #E83D8A; margin-bottom: 3rem;">
             <h2 style="color:var(--primary); margin-top:0;"><i class="fas fa-medal"></i> Cadastrar Badges Oficiais</h2>
-            <p style="color:#666; font-size:0.9rem;">Vincule um arquivo PNG (Fundo Transparente) para cada setor.</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
-                <form id="badgeForm" style="margin:0; box-shadow:none; border:none; padding:0; background:transparent;">
-                    <label>1. Escolha o Setor (Aventura)</label>
-                    <select id="badgeSectorSelect" onchange="checkExistingBadge()" required>
-                        <option value="">Carregando...</option>
-                    </select>
-
-                    <label>2. Nome do Badge (Opcional - altera o título do setor)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <form id="badgeForm" style="margin:0; padding:0; box-shadow:none; border:none; background:transparent;">
+                    <label>1. Escolha o Setor</label>
+                    <select id="badgeSectorSelect" onchange="checkExistingBadge()" required><option>Carregando...</option></select>
+                    
+                    <label>2. Nome do Badge (Opcional)</label>
                     <input type="text" id="badgeNameInput" placeholder="Ex: Conquistador do Moreno">
 
-                    <label>3. Upload do Arquivo (PNG)</label>
+                    <label>3. Upload do PNG (Fundo Transparente)</label>
                     <div class="upload-group">
                         <input type="hidden" id="badgeImageUrl" required>
-                        <div id="badgeImageStatus" class="status-indicator"><i class="fas fa-image"></i> Aguardando...</div>
-                        <label class="file-label">Escolher PNG <input type="file" accept="image/png" onchange="uploadBadgeFile(this)"></label>
+                        <div id="badgeStatus" class="status-indicator">Aguardando...</div>
+                        <label class="file-label">Upload <input type="file" accept="image/png" onchange="uploadBadge(this)"></label>
                     </div>
-
-                    <button type="submit" class="success" style="width:100%; justify-content:center; margin-top:10px;">
-                        <i class="fas fa-save"></i> Salvar Badge Oficial
-                    </button>
+                    <button type="submit" class="success" style="width:100%; justify-content:center;">Salvar Badge</button>
                 </form>
-
-                <div style="text-align: center; background: white; padding: 20px; border-radius: 12px; border: 1px solid #ddd;">
+                
+                <div style="text-align: center; background: white; padding: 20px; border-radius: 12px;">
                     <label>Pré-visualização</label>
-                    <div class="badge-preview" id="badgePreviewBox">
-                        <span style="color:#ccc; font-size:0.8rem;">Sem imagem</span>
-                    </div>
-                    <p id="badgeCurrentStatus" style="font-size:0.8rem; color:#666;">Selecione um setor para ver o badge atual.</p>
+                    <div class="badge-preview-box" id="badgePreview"><span style="color:#ccc">Selecione um setor</span></div>
+                    <p id="badgeMsg" style="font-size:0.8rem; color:#666;"></p>
                 </div>
             </div>
         </section>
 
-        <hr style="margin: 3rem 0; border:0; border-top:1px dashed #ccc;">
-
         <section>
-            <h2>Mural (Moderação)</h2>
+            <h2><i class="fas fa-images"></i> Moderação do Mural</h2>
             <div class="admin-grid">
                 <div class="admin-list" style="grid-column: 1 / -1;">
-                    <h4 style="color:#e67e22;">⏳ Pendentes</h4>
+                    <h4 style="color:#e67e22; border-bottom:1px solid #eee; padding-bottom:10px;">⏳ Pendentes</h4>
                     <div id="pendingMuralList"></div>
-                    <h4 style="color:var(--success); margin-top:20px;">✅ No Ar</h4>
+                    
+                    <h4 style="color:var(--success); margin-top:30px; border-bottom:1px solid #eee; padding-bottom:10px;">✅ No Ar</h4>
                     <div id="muralList"></div>
                 </div>
             </div>
         </section>
 
-        <section style="margin-top: 3rem;">
-            <h2>Gerar Código de Resgate</h2>
-            <div style="background:white; padding:1.5rem; border-radius:12px; display:flex; gap:10px;">
+        <section id="agendaSection">
+            <h2><i class="fas fa-calendar-alt"></i> Gerenciar Agenda</h2>
+            <div class="admin-grid">
+                <form id="agendaForm">
+                    <h3 id="agendaFormTitle">Novo Evento</h3>
+                    <input type="hidden" id="agendaId">
+                    <input type="text" id="agendaTitle" placeholder="Título do Evento" required>
+                    
+                    <label>Vincular Aventura (Badge)</label>
+                    <select id="agendaAdventureId"><option value="">-- Selecione --</option></select>
+                    
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                        <input type="text" id="agendaDate" placeholder="Data (Ex: 20/10 - 08h)" required>
+                        <input type="number" id="agendaPrice" placeholder="Preço" step="0.01" required>
+                    </div>
+
+                    <div class="upload-group">
+                        <input type="hidden" id="agendaImage" required>
+                        <div id="agendaImgStatus" class="status-indicator">Imagem...</div>
+                        <label class="file-label">Upload <input type="file" onchange="uploadGeneric(this, 'agendaImage', 'agendaImgStatus')"></label>
+                    </div>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button type="submit" style="flex:1;">Salvar</button>
+                        <button type="button" id="cancelAgenda" class="outline" style="display:none;" onclick="resetForm('agenda')">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list"><div id="agendaList"></div></div>
+            </div>
+        </section>
+
+        <section id="aventuraSection">
+            <h2><i class="fas fa-mountain"></i> Gerenciar Aventuras</h2>
+            <div class="admin-grid">
+                <form id="adventureForm">
+                    <h3 id="adventureFormTitle">Nova Aventura</h3>
+                    <input type="hidden" id="adventureId">
+                    <input type="text" id="adventureTitle" placeholder="Título" required>
+                    <input type="text" id="adventureSubtitle" placeholder="Subtítulo">
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <select id="adventureDifficulty">
+                            <option value="facil">Fácil</option>
+                            <option value="medio">Médio</option>
+                            <option value="dificil">Difícil</option>
+                        </select>
+                        <input type="text" id="adventureDuration" placeholder="Duração">
+                    </div>
+                    <textarea id="adventureDescription" rows="3" placeholder="Descrição completa..." required></textarea>
+
+                    <label>Foto de Capa</label>
+                    <div class="upload-group">
+                        <input type="hidden" id="adventureImage" required>
+                        <div id="advImgStatus" class="status-indicator">Capa...</div>
+                        <label class="file-label">Upload <input type="file" onchange="uploadGeneric(this, 'adventureImage', 'advImgStatus')"></label>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button type="submit" style="flex:1;">Salvar</button>
+                        <button type="button" id="cancelAdventure" class="outline" style="display:none;" onclick="resetForm('adventure')">Cancelar</button>
+                    </div>
+                </form>
+                <div class="admin-list"><div id="adventureList"></div></div>
+            </div>
+        </section>
+
+        <section style="background: #e3f2fd; padding: 2rem; border-radius: 12px; margin-top:3rem;">
+            <h2><i class="fas fa-ticket-alt"></i> Gerar Código de Resgate</h2>
+            <div style="display:flex; gap:10px;">
                 <select id="manualBadgeSelect" style="margin:0;"><option>Carregando...</option></select>
-                <button onclick="generateCode()" class="secondary">Gerar Código</button>
+                <button onclick="generateCode()" class="secondary">Gerar</button>
             </div>
             <div id="generatedCodeDisplay" class="code-box"></div>
         </section>
@@ -126,131 +221,272 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- AUTH ---
+        // --- 1. AUTENTICAÇÃO E SEGURANÇA ---
         checkAuth();
-        async function checkAuth() { const {data:{session}} = await supabase.auth.getSession(); if(session){ document.getElementById('authScreen').style.display='none'; document.getElementById('adminLayout').style.display='block'; loadAllData(); } }
-        document.getElementById('loginForm').addEventListener('submit', async(e)=>{ e.preventDefault(); const {error} = await supabase.auth.signInWithPassword({email:document.getElementById('loginEmail').value, password:document.getElementById('loginPassword').value}); if(!error) location.reload(); else alert(error.message); });
-        document.getElementById('logoutButton').addEventListener('click', async()=>{ await supabase.auth.signOut(); location.reload(); });
 
-        async function loadAllData() {
-            loadSectorsForBadges(); // Novo
-            loadMuralData();
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                document.getElementById('authScreen').style.display = 'block';
+                document.getElementById('adminLayout').style.display = 'none';
+                return;
+            }
+
+            // VERIFICAÇÃO DE ADMIN (CHAVE MESTRA)
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', session.user.id)
+                .single();
+
+            if (error || !profile || profile.is_admin !== true) {
+                await supabase.auth.signOut();
+                alert('Acesso Negado: Você não é administrador.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('adminLayout').style.display = 'block';
+            loadAllData();
         }
 
-        // --- NOVO: GERENCIADOR DE BADGES ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.auth.signInWithPassword({
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            });
+            if (!error) location.reload(); else alert(error.message);
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            await supabase.auth.signOut(); location.reload();
+        });
+
+        // --- 2. CARREGAMENTO GERAL ---
         let sectorsData = [];
 
-        async function loadSectorsForBadges() {
+        async function loadAllData() {
+            await loadSectors();
+            loadAgenda();
+            loadMural();
+        }
+
+        async function loadSectors() {
             const { data } = await supabase.from('aventuras').select('*').order('title');
             sectorsData = data || [];
             
             const badgeSel = document.getElementById('badgeSectorSelect');
             const codeSel = document.getElementById('manualBadgeSelect');
-            
-            badgeSel.innerHTML = '<option value="">-- Selecione o Setor --</option>';
+            const agSel = document.getElementById('agendaAdventureId');
+            const list = document.getElementById('adventureList');
+
+            badgeSel.innerHTML = '<option value="">-- Selecione --</option>';
             codeSel.innerHTML = '<option value="">-- Selecione --</option>';
+            agSel.innerHTML = '<option value="">-- Selecione --</option>';
+            list.innerHTML = '';
 
             sectorsData.forEach(s => {
                 const opt = `<option value="${s.id}">${s.title}</option>`;
                 badgeSel.innerHTML += opt;
                 codeSel.innerHTML += opt;
+                agSel.innerHTML += opt;
+
+                // Renderiza Lista de Aventuras
+                list.innerHTML += `
+                    <div class="item">
+                        <div class="item-info">
+                            <img src="${s.image_url}">
+                            <div><strong>${s.title}</strong><br><small>${s.subtitle || ''}</small></div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="secondary" onclick="editAdventure('${s.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="danger" onclick="deleteItem('aventuras','${s.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
             });
         }
 
+        // --- 3. BADGE MANAGER ---
         window.checkExistingBadge = () => {
             const id = document.getElementById('badgeSectorSelect').value;
             const sector = sectorsData.find(s => s.id == id);
-            const preview = document.getElementById('badgePreviewBox');
-            const status = document.getElementById('badgeCurrentStatus');
+            const preview = document.getElementById('badgePreview');
+            const msg = document.getElementById('badgeMsg');
             const nameInput = document.getElementById('badgeNameInput');
 
             if (sector) {
                 nameInput.value = sector.title;
-                if (sector.badge_url) {
+                if(sector.badge_url) {
                     preview.innerHTML = `<img src="${sector.badge_url}">`;
-                    status.innerHTML = '<span style="color:green"><i class="fas fa-check"></i> Este setor já tem um badge oficial.</span>';
+                    msg.innerHTML = '<span style="color:green">Badge Oficial Ativo</span>';
                 } else {
-                    // Se não tiver badge oficial, mostra a capa como fallback ou vazio
                     preview.innerHTML = `<img src="${sector.image_url}" style="opacity:0.3; filter:grayscale(100%)">`;
-                    status.innerHTML = '<span style="color:orange">Usando imagem de capa (Provisório). Suba um PNG!</span>';
+                    msg.innerHTML = '<span style="color:orange">Usando capa (Provisório). Suba um PNG!</span>';
                 }
-            } else {
-                preview.innerHTML = '<span style="color:#ccc">...</span>';
-                status.innerText = 'Selecione um setor.';
             }
         };
 
-        window.uploadBadgeFile = async (input) => {
+        window.uploadBadge = async (input) => {
             const file = input.files[0];
             if (!file) return;
-            
-            const statusEl = document.getElementById('badgeImageStatus');
-            statusEl.innerHTML = 'Enviando...';
-
+            document.getElementById('badgeStatus').innerHTML = 'Enviando...';
             try {
-                // Salva na pasta 'badges' para organizar
-                const fileName = `badges/${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-                const { error } = await supabase.storage.from('imagens').upload(fileName, file); // Usando bucket imagens msm
-                if (error) throw error;
-
+                const fileName = `badges/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+                await supabase.storage.from('imagens').upload(fileName, file);
                 const { data } = supabase.storage.from('imagens').getPublicUrl(fileName);
-                document.getElementById('badgeImageUrl').value = data.publicUrl;
                 
-                // Preview imediato
-                document.getElementById('badgePreviewBox').innerHTML = `<img src="${data.publicUrl}">`;
-                statusEl.innerHTML = '✅ PNG Carregado!';
-                statusEl.classList.add('success');
-
-            } catch (e) {
-                alert('Erro no upload: ' + e.message);
-                statusEl.innerHTML = 'Erro';
-            }
+                document.getElementById('badgeImageUrl').value = data.publicUrl;
+                document.getElementById('badgePreview').innerHTML = `<img src="${data.publicUrl}">`;
+                document.getElementById('badgeStatus').innerHTML = '✅ OK';
+                document.getElementById('badgeStatus').classList.add('success');
+            } catch(e) { alert('Erro: '+e.message); }
         };
 
-        document.getElementById('badgeForm').addEventListener('submit', async (e) => {
+        document.getElementById('badgeForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const id = document.getElementById('badgeSectorSelect').value;
             const url = document.getElementById('badgeImageUrl').value;
-            const name = document.getElementById('badgeNameInput').value;
-
-            if (!id || !url) return alert('Selecione o setor e faça o upload do PNG.');
-
-            const { error } = await supabase.from('aventuras')
-                .update({ badge_url: url, title: name }) // Atualiza URL do badge e Nome
-                .eq('id', id);
-
-            if (error) alert('Erro ao salvar: ' + error.message);
-            else {
-                alert('Badge Oficial atualizado com sucesso!');
-                loadSectorsForBadges(); // Recarrega para atualizar dados locais
-                // Reset visual simples
-                document.getElementById('badgeImageStatus').className = 'status-indicator';
-                document.getElementById('badgeImageStatus').innerHTML = 'Aguardando...';
-            }
+            const title = document.getElementById('badgeNameInput').value;
+            
+            if(!id || !url) return alert('Selecione o setor e suba a imagem.');
+            
+            const { error } = await supabase.from('aventuras').update({badge_url: url, title: title}).eq('id', id);
+            if(!error) { alert('Badge Salvo!'); loadSectors(); } else alert(error.message);
         });
 
-        // --- MURAL ---
-        async function loadMuralData() {
+        // --- 4. MURAL ---
+        async function loadMural() {
             const { data } = await supabase.from('mural').select('*').order('created_at', {ascending:false});
             const p = document.getElementById('pendingMuralList');
             const a = document.getElementById('muralList');
             p.innerHTML=''; a.innerHTML='';
-            if(data) data.forEach(m => {
-                const html = `<div class="item"><div class="item-info"><img src="${m.image_url}" onclick="window.open('${m.image_url}')"><div><strong>${m.author}</strong> - ${m.title}</div></div><div class="item-actions">${m.status==='pending' ? `<button class="success" onclick="updMural('${m.id}','approved')">✔</button><button class="danger" onclick="delMural('${m.id}')">✖</button>` : `<button class="danger" onclick="delMural('${m.id}')">🗑</button>`}</div></div>`;
-                if(m.status==='pending') p.innerHTML+=html; else a.innerHTML+=html;
+            
+            data.forEach(m => {
+                const html = `
+                    <div class="item">
+                        <div class="item-info">
+                            <img src="${m.image_url}" onclick="window.open('${m.image_url}')">
+                            <div><strong>${m.author}</strong> - ${m.title}</div>
+                        </div>
+                        <div class="item-actions">
+                            ${m.status === 'pending' 
+                                ? `<button class="success" onclick="updateMural('${m.id}','approved')"><i class="fas fa-check"></i></button>
+                                   <button class="danger" onclick="deleteItem('mural','${m.id}')"><i class="fas fa-times"></i></button>`
+                                : `<button class="danger" onclick="deleteItem('mural','${m.id}')"><i class="fas fa-trash"></i></button>`
+                            }
+                        </div>
+                    </div>`;
+                if(m.status === 'pending') p.innerHTML += html; else a.innerHTML += html;
             });
+            if(p.innerHTML === '') p.innerHTML = '<p style="color:#aaa">Nada pendente.</p>';
         }
-        window.updMural = async(id,s)=>{ await supabase.from('mural').update({status:s}).eq('id',id); loadMuralData(); };
-        window.delMural = async(id)=>{ if(confirm('Apagar?')) { await supabase.from('mural').delete().eq('id',id); loadMuralData(); } };
+        window.updateMural = async (id, s) => { await supabase.from('mural').update({status:s}).eq('id',id); loadMural(); };
 
-        // --- CÓDIGOS ---
+        // --- 5. AGENDA ---
+        async function loadAgenda() {
+            const { data } = await supabase.from('agenda').select('*').order('display_order');
+            const list = document.getElementById('agendaList'); list.innerHTML='';
+            data.forEach(a => {
+                const el = document.createElement('div'); el.className='item'; el.dataset.id=a.id;
+                el.innerHTML = `<div class="item-info"><i class="fas fa-grip-vertical" style="color:#ccc; cursor:grab; margin-right:10px;"></i><img src="${a.image_url}"><div><strong>${a.title}</strong><br>${a.date_text}</div></div><div class="item-actions"><button class="secondary" onclick="editAgenda('${a.id}')"><i class="fas fa-edit"></i></button><button class="danger" onclick="deleteItem('agenda','${a.id}')"><i class="fas fa-trash"></i></button></div>`;
+                list.appendChild(el);
+            });
+            new Sortable(list, { animation:150, onEnd: async()=>{
+                const updates = Array.from(list.children).map((el, i) => supabase.from('agenda').update({display_order:i}).eq('id', el.dataset.id));
+                await Promise.all(updates);
+            }});
+        }
+
+        // --- 6. UPLOAD GENÉRICO E FORMS ---
+        window.uploadGeneric = async (input, hiddenId, statusId) => {
+            const file = input.files[0]; if(!file) return;
+            document.getElementById(statusId).innerHTML = '...';
+            const name = `admin/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+            await supabase.storage.from('imagens').upload(name, file);
+            const { data } = supabase.storage.from('imagens').getPublicUrl(name);
+            document.getElementById(hiddenId).value = data.publicUrl;
+            document.getElementById(statusId).innerHTML = 'OK!';
+            document.getElementById(statusId).classList.add('success');
+        };
+
+        // AGENDA CRUD
+        document.getElementById('agendaForm').addEventListener('submit', async(e)=>{
+            e.preventDefault();
+            const id = document.getElementById('agendaId').value;
+            const obj = {
+                title: document.getElementById('agendaTitle').value,
+                adventure_id: document.getElementById('agendaAdventureId').value || null,
+                date_text: document.getElementById('agendaDate').value,
+                price: document.getElementById('agendaPrice').value,
+                image_url: document.getElementById('agendaImage').value
+            };
+            if(id) await supabase.from('agenda').update(obj).eq('id',id); else await supabase.from('agenda').insert([obj]);
+            resetForm('agenda'); loadAgenda();
+        });
+
+        // AVENTURA CRUD
+        document.getElementById('adventureForm').addEventListener('submit', async(e)=>{
+            e.preventDefault();
+            const id = document.getElementById('adventureId').value;
+            const obj = {
+                title: document.getElementById('adventureTitle').value,
+                subtitle: document.getElementById('adventureSubtitle').value,
+                difficulty: document.getElementById('adventureDifficulty').value,
+                duration: document.getElementById('adventureDuration').value,
+                description: document.getElementById('adventureDescription').value,
+                image_url: document.getElementById('adventureImage').value
+            };
+            if(id) await supabase.from('aventuras').update(obj).eq('id',id); else await supabase.from('aventuras').insert([obj]);
+            resetForm('adventure'); loadSectors();
+        });
+
+        // UTILS
+        window.deleteItem = async (table, id) => { if(confirm('Excluir?')) { await supabase.from(table).delete().eq('id',id); loadAllData(); } };
+        
+        window.editAgenda = async(id) => {
+            const {data} = await supabase.from('agenda').select('*').eq('id',id).single();
+            fillForm('agenda', data);
+        };
+        window.editAdventure = async(id) => {
+            const {data} = await supabase.from('aventuras').select('*').eq('id',id).single();
+            fillForm('adventure', data);
+        };
+
+        function fillForm(type, data) {
+            document.getElementById(type+'Id').value = data.id;
+            document.getElementById(type+'Title').value = data.title;
+            document.getElementById(type+'Image').value = data.image_url;
+            if(type==='agenda') {
+                document.getElementById('agendaDate').value = data.date_text;
+                document.getElementById('agendaPrice').value = data.price;
+                document.getElementById('agendaAdventureId').value = data.adventure_id || '';
+            } else {
+                document.getElementById('adventureSubtitle').value = data.subtitle;
+                document.getElementById('adventureDifficulty').value = data.difficulty;
+                document.getElementById('adventureDuration').value = data.duration;
+                document.getElementById('adventureDescription').value = data.description;
+            }
+            document.getElementById('cancel'+type.charAt(0).toUpperCase()+type.slice(1)).style.display='inline-block';
+            document.getElementById(type+'FormTitle').innerText = 'Editar';
+        }
+
+        window.resetForm = (type) => {
+            document.getElementById(type+'Form').reset();
+            document.getElementById(type+'Id').value = '';
+            document.getElementById('cancel'+type.charAt(0).toUpperCase()+type.slice(1)).style.display='none';
+            document.getElementById(type+'FormTitle').innerText = 'Novo';
+        };
+
         window.generateCode = async () => {
             const id = document.getElementById('manualBadgeSelect').value;
-            if(!id) return alert('Escolha a aventura');
+            if(!id) return alert('Selecione a aventura');
             const code = `ARANHA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
             await supabase.from('redeem_codes').insert([{code, adventure_id:id}]);
-            const display = document.getElementById('generatedCodeDisplay');
-            display.style.display='block'; display.textContent=code;
+            document.getElementById('generatedCodeDisplay').style.display='block';
+            document.getElementById('generatedCodeDisplay').innerText = code;
         };
 
     </script>
