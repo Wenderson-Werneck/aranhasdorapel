@@ -23,6 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 
     <style>
+        /* --- RESET E VARIÁVEIS --- */
         :root {
             --es-pink: #E83D8A;
             --es-blue: #0055A4;
@@ -36,6 +37,10 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* CORREÇÃO DOS PONTINHOS: Remove estilo de lista de TUDO */
+        ul, li { list-style: none !important; padding: 0; margin: 0; }
+        
         html { scroll-behavior: smooth; }
         
         body { 
@@ -49,7 +54,7 @@
         
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
-        /* HEADER */
+        /* --- HEADER DESKTOP --- */
         header {
             background: var(--primary); position: fixed; width: 100%; top: 0; left: 0; z-index: 1000;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 70px;
@@ -57,8 +62,7 @@
         }
 
         .desktop-nav { display: flex; width: 100%; justify-content: center; align-items: center; }
-        .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0; }
-        .nav-links li { margin: 0 10px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; }
         
         .nav-links .btn-login {
@@ -68,47 +72,22 @@
         }
         .nav-links .btn-login:hover { transform: translateY(-2px); background-color: #fff0f5; }
 
-        /* ARANHA PENDURADA (CORRIGIDA) */
+        /* --- ARANHA PENDURADA --- */
         .fixed-spider {
-            position: fixed;
-            top: 70px; /* Exatamente abaixo do header */
-            left: 20px;
-            width: 70px; /* Tamanho médio ideal */
-            z-index: 900; /* Fica acima do conteúdo mas abaixo de modais */
-            pointer-events: none; /* Não atrapalha cliques no site */
-            /* Animação suave de balanço */
-            animation: swing 4s infinite ease-in-out alternate;
-            transform-origin: top center;
+            position: fixed; top: 70px; left: 20px; width: 60px; z-index: 900;
+            pointer-events: none; animation: swing 4s infinite ease-in-out alternate; transform-origin: top center;
         }
-        
-        /* Fio da teia */
-        .fixed-spider::before {
-            content: '';
-            display: block;
-            width: 1px;
-            height: 60px; /* Comprimento do fio */
-            background: #444; /* Cinza escuro para aparecer no fundo claro */
-            margin: 0 auto;
-        }
-        
-        .fixed-spider img {
-            width: 100%;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
-        }
+        .fixed-spider::before { content: ''; display: block; width: 1px; height: 50px; background: #444; margin: 0 auto; }
+        .fixed-spider img { width: 100%; height: auto; display: block; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
+        @keyframes swing { 0% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
 
-        @keyframes swing {
-            0% { transform: rotate(5deg); }
-            100% { transform: rotate(-5deg); }
-        }
-
-        /* Resto dos estilos mobile/desktop */
+        /* Escondidos no Desktop */
         .mobile-header-content { display: none; }
         .app-bottom-nav { display: none; }
-        .mobile-sidebar { display: none; } 
+        .mobile-sidebar { display: none; }
         .sidebar-overlay { display: none; }
 
+        /* --- CONTEÚDO --- */
         section { padding: 4rem 0; scroll-margin-top: 90px; }
         .section-title { text-align: center; margin-bottom: 3rem; }
         .section-title h2 { font-size: 2.5rem; color: var(--primary); }
@@ -152,7 +131,7 @@
         .modal { 
             display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: hidden; padding: 1rem; 
-            opacity: 0; visibility: hidden; pointer-events: none; 
+            opacity: 0; visibility: hidden; pointer-events: none; /* Corrige bug fantasma */
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .modal.active { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -211,12 +190,15 @@
         .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; padding:15px; gap:10px; }
         .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
 
+        /* --- MOBILE MEDIA QUERY --- */
         @media (max-width: 768px) {
+            /* 1. Reset e Header Mobile */
             .desktop-nav { display: none !important; } 
             .mobile-header-content { display: flex; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
             .header-brand { color: white; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
             .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
+            /* 2. Sidebar Mobile */
             .mobile-sidebar { 
                 display: flex; position: fixed; top: 0; right: -280px; width: 280px; height: 100%; 
                 background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); 
@@ -226,13 +208,25 @@
             .sidebar-overlay { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; }
             .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
+            /* 3. Bottom Nav CORRIGIDA (Layout Bonito) */
             .app-bottom-nav { 
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; justify-content: space-around; 
-                align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+                display: flex !important; /* Força display */
+                position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; 
+                justify-content: space-around; align-items: center; 
+                padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
             }
+            
+            /* ESTILO DOS ITENS DO MENU INFERIOR */
+            .app-nav-item {
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; 
+                width: 25%; transition: color 0.3s ease;
+            }
+            .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+            .app-nav-item.active { color: var(--primary); }
 
-            .fixed-spider { display: none; } /* Esconde aranha no mobile para limpar a tela */
+            .fixed-spider { display: none; } /* Esconde aranha no mobile */
             header { height: 60px; } 
             .container { width: 100%; max-width: 100%; padding: 0; }
             .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
@@ -258,6 +252,17 @@
             .agenda-actions { flex-direction: column; gap: 10px; }
             .btn-whatsapp, .btn-sector, .btn-reserve { width: 100%; font-size: 1rem; }
             #agendaModalImage { max-height: 65vh; } 
+        }
+
+        /* --- CORREÇÃO DE PRINT --- */
+        @media print {
+            body { padding-top: 0; padding-bottom: 0; background: white; color: black; }
+            header, .app-bottom-nav, .fixed-spider, .mobile-sidebar, .sidebar-overlay, .photo-upload, .swipe-hint-text, .close-modal { display: none !important; }
+            .section-title h2 { color: black; }
+            .agenda-grid, .adventures-grid, .photos-grid { display: block; overflow: visible; }
+            .agenda-item, .adventure-card, .photo-item { page-break-inside: avoid; margin-bottom: 20px; border: 1px solid #ccc; box-shadow: none; width: 100%; }
+            .modal { position: relative; opacity: 1; visibility: visible; }
+            .modal-content { max-height: none; overflow: visible; }
         }
     </style>
 </head>
@@ -406,6 +411,7 @@
                     <a href="#" class="btn-modal btn-reserve" id="reserveButton" style="display:none !important;">
                         <i class="fas fa-ticket-alt"></i> Reservar Vaga
                     </a>
+                    
                     <a href="#" class="btn-modal btn-whatsapp" id="whatsappButton" target="_blank">
                         <i class="fab fa-whatsapp"></i> Saiba mais
                     </a>
@@ -631,7 +637,7 @@
                 const dBtn = document.getElementById('desktopLoginBtn'); 
                 const mBtn = document.getElementById('mobileLoginBtn');
                 if(dBtn) { dBtn.href = 'dashboard.html'; dBtn.innerHTML = '<i class="fas fa-user-circle"></i> Minha Conta'; }
-                if(mBtn) { mBtn.href = 'dashboard.html'; mBtn.innerHTML = '<i class="fas fa-user-circle"></i> Painel'; }
+                if(mBtn) { mBtn.href = 'dashboard.html'; mBtn.innerHTML = '<i class="fas fa-user-circle"></i> Fazer Login'; }
             }
         }
 
