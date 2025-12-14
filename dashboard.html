@@ -8,6 +8,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 
     <style>
@@ -130,7 +131,7 @@
             <div class="card" style="background: #e3f2fd; border: 1px dashed #90caf9; padding:15px; margin-bottom:20px;">
                 <h3 style="color:var(--secondary); margin-bottom:10px; font-size:1.1rem;"><i class="fas fa-ticket-alt"></i> Resgatar Código</h3>
                 <div class="redeem-box">
-                    <input type="text" id="redeemCode" placeholder="Cole seu código (Ex: ARANHA-X9)">
+                    <input type="text" id="redeemCode" placeholder="Cole seu código aqui (Ex: ARANHA-X9)">
                     <button onclick="redeemBadge()">OK</button>
                 </div>
             </div>
@@ -226,7 +227,6 @@
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const desktopItems = document.querySelectorAll('.nav-item');
-            // Índices baseados na ordem do HTML
             if(sectionId === 'badges') desktopItems[0].classList.add('active');
             if(sectionId === 'estudio') desktopItems[1].classList.add('active');
             if(sectionId === 'myposts') desktopItems[2].classList.add('active');
@@ -258,26 +258,20 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        // CARREGA DADOS + PREENCHE FORMULÁRIO DE PERFIL
+        // CARREGA DADOS + PREENCHE FORMULÁRIO
         async function loadUserData() {
             document.getElementById('email').value = currentUser.email;
-            
             const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
             
-            // Popula imagens em todos os lugares
             const imgs = [document.getElementById('sidebarAvatar'), document.getElementById('mobileAvatar'), document.getElementById('profilePageAvatar')];
             imgs.forEach(img => { if(img) img.src = avatarUrl; });
 
-            // Busca dados extras
             const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-            
             const name = data?.full_name || currentUser.user_metadata.full_name || 'Aventureiro';
             
-            // Preenche textos de nome
             document.getElementById('sidebarName').textContent = name.split(' ')[0];
             document.getElementById('profilePageName').textContent = name;
 
-            // Preenche Formulário
             if (data) {
                 document.getElementById('fullName').value = data.full_name || '';
                 document.getElementById('nickname').value = data.nickname || '';
@@ -286,7 +280,7 @@
             }
         }
 
-        // OUTRAS FUNÇÕES (Mesma lógica robusta de antes)
+        // OUTRAS FUNÇÕES
         async function loadBookings() {
             const list = document.getElementById('bookingsList');
             const { data } = await supabase.from('bookings').select(`*, agenda (title, date_text, image_url)`).eq('user_id', currentUser.id).order('created_at', { ascending: false });
@@ -338,7 +332,17 @@
             else div.innerHTML='<small>Sem badges.</small>';
         }
         
-        window.addBadge = (url) => { if(badgesOnCanvas.some(b=>b.src===url)) return Swal.fire('Já adicionado','','info'); const i=new Image(); i.onload=()=>{badgesOnCanvas.push(i); draw();}; i.src=url; }
+        // CORREÇÃO: VERIFICAÇÃO DE DUPLICIDADE
+        window.addBadge = (url) => { 
+            if(badgesOnCanvas.some(b => b.originalSrc === url)) {
+                return Swal.fire({ icon: 'info', title: 'Atenção', text: 'Você já adicionou este badge!', confirmButtonColor: '#E83D8A' });
+            }
+            const i = new Image();
+            i.onload = () => { badgesOnCanvas.push(i); draw(); };
+            i.src = url;
+            i.originalSrc = url; // Guarda referência original
+        }
+        
         window.clearBadgesFromCanvas = () => { badgesOnCanvas=[]; draw(); }
         
         function draw() {
@@ -377,6 +381,10 @@
             if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou usado','error');
             await supabase.from('redeem_codes').update({used_by:currentUser.id}).eq('id',c.id);
             await supabase.from('user_badges').upsert({user_id:currentUser.id, adventure_id:c.adventure_id},{onConflict:'user_id,adventure_id'});
+            
+            // EFEITO DE CONFETES AO RESGATAR
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 11000 });
+            
             Swal.fire('Sucesso','Badge liberado!','success'); document.getElementById('redeemCode').value=''; loadBadges();
         }
 
