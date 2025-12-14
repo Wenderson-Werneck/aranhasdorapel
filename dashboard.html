@@ -14,7 +14,7 @@
     <style>
         :root {
             --primary: #E83D8A; --secondary: #0055A4; --light: #FDF2F8; 
-            --dark: #1A202C; --success: #27ae60; --warning: #f1c40f; --sidebar-width: 260px;
+            --dark: #1A202C; --success: #27ae60; --warning: #f1c40f; --sidebar-width: 260px; --insta: #E1306C;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f0f2f5; color: var(--dark); display: flex; min-height: 100vh; }
@@ -40,13 +40,21 @@
 
         .card { background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         
-        /* ESTÚDIO */
+        /* ESTÚDIO E BADGES (ATUALIZADO PARA QUADRADO) */
         .canvas-container { width: 100%; max-width: 100%; margin: 0 auto 20px; border-radius: 12px; overflow: hidden; background: #eee; display: flex; justify-content: center; }
         canvas { width: 100%; height: auto; display: block; }
         .badge-selector { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: thin; }
-        .badge-option { min-width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ddd; cursor: pointer; opacity: 0.6; transition: 0.3s; position: relative; }
-        .badge-option:hover { opacity: 1; transform: scale(1.1); }
-        .badge-option img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        /* Badges quadrados no seletor */
+        .badge-option { min-width: 70px; height: 70px; border-radius: 12px; border: 2px solid #ddd; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; background: #f9f9f9; padding: 5px; }
+        .badge-option:hover { opacity: 1; transform: scale(1.05); border-color: var(--primary); }
+        .badge-option img { width: 100%; height: 100%; object-fit: contain; } /* Contain para não cortar hexágonos */
+
+        /* Botões de Ação do Editor */
+        .editor-actions-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; font-size: 0.9rem; min-width: 120px; }
+        .btn-clear { background: #eee; color: #333; } .btn-clear:hover { background: #ddd; }
+        .btn-download { background: #3498db; color: white; } .btn-download:hover { background: #2980b9; }
+        .btn-insta { background: var(--insta); color: white; } .btn-insta:hover { opacity: 0.9; }
 
         /* MEUS POSTS */
         .my-posts-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
@@ -58,7 +66,7 @@
         .post-actions { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
         .btn-delete { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 0.9rem; font-weight: bold; }
 
-        /* INPUTS */
+        /* INPUTS & FORMS */
         .upload-group { text-align: center; margin-bottom: 20px; border: 2px dashed #ddd; padding: 30px; border-radius: 12px; transition:0.3s; cursor: pointer; }
         .upload-group:hover { border-color: var(--primary); background: #fff0f5; }
         .redeem-box { display: flex; gap: 10px; margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
@@ -73,11 +81,11 @@
         .st-pendente { background: #fff8e1; color: #f57c00; }
         .st-confirmado { background: #e8f5e9; color: #2e7d32; }
         
-        .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; text-align: center; }
-        .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; }
-        .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
-        .badge-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #ddd; object-fit: cover; margin: 0 auto 5px; }
-        .badge-item.unlocked .badge-img { border-color: var(--primary); box-shadow: 0 0 15px rgba(232, 61, 138, 0.2); }
+        /* Badges quadrados no Mural */
+        .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; text-align: center; }
+        .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; padding: 10px; border-radius: 12px; background: white; border: 2px solid transparent;}
+        .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.05); border-color: var(--primary); box-shadow: 0 4px 15px rgba(232, 61, 138, 0.2); }
+        .badge-img { width: 80px; height: 80px; object-fit: contain; margin: 0 auto 5px; display: block; } /* Contain e sem border-radius */
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #555; margin-bottom: 5px; }
@@ -88,7 +96,6 @@
         .btn-save { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; }
 
-        /* PERFIL HEADER */
         .profile-header { text-align: center; margin-bottom: 2rem; }
         .profile-big-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); margin-bottom: 10px; }
 
@@ -101,6 +108,7 @@
             .nav-btn-mobile { border: none; background: none; color: #999; font-size: 0.7rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
             .nav-btn-mobile i { font-size: 1.4rem; margin-bottom: 4px; }
             .nav-btn-mobile.active { color: var(--primary); }
+            .editor-actions-row { flex-direction: column; } /* Botões empilhados no mobile */
         }
         @media (min-width: 769px) { .bottom-nav { display: none; } }
     </style>
@@ -151,19 +159,24 @@
                 <div id="editorArea" style="display: none;">
                     <div class="canvas-container"><canvas id="photoCanvas"></canvas></div>
 
-                    <h4 style="margin-bottom: 10px; color: var(--secondary);">1. Adicionar Badges:</h4>
+                    <h4 style="margin-bottom: 10px; color: var(--secondary);">1. Adicione seus Badges:</h4>
                     <div class="badge-selector" id="badgeSelector"></div>
-                    <button onclick="clearBadgesFromCanvas()" style="background:#ddd; border:none; padding:5px 10px; border-radius:5px; margin-top:5px; cursor:pointer;">Limpar Badges</button>
+                    
+                    <div class="editor-actions-row">
+                         <button onclick="clearBadgesFromCanvas()" class="btn-action btn-clear"><i class="fas fa-eraser"></i> Limpar</button>
+                         <button onclick="downloadImage()" class="btn-action btn-download"><i class="fas fa-download"></i> Baixar Foto</button>
+                         <button onclick="shareToInstagram()" class="btn-action btn-insta"><i class="fab fa-instagram"></i> Instagram</button>
+                    </div>
 
-                    <div style="margin-top: 20px;">
-                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Onde foi?</h4>
-                        <div class="form-group"><select id="postAdventureId"><option value="">Carregando locais...</option></select></div>
-                        <div class="form-group"><textarea id="postQuote" rows="3" placeholder="Legenda..." maxlength="100"></textarea></div>
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Detalhes do Post:</h4>
+                        <div class="form-group"><select id="postAdventureId"><option value="">Onde foi essa aventura?</option></select></div>
+                        <div class="form-group"><textarea id="postQuote" rows="3" placeholder="Escreva uma legenda épica..." maxlength="150"></textarea></div>
                     </div>
 
                     <div style="display:flex; gap:10px; margin-top:20px;">
                         <button onclick="resetEditor()" class="btn-save" style="background:#ddd; color:#555; flex:1;">Cancelar</button>
-                        <button onclick="submitPost()" class="btn-save" style="flex:2;"><i class="fas fa-paper-plane"></i> Enviar</button>
+                        <button onclick="submitPost()" class="btn-save" style="flex:2;"><i class="fas fa-paper-plane"></i> Enviar para o Site</button>
                     </div>
                 </div>
             </div>
@@ -258,7 +271,7 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        // CARREGA DADOS + PREENCHE FORMULÁRIO
+        // CARREGA DADOS
         async function loadUserData() {
             document.getElementById('email').value = currentUser.email;
             const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
@@ -329,18 +342,18 @@
             const { data: userBadges } = await supabase.from('user_badges').select('aventuras(image_url)').eq('user_id', currentUser.id);
             const div = document.getElementById('badgeSelector'); div.innerHTML='';
             if(userBadges && userBadges.length>0) userBadges.forEach(b => div.innerHTML += `<div class="badge-option" onclick="addBadge('${b.aventuras.image_url}')"><img src="${b.aventuras.image_url}"></div>`);
-            else div.innerHTML='<small>Sem badges.</small>';
+            else div.innerHTML='<small style="color:#777;">Você ainda não tem badges liberados.</small>';
         }
         
-        // CORREÇÃO: VERIFICAÇÃO DE DUPLICIDADE
+        // TRAVA DE DUPLICIDADE
         window.addBadge = (url) => { 
             if(badgesOnCanvas.some(b => b.originalSrc === url)) {
-                return Swal.fire({ icon: 'info', title: 'Atenção', text: 'Você já adicionou este badge!', confirmButtonColor: '#E83D8A' });
+                return Swal.fire({ icon: 'info', title: 'Badge já adicionado', text: 'Este badge já está na sua foto.', confirmButtonColor: '#E83D8A' });
             }
             const i = new Image();
             i.onload = () => { badgesOnCanvas.push(i); draw(); };
             i.src = url;
-            i.originalSrc = url; // Guarda referência original
+            i.originalSrc = url;
         }
         
         window.clearBadgesFromCanvas = () => { badgesOnCanvas=[]; draw(); }
@@ -348,20 +361,72 @@
         function draw() {
             if(!currentImage) return;
             ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(currentImage,0,0,canvas.width,canvas.height);
-            const size=canvas.width*0.15; const pad=40; const startX=canvas.width-size-pad; const y=canvas.height-size-pad;
-            badgesOnCanvas.forEach((b,i) => { const x=startX-(i*(size+10)); if(x>0){ ctx.shadowColor="rgba(0,0,0,0.5)"; ctx.shadowBlur=10; ctx.drawImage(b,x,y,size,size); ctx.shadowBlur=0; } });
+            // Badges menores no canto inferior direito, alinhados horizontalmente
+            const size=canvas.width*0.12; 
+            const padding=30; 
+            const startY=canvas.height-size-padding;
+            let currentX = canvas.width - padding - size;
+
+            // Desenha de trás para frente para o último adicionado ficar mais à direita
+            [...badgesOnCanvas].reverse().forEach((b) => {
+                if(currentX > 0) {
+                    ctx.shadowColor="rgba(0,0,0,0.3)"; ctx.shadowBlur=8; ctx.shadowOffsetY=4;
+                    ctx.drawImage(b, currentX, startY, size, size);
+                    ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+                    currentX -= (size + 15); // Espaço entre badges
+                }
+            });
+        }
+
+        // NOVA FUNÇÃO: BAIXAR IMAGEM
+        window.downloadImage = () => {
+            if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem para baixar', 'warning');
+            const link = document.createElement('a');
+            link.download = `aranhas-aventura-${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95); // Alta qualidade JPG
+            link.click();
+        }
+
+        // NOVA FUNÇÃO: COMPARTILHAR INSTAGRAM (Fluxo Mobile)
+        window.shareToInstagram = () => {
+            if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem para compartilhar', 'warning');
+            
+            // Detecção simples de mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) {
+                return Swal.fire({ title: 'Atenção', text: 'O compartilhamento direto funciona melhor no celular. No computador, use o botão "Baixar" e poste manualmente.', icon: 'info', confirmButtonColor: '#E83D8A' });
+            }
+
+            // 1. Baixa a imagem
+            downloadImage();
+
+            // 2. Orienta o usuário
+            Swal.fire({
+                title: 'Imagem Salva na Galeria!',
+                html: 'A foto foi salva no seu celular.<br><br><b>Abra o Instagram e selecione a foto na sua biblioteca para postar.</b>',
+                icon: 'success',
+                confirmButtonText: '<i class="fab fa-instagram"></i> Abrir Instagram',
+                confirmButtonColor: '#E1306C', // Cor do Instagram
+                showCancelButton: true,
+                cancelButtonText: 'Fechar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tenta abrir o app (deep link genérico)
+                    window.location.href = 'instagram://app';
+                }
+            });
         }
 
         window.submitPost = async () => {
             const title = document.getElementById('postAdventureId').value; const quote = document.getElementById('postQuote').value;
-            if(!title || !quote) return Swal.fire('Ops','Preencha tudo','warning');
+            if(!title || !quote) return Swal.fire('Ops','Preencha o local e a legenda','warning');
             Swal.fire({title:'Enviando...', didOpen:()=>Swal.showLoading()});
             canvas.toBlob(async (blob) => {
                 const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
                 await supabase.storage.from('imagens').upload(fileName, blob);
                 const {data:{publicUrl}} = supabase.storage.from('imagens').getPublicUrl(fileName);
                 await supabase.from('mural').insert([{ user_id:currentUser.id, title, quote, author:currentUser.user_metadata.full_name||'Aventureiro', image_url:publicUrl, status:'pending' }]);
-                Swal.fire('Sucesso','Enviado para análise','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
+                Swal.fire('Sucesso','Enviado para análise. Assim que aprovado, aparecerá no site!','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
             }, 'image/jpeg', 0.9);
         }
         window.resetEditor = () => { currentImage=null; badgesOnCanvas=[]; document.getElementById('uploadStep').style.display='block'; document.getElementById('editorArea').style.display='none'; }
@@ -378,21 +443,21 @@
             const code = document.getElementById('redeemCode').value.trim().toUpperCase();
             if(!code) return;
             const { data: c } = await supabase.from('redeem_codes').select('*').eq('code', code).single();
-            if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou usado','error');
+            if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou já utilizado.','error');
             await supabase.from('redeem_codes').update({used_by:currentUser.id}).eq('id',c.id);
             await supabase.from('user_badges').upsert({user_id:currentUser.id, adventure_id:c.adventure_id},{onConflict:'user_id,adventure_id'});
             
-            // EFEITO DE CONFETES AO RESGATAR
+            // EFEITO DE CONFETES
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 11000 });
             
-            Swal.fire('Sucesso','Badge liberado!','success'); document.getElementById('redeemCode').value=''; loadBadges();
+            Swal.fire('Parabéns!','Nova conquista desbloqueada!','success'); document.getElementById('redeemCode').value=''; loadBadges();
         }
 
         document.getElementById('profileForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
             const updates = { id:currentUser.id, full_name:document.getElementById('fullName').value, nickname:document.getElementById('nickname').value, cpf:document.getElementById('cpf').value, phone:document.getElementById('phone').value, updated_at:new Date() };
             await supabase.from('profiles').upsert(updates);
-            Swal.fire('Salvo','','success');
+            Swal.fire('Dados Salvos','Seu perfil foi atualizado.','success');
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async()=>{ await supabase.auth.signOut(); location.href='index.html'; });
