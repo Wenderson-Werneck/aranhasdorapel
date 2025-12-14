@@ -57,43 +57,59 @@
         }
 
         .desktop-nav { display: flex; width: 100%; justify-content: center; align-items: center; }
-        .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; }
+        .nav-links { display: flex; list-style: none; gap: 20px; align-items: center; margin: 0; padding: 0; }
+        .nav-links li { margin: 0 10px; }
         .nav-links a { color: white; text-decoration: none; font-weight: 600; font-size: 1.0rem; }
+        
         .nav-links .btn-login {
-            background-color: white; color: var(--primary) !important; padding: 0.5rem 1.5rem !important;
+            background-color: white; color: var(--primary) !important; padding: 0.6rem 1.5rem !important;
             border-radius: 50px; transition: transform 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: inline-flex; align-items: center; gap: 8px; 
         }
         .nav-links .btn-login:hover { transform: translateY(-2px); background-color: #fff0f5; }
 
-        .mobile-header-content { display: none; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
-        .header-brand { color: white; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-        .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
-
-        .mobile-sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: right 0.3s ease-out; display: flex; flex-direction: column; }
-        .mobile-sidebar.active { right: 0; }
-        .sidebar-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 70px; }
-        .close-sidebar { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
-        .sidebar-content { padding: 1.5rem; overflow-y: auto; }
-        .sidebar-login-area { text-align: center; margin-bottom: 1.5rem; }
-        .btn-login-mobile { 
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-            background: var(--primary); color: white; padding: 0.8rem; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: var(--shadow-lg); 
+        /* ARANHA PENDURADA (CORRIGIDA) */
+        .fixed-spider {
+            position: fixed;
+            top: 70px; /* Exatamente abaixo do header */
+            left: 20px;
+            width: 70px; /* Tamanho médio ideal */
+            z-index: 900; /* Fica acima do conteúdo mas abaixo de modais */
+            pointer-events: none; /* Não atrapalha cliques no site */
+            /* Animação suave de balanço */
+            animation: swing 4s infinite ease-in-out alternate;
+            transform-origin: top center;
         }
-        .sidebar-links { list-style: none; }
-        .sidebar-links li { margin-bottom: 1.2rem; }
-        .sidebar-links a { text-decoration: none; color: var(--dark); font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; }
-        .sidebar-links a i { width: 30px; color: var(--primary); text-align: center; margin-right: 10px; }
-        .badge-new { background: var(--success); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; text-transform: uppercase; }
         
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
-        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        /* Fio da teia */
+        .fixed-spider::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 60px; /* Comprimento do fio */
+            background: #444; /* Cinza escuro para aparecer no fundo claro */
+            margin: 0 auto;
+        }
         
-        .fixed-spider { position: fixed; top: -25px; left: 20px; width: 80px; z-index: 999; pointer-events: none; transition: top 0.3s; }
-        .fixed-spider::before { content: ''; display: block; width: 2px; height: 80px; background: rgba(255, 255, 255, 0.5); margin: 0 auto; }
-        .fixed-spider img { width: 100%; height: auto; }
+        .fixed-spider img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        }
 
-        section { padding: 3rem 0; scroll-margin-top: 80px; }
+        @keyframes swing {
+            0% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
+        }
+
+        /* Resto dos estilos mobile/desktop */
+        .mobile-header-content { display: none; }
+        .app-bottom-nav { display: none; }
+        .mobile-sidebar { display: none; } 
+        .sidebar-overlay { display: none; }
+
+        section { padding: 4rem 0; scroll-margin-top: 90px; }
         .section-title { text-align: center; margin-bottom: 3rem; }
         .section-title h2 { font-size: 2.5rem; color: var(--primary); }
         .section-title p { color: var(--dark); opacity: 0.8; }
@@ -102,7 +118,6 @@
         .adventures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
         .agenda-grid, .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2.5rem; }
         
-        /* CARD ORIGINAL */
         .agenda-item, .adventure-card, .photo-item {
             border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); 
             background: var(--es-white); cursor: pointer; position: relative;
@@ -115,49 +130,35 @@
         .card-image { height: 280px; overflow: hidden; }
         .card-image img { height: 100%; transition: transform 0.4s; }
         .adventure-card:hover .card-image img { transform: scale(1.1); }
-        
         .photo-item .client-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
 
         .agenda-content, .card-content, .photo-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
         .agenda-content { text-align: center; }
         .agenda-content h4, .photo-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
-        
         .card-content h3 { color: var(--primary); margin-bottom: 0.2rem; font-size: 1.3rem; text-align: left; }
         
         .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #eee; margin-top: auto; }
-        
         .difficulty { padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; white-space: nowrap; }
         .difficulty.facil { background: #e8f5e9; color: var(--success); }
         .difficulty.medio { background: #fff3e0; color: #ff9800; }
         .difficulty.dificil { background: #ffebee; color: #f44336; }
         
         .photo-upload { text-align: center; margin-top: 2rem; }
-        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); transition:0.3s; }
-        .btn-upload:hover { transform: translateY(-2px); }
+        .btn-upload { display: inline-flex; gap: 8px; align-items: center; background: var(--primary); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: var(--shadow-lg); }
+        
+        .swal2-container { z-index: 10000 !important; }
 
-        /* MODAL E CORREÇÃO DO BUG INVISÍVEL */
+        /* MODAL */
         .modal { 
             display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: hidden; padding: 1rem; 
-            
-            /* ESTADOS DE VISIBILIDADE */
-            opacity: 0; 
-            visibility: hidden; 
-            pointer-events: none; /* CRÍTICO: ISSO IMPEDE O BLOQUEIO QUANDO INVISÍVEL */
-            
+            opacity: 0; visibility: hidden; pointer-events: none; 
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        
-        .modal.active { 
-            opacity: 1; 
-            visibility: visible; 
-            pointer-events: auto; /* Reativa os cliques quando visível */
-        }
-
+        .modal.active { opacity: 1; visibility: visible; pointer-events: auto; }
         .modal-content { 
             background: white; margin: auto; border-radius: 20px; width: 100%; max-width: 1000px; 
-            max-height: 90vh; overflow-y: auto; 
-            transform: scale(0.98); transition: transform 0.3s ease-out; 
+            max-height: 90vh; overflow-y: auto; transform: scale(0.98); transition: transform 0.3s ease-out; 
         }
         .modal.active .modal-content { transform: scale(1); }
         .close-modal { 
@@ -187,7 +188,6 @@
         #agendaModalImage { width: 100%; height: auto; max-width: 550px; max-height: 75vh; object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-lg); display: block; margin: 0 auto; }
         .agenda-actions { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; margin-top: 15px; width: 100%; flex-wrap: wrap; }
         
-        /* BOTÕES MODAL CORRIGIDOS */
         .modal-buttons-row { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
         .btn-modal { 
             display: flex; align-items: center; justify-content: center; 
@@ -200,34 +200,44 @@
         .btn-reserve { background-color: #e67e22; background-image: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important; }
         .btn-whatsapp { background-color: #25D366; background-image: linear-gradient(135deg, var(--whatsapp) 0%, #128C7E 100%) !important; }
         .btn-sector { background-color: #3498db; background-image: none !important; display: none; } 
-        .btn-reserve:hover, .btn-whatsapp:hover, .btn-sector:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
+        
         footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
         .footer-logo-img { width: 180px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; position: relative; z-index: 5; }
         .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; text-decoration: none; cursor: pointer; pointer-events: auto; }
 
-        /* SKELETON */
         .skeleton { background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shimmer linear infinite; border-radius: 5px; }
         @keyframes shimmer { to { background-position-x: -200%; } }
         .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; padding:15px; gap:10px; }
         .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
 
-        /* MOBILE ADJUSTS */
         @media (max-width: 768px) {
-            .desktop-nav { display: none; } 
-            .mobile-header-content { display: flex; } 
-            .fixed-spider { display: none; }
-            .app-bottom-nav { display: flex; }
-            
-            header { height: 60px; } 
-            .header-brand { font-size: 1.2rem; }
-            .menu-toggle { font-size: 1.4rem; }
+            .desktop-nav { display: none !important; } 
+            .mobile-header-content { display: flex; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
+            .header-brand { color: white; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+            .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
+            .mobile-sidebar { 
+                display: flex; position: fixed; top: 0; right: -280px; width: 280px; height: 100%; 
+                background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); 
+                transition: right 0.3s ease-out; flex-direction: column; 
+            }
+            .mobile-sidebar.active { right: 0; }
+            .sidebar-overlay { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; }
+            .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+            .app-bottom-nav { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; justify-content: space-around; 
+                align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+            }
+
+            .fixed-spider { display: none; } /* Esconde aranha no mobile para limpar a tela */
+            header { height: 60px; } 
             .container { width: 100%; max-width: 100%; padding: 0; }
             .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
             .section-title h2 { font-size: 2rem; }
-            section { padding: 2.5rem 0; scroll-margin-top: 70px; }
+            section { padding: 2.5rem 0; scroll-margin-top: 80px; }
             
             .swipe-hint-text { display: block; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; display: flex; align-items: center; }
             .swipe-hint-text i { margin-left: 5px; animation: slideRight 1.5s infinite; }
@@ -237,7 +247,6 @@
             .agenda-grid::-webkit-scrollbar, .adventures-grid::-webkit-scrollbar, .photos-grid::-webkit-scrollbar { display: none; }
             
             .agenda-item, .adventure-card, .photo-item { min-width: 80vw; width: 80vw; scroll-snap-align: center; margin-bottom: 15px; height: auto; }
-            .agenda-item:hover, .adventure-card:hover, .photo-item:hover { transform: none; }
             .modal { align-items: center; padding: 1rem; }
             .modal-content { border-radius: 20px; min-height: auto; transform: none; margin: 0; max-height: 85vh; overflow-y: auto; }
             .modal.active .modal-content { transform: none; }
@@ -397,7 +406,6 @@
                     <a href="#" class="btn-modal btn-reserve" id="reserveButton" style="display:none !important;">
                         <i class="fas fa-ticket-alt"></i> Reservar Vaga
                     </a>
-                    
                     <a href="#" class="btn-modal btn-whatsapp" id="whatsappButton" target="_blank">
                         <i class="fab fa-whatsapp"></i> Saiba mais
                     </a>
@@ -447,13 +455,12 @@
         const whatsappNumber = '5527995335559';
         const MP_PUBLIC_KEY = 'APP_USR-e0f74881-fec0-4f1a-9aaf-44313bd17b04';
 
-        // Inicialização
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const mp = new MercadoPago(MP_PUBLIC_KEY);
 
         // --- CACHE & SKELETON SETUP ---
         const CACHE_KEY = 'aranhas_data_v1';
-        const CACHE_EXPIRY = 15 * 60 * 1000; // 15 Minutos
+        const CACHE_EXPIRY = 15 * 60 * 1000;
 
         function renderSkeleton(containerId, count) {
             const container = document.getElementById(containerId);
@@ -472,24 +479,20 @@
         }
 
         async function loadDataWithCache() {
-            // 1. Verifica Cache Local
             const cached = localStorage.getItem(CACHE_KEY);
             if (cached) {
                 const { timestamp, data } = JSON.parse(cached);
                 if (Date.now() - timestamp < CACHE_EXPIRY) {
-                    console.log("Usando Cache ⚡");
                     renderAll(data);
                     checkLoginState();
                     return;
                 }
             }
 
-            // 2. Se não tem cache, mostra Skeletons
             renderSkeleton('agendaGrid', 4);
             renderSkeleton('adventuresGrid', 4);
             renderSkeleton('photosGrid', 4);
 
-            // 3. Busca Dados Reais (Paralelo)
             try {
                 const [agendaRes, advRes, muralRes] = await Promise.all([
                     supabase.from('agenda').select('*').order('display_order', { ascending: true }),
@@ -503,7 +506,6 @@
                     mural: muralRes.data || []
                 };
 
-                // 4. Salva no Cache e Renderiza
                 localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: freshData }));
                 renderAll(freshData);
                 checkLoginState();
@@ -513,7 +515,6 @@
             }
         }
 
-        // --- RENDERIZAÇÃO ---
         let allAdventures = [];
         let allAgenda = []; 
         let currentUser = null;
@@ -561,7 +562,6 @@
             });
         }
 
-        // --- FUNÇÕES DE LÓGICA (MODAIS, LOGIN, PAGAMENTO) ---
         const advModal = document.getElementById('adventureModal');
         const agModal = document.getElementById('agendaModal');
         const btnReserveSpot = document.getElementById('btnReserveSpot');
@@ -573,13 +573,11 @@
         document.getElementById('closeModal').onclick = () => closeModal(advModal);
         document.getElementById('closeAgendaModal').onclick = () => closeModal(agModal);
 
-        // ABRE MODAL AGENDA (Com botão "Ver Setor" restaurado)
         function openAgendaModal(item) {
             currentAgendaItem = item;
             document.getElementById('agendaModalImage').src = item.image_url;
             document.getElementById('agendaModalButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Dúvida: '+item.title)}`;
             
-            // Lógica do botão "Ver Setor"
             const related = allAdventures.find(a => a.id === item.adventure_id);
             if(related) {
                 agendaSectorBtn.style.setProperty('display', 'inline-flex', 'important');
@@ -594,18 +592,13 @@
             openModal(agModal);
         }
 
-        // ABRE MODAL AVENTURA (Com botão "Reservar" condicional)
         function openAdventureModal(adv) {
-            // FIX SCROLL
             document.querySelector('#adventureModal .modal-content').scrollTop = 0;
-
             document.getElementById('modalTitle').textContent = adv.title;
-            // Subtítulo removido
             document.getElementById('modalImage').src = adv.image_url;
             document.getElementById('adventureDescription').textContent = adv.description;
             document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
             
-            // LÓGICA INTELIGENTE: Verifica se existe evento na Agenda
             const activeEvent = allAgenda.find(item => item.adventure_id === adv.id);
             const reserveBtn = document.getElementById('reserveButton');
 
@@ -650,7 +643,6 @@
             }
         }
 
-        // REDIRECIONAR FOTO
         document.getElementById('btnSendPhoto').addEventListener('click', async (e) => {
             e.preventDefault();
             if(currentUser) {
@@ -667,21 +659,20 @@
             }
         });
 
-        // PAGAMENTO (BOTÃO ENVIAR CONFIRMAÇÃO)
         btnReserveSpot.addEventListener('click', async () => {
             if(!currentUser) { localStorage.setItem('pendingAgendaId', currentAgendaItem.id); location.href = 'login.html'; return; }
             
-            const price = currentAgendaItem.price || 0;
-            const title = `Reserva: ${currentAgendaItem.title}`;
-            
             Swal.fire({
                 title: 'Confirmar Reserva',
-                html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${price}</b>`,
-                showCancelButton: true, confirmButtonText: 'Pagar PIX', confirmButtonColor: '#E83D8A', cancelButtonText: 'Cancelar'
+                html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${currentAgendaItem.price}</b>`,
+                showCancelButton: true, 
+                confirmButtonText: 'Pagar PIX', 
+                cancelButtonText: 'Cancelar', 
+                confirmButtonColor: '#E83D8A'
             }).then(async (res) => {
                 if(res.isConfirmed) {
-                    const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: price }]).select().single();
-                    processPayment(booking.id, price, title);
+                    const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: currentAgendaItem.price }]).select().single();
+                    processPayment(booking.id, currentAgendaItem.price, `Reserva: ${currentAgendaItem.title}`);
                 }
             });
         });
@@ -703,7 +694,7 @@
                         html: `<img src="data:image/png;base64,${b64}" style="width:200px;display:block;margin:auto"><textarea id="pix" style="width:100%;margin-top:10px" readonly>${qr}</textarea><button onclick="document.getElementById('pix').select();document.execCommand('copy');" class="swal2-confirm swal2-styled" style="background:#25D366;margin-top:10px">Copiar Código</button>`,
                         showCancelButton: true,
                         cancelButtonText: 'Fechar',
-                        confirmButtonText: '<i class="fab fa-whatsapp"></i> Enviar Comprovante',
+                        confirmButtonText: '<i class="fab fa-whatsapp"></i> Enviar Comprovante', 
                         confirmButtonColor: '#25D366'
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -714,7 +705,6 @@
             } catch { Swal.fire('Erro', 'Tente novamente.', 'error'); }
         }
 
-        // SIDEBAR
         const menuBtn = document.getElementById('mobileMenuBtn');
         const closeBtn = document.getElementById('closeSidebarBtn');
         const sidebar = document.getElementById('mobileSidebar');
@@ -724,13 +714,11 @@
         if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         if(overlay) overlay.addEventListener('click', toggleSidebar);
 
-        // LINKS WHATSAPP
         const waLink = `https://wa.me/${whatsappNumber}`;
         document.getElementById('footerWhatsapp').href = waLink;
         document.getElementById('mobileWhatsappBtn').href = waLink;
         document.getElementById('sidebarWhatsapp').href = waLink;
 
-        // INICIAR
         document.addEventListener('DOMContentLoaded', loadDataWithCache);
 
     </script>
