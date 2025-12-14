@@ -40,16 +40,15 @@
 
         .card { background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         
-        /* ESTÚDIO E BADGES (ATUALIZADO PARA QUADRADO) */
+        /* ESTÚDIO */
         .canvas-container { width: 100%; max-width: 100%; margin: 0 auto 20px; border-radius: 12px; overflow: hidden; background: #eee; display: flex; justify-content: center; }
         canvas { width: 100%; height: auto; display: block; }
         .badge-selector { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: thin; }
-        /* Badges quadrados no seletor */
         .badge-option { min-width: 70px; height: 70px; border-radius: 12px; border: 2px solid #ddd; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; background: #f9f9f9; padding: 5px; }
         .badge-option:hover { opacity: 1; transform: scale(1.05); border-color: var(--primary); }
-        .badge-option img { width: 100%; height: 100%; object-fit: contain; } /* Contain para não cortar hexágonos */
+        .badge-option img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Botões de Ação do Editor */
+        /* Editor Actions */
         .editor-actions-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; font-size: 0.9rem; min-width: 120px; }
         .btn-clear { background: #eee; color: #333; } .btn-clear:hover { background: #ddd; }
@@ -66,7 +65,7 @@
         .post-actions { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
         .btn-delete { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 0.9rem; font-weight: bold; }
 
-        /* INPUTS & FORMS */
+        /* INPUTS */
         .upload-group { text-align: center; margin-bottom: 20px; border: 2px dashed #ddd; padding: 30px; border-radius: 12px; transition:0.3s; cursor: pointer; }
         .upload-group:hover { border-color: var(--primary); background: #fff0f5; }
         .redeem-box { display: flex; gap: 10px; margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
@@ -81,11 +80,10 @@
         .st-pendente { background: #fff8e1; color: #f57c00; }
         .st-confirmado { background: #e8f5e9; color: #2e7d32; }
         
-        /* Badges quadrados no Mural */
         .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; text-align: center; }
         .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; padding: 10px; border-radius: 12px; background: white; border: 2px solid transparent;}
         .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.05); border-color: var(--primary); box-shadow: 0 4px 15px rgba(232, 61, 138, 0.2); }
-        .badge-img { width: 80px; height: 80px; object-fit: contain; margin: 0 auto 5px; display: block; } /* Contain e sem border-radius */
+        .badge-img { width: 80px; height: 80px; object-fit: contain; margin: 0 auto 5px; display: block; }
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #555; margin-bottom: 5px; }
@@ -108,7 +106,7 @@
             .nav-btn-mobile { border: none; background: none; color: #999; font-size: 0.7rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
             .nav-btn-mobile i { font-size: 1.4rem; margin-bottom: 4px; }
             .nav-btn-mobile.active { color: var(--primary); }
-            .editor-actions-row { flex-direction: column; } /* Botões empilhados no mobile */
+            .editor-actions-row { flex-direction: column; }
         }
         @media (min-width: 769px) { .bottom-nav { display: none; } }
     </style>
@@ -159,7 +157,7 @@
                 <div id="editorArea" style="display: none;">
                     <div class="canvas-container"><canvas id="photoCanvas"></canvas></div>
 
-                    <h4 style="margin-bottom: 10px; color: var(--secondary);">1. Adicione seus Badges:</h4>
+                    <h4 style="margin-bottom: 10px; color: var(--secondary);">1. Adicionar Badges:</h4>
                     <div class="badge-selector" id="badgeSelector"></div>
                     
                     <div class="editor-actions-row">
@@ -169,14 +167,14 @@
                     </div>
 
                     <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
-                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Detalhes do Post:</h4>
+                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Detalhes:</h4>
                         <div class="form-group"><select id="postAdventureId"><option value="">Onde foi essa aventura?</option></select></div>
                         <div class="form-group"><textarea id="postQuote" rows="3" placeholder="Escreva uma legenda épica..." maxlength="150"></textarea></div>
                     </div>
 
                     <div style="display:flex; gap:10px; margin-top:20px;">
                         <button onclick="resetEditor()" class="btn-save" style="background:#ddd; color:#555; flex:1;">Cancelar</button>
-                        <button onclick="submitPost()" class="btn-save" style="flex:2;"><i class="fas fa-paper-plane"></i> Enviar para o Site</button>
+                        <button onclick="submitPost()" class="btn-save" style="flex:2;"><i class="fas fa-paper-plane"></i> Enviar</button>
                     </div>
                 </div>
             </div>
@@ -233,7 +231,6 @@
         const canvas = document.getElementById('photoCanvas');
         const ctx = canvas.getContext('2d');
 
-        // NAVEGAÇÃO
         window.showSection = (sectionId, mobileBtn) => {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.getElementById('section-' + sectionId).classList.add('active');
@@ -271,13 +268,12 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        // CARREGA DADOS
         async function loadUserData() {
             document.getElementById('email').value = currentUser.email;
             const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
             
             const imgs = [document.getElementById('sidebarAvatar'), document.getElementById('mobileAvatar'), document.getElementById('profilePageAvatar')];
-            imgs.forEach(img => { if(img) img.src = avatarUrl; });
+            imgs.forEach(img => { if(img) { img.src = avatarUrl; img.crossOrigin = "anonymous"; } });
 
             const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
             const name = data?.full_name || currentUser.user_metadata.full_name || 'Aventureiro';
@@ -345,12 +341,13 @@
             else div.innerHTML='<small style="color:#777;">Você ainda não tem badges liberados.</small>';
         }
         
-        // TRAVA DE DUPLICIDADE
+        // ADD BADGE (CORRIGIDO COM CROSSORIGIN)
         window.addBadge = (url) => { 
             if(badgesOnCanvas.some(b => b.originalSrc === url)) {
                 return Swal.fire({ icon: 'info', title: 'Badge já adicionado', text: 'Este badge já está na sua foto.', confirmButtonColor: '#E83D8A' });
             }
             const i = new Image();
+            i.crossOrigin = "anonymous"; // CRUCIAL PARA DOWNLOAD
             i.onload = () => { badgesOnCanvas.push(i); draw(); };
             i.src = url;
             i.originalSrc = url;
@@ -361,57 +358,53 @@
         function draw() {
             if(!currentImage) return;
             ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(currentImage,0,0,canvas.width,canvas.height);
-            // Badges menores no canto inferior direito, alinhados horizontalmente
+            
             const size=canvas.width*0.12; 
             const padding=30; 
             const startY=canvas.height-size-padding;
             let currentX = canvas.width - padding - size;
 
-            // Desenha de trás para frente para o último adicionado ficar mais à direita
             [...badgesOnCanvas].reverse().forEach((b) => {
                 if(currentX > 0) {
                     ctx.shadowColor="rgba(0,0,0,0.3)"; ctx.shadowBlur=8; ctx.shadowOffsetY=4;
                     ctx.drawImage(b, currentX, startY, size, size);
                     ctx.shadowBlur=0; ctx.shadowOffsetY=0;
-                    currentX -= (size + 15); // Espaço entre badges
+                    currentX -= (size + 15);
                 }
             });
         }
 
-        // NOVA FUNÇÃO: BAIXAR IMAGEM
+        // DOWNLOAD FUNCIONAL
         window.downloadImage = () => {
             if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem para baixar', 'warning');
-            const link = document.createElement('a');
-            link.download = `aranhas-aventura-${Date.now()}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.95); // Alta qualidade JPG
-            link.click();
+            try {
+                const link = document.createElement('a');
+                link.download = `aranhas-aventura-${Date.now()}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Erro', 'Não foi possível baixar a imagem. Tente novamente.', 'error');
+            }
         }
 
-        // NOVA FUNÇÃO: COMPARTILHAR INSTAGRAM (Fluxo Mobile)
         window.shareToInstagram = () => {
-            if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem para compartilhar', 'warning');
+            if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem', 'warning');
             
-            // Detecção simples de mobile
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            if (!isMobile) {
-                return Swal.fire({ title: 'Atenção', text: 'O compartilhamento direto funciona melhor no celular. No computador, use o botão "Baixar" e poste manualmente.', icon: 'info', confirmButtonColor: '#E83D8A' });
-            }
+            downloadImage(); // Baixa primeiro
 
-            // 1. Baixa a imagem
-            downloadImage();
-
-            // 2. Orienta o usuário
             Swal.fire({
-                title: 'Imagem Salva na Galeria!',
-                html: 'A foto foi salva no seu celular.<br><br><b>Abra o Instagram e selecione a foto na sua biblioteca para postar.</b>',
+                title: 'Imagem Salva!',
+                html: 'A foto foi salva no seu dispositivo.<br><br><b>Abra o Instagram e escolha ela na galeria para postar.</b>',
                 icon: 'success',
-                confirmButtonText: '<i class="fab fa-instagram"></i> Abrir Instagram',
-                confirmButtonColor: '#E1306C', // Cor do Instagram
+                confirmButtonText: '<i class="fab fa-instagram"></i> Abrir App',
+                confirmButtonColor: '#E1306C',
                 showCancelButton: true,
                 cancelButtonText: 'Fechar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Tenta abrir o app (deep link genérico)
                     window.location.href = 'instagram://app';
                 }
             });
@@ -419,15 +412,20 @@
 
         window.submitPost = async () => {
             const title = document.getElementById('postAdventureId').value; const quote = document.getElementById('postQuote').value;
-            if(!title || !quote) return Swal.fire('Ops','Preencha o local e a legenda','warning');
+            if(!title || !quote) return Swal.fire('Ops','Preencha tudo','warning');
             Swal.fire({title:'Enviando...', didOpen:()=>Swal.showLoading()});
-            canvas.toBlob(async (blob) => {
-                const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
-                await supabase.storage.from('imagens').upload(fileName, blob);
-                const {data:{publicUrl}} = supabase.storage.from('imagens').getPublicUrl(fileName);
-                await supabase.from('mural').insert([{ user_id:currentUser.id, title, quote, author:currentUser.user_metadata.full_name||'Aventureiro', image_url:publicUrl, status:'pending' }]);
-                Swal.fire('Sucesso','Enviado para análise. Assim que aprovado, aparecerá no site!','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
-            }, 'image/jpeg', 0.9);
+            
+            try {
+                canvas.toBlob(async (blob) => {
+                    const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
+                    await supabase.storage.from('imagens').upload(fileName, blob);
+                    const {data:{publicUrl}} = supabase.storage.from('imagens').getPublicUrl(fileName);
+                    await supabase.from('mural').insert([{ user_id:currentUser.id, title, quote, author:currentUser.user_metadata.full_name||'Aventureiro', image_url:publicUrl, status:'pending' }]);
+                    Swal.fire('Sucesso','Enviado para análise','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
+                }, 'image/jpeg', 0.9);
+            } catch(e) {
+                Swal.fire('Erro', 'Falha ao enviar imagem. Tente novamente.', 'error');
+            }
         }
         window.resetEditor = () => { currentImage=null; badgesOnCanvas=[]; document.getElementById('uploadStep').style.display='block'; document.getElementById('editorArea').style.display='none'; }
 
@@ -443,13 +441,10 @@
             const code = document.getElementById('redeemCode').value.trim().toUpperCase();
             if(!code) return;
             const { data: c } = await supabase.from('redeem_codes').select('*').eq('code', code).single();
-            if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou já utilizado.','error');
+            if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou usado','error');
             await supabase.from('redeem_codes').update({used_by:currentUser.id}).eq('id',c.id);
             await supabase.from('user_badges').upsert({user_id:currentUser.id, adventure_id:c.adventure_id},{onConflict:'user_id,adventure_id'});
-            
-            // EFEITO DE CONFETES
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 11000 });
-            
             Swal.fire('Parabéns!','Nova conquista desbloqueada!','success'); document.getElementById('redeemCode').value=''; loadBadges();
         }
 
@@ -457,7 +452,7 @@
             e.preventDefault();
             const updates = { id:currentUser.id, full_name:document.getElementById('fullName').value, nickname:document.getElementById('nickname').value, cpf:document.getElementById('cpf').value, phone:document.getElementById('phone').value, updated_at:new Date() };
             await supabase.from('profiles').upsert(updates);
-            Swal.fire('Dados Salvos','Seu perfil foi atualizado.','success');
+            Swal.fire('Salvo','','success');
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async()=>{ await supabase.auth.signOut(); location.href='index.html'; });
