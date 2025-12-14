@@ -48,7 +48,6 @@
         .badge-option:hover { opacity: 1; transform: scale(1.05); border-color: var(--primary); }
         .badge-option img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Editor Actions */
         .editor-actions-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; font-size: 0.9rem; min-width: 120px; }
         .btn-clear { background: #eee; color: #333; } .btn-clear:hover { background: #ddd; }
@@ -289,7 +288,6 @@
             }
         }
 
-        // OUTRAS FUNÇÕES
         async function loadBookings() {
             const list = document.getElementById('bookingsList');
             const { data } = await supabase.from('bookings').select(`*, agenda (title, date_text, image_url)`).eq('user_id', currentUser.id).order('created_at', { ascending: false });
@@ -313,7 +311,6 @@
         }
         window.deletePost = async (id) => { if(confirm('Apagar?')) { await supabase.from('mural').delete().eq('id',id); loadMyPosts(); } }
 
-        // ESTÚDIO
         async function loadAdventuresForSelect() {
             const { data } = await supabase.from('aventuras').select('title').order('title');
             const sel = document.getElementById('postAdventureId'); sel.innerHTML = '<option value="">Selecione...</option>';
@@ -335,19 +332,24 @@
         }
 
         async function loadUserBadges() {
-            const { data: userBadges } = await supabase.from('user_badges').select('aventuras(image_url)').eq('user_id', currentUser.id);
+            // AQUI ESTÁ A CORREÇÃO PRINCIPAL: Busca badge_url
+            const { data: userBadges } = await supabase.from('user_badges').select('aventuras(image_url, badge_url)').eq('user_id', currentUser.id);
             const div = document.getElementById('badgeSelector'); div.innerHTML='';
-            if(userBadges && userBadges.length>0) userBadges.forEach(b => div.innerHTML += `<div class="badge-option" onclick="addBadge('${b.aventuras.image_url}')"><img src="${b.aventuras.image_url}"></div>`);
-            else div.innerHTML='<small style="color:#777;">Você ainda não tem badges liberados.</small>';
+            if(userBadges && userBadges.length>0) {
+                userBadges.forEach(b => {
+                    // Se tiver badge_url usa, senão usa capa
+                    const imgUrl = b.aventuras.badge_url || b.aventuras.image_url;
+                    div.innerHTML += `<div class="badge-option" onclick="addBadge('${imgUrl}')"><img src="${imgUrl}"></div>`;
+                });
+            } else div.innerHTML='<small style="color:#777;">Você ainda não tem badges liberados.</small>';
         }
         
-        // ADD BADGE (CORRIGIDO COM CROSSORIGIN)
         window.addBadge = (url) => { 
             if(badgesOnCanvas.some(b => b.originalSrc === url)) {
                 return Swal.fire({ icon: 'info', title: 'Badge já adicionado', text: 'Este badge já está na sua foto.', confirmButtonColor: '#E83D8A' });
             }
             const i = new Image();
-            i.crossOrigin = "anonymous"; // CRUCIAL PARA DOWNLOAD
+            i.crossOrigin = "anonymous"; 
             i.onload = () => { badgesOnCanvas.push(i); draw(); };
             i.src = url;
             i.originalSrc = url;
@@ -374,7 +376,6 @@
             });
         }
 
-        // DOWNLOAD FUNCIONAL
         window.downloadImage = () => {
             if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem para baixar', 'warning');
             try {
@@ -386,15 +387,13 @@
                 document.body.removeChild(link);
             } catch (e) {
                 console.error(e);
-                Swal.fire('Erro', 'Não foi possível baixar a imagem. Tente novamente.', 'error');
+                Swal.fire('Erro', 'Não foi possível baixar. Tente usar o botão de envio.', 'error');
             }
         }
 
         window.shareToInstagram = () => {
             if(!currentImage) return Swal.fire('Ops', 'Nenhuma imagem', 'warning');
-            
-            downloadImage(); // Baixa primeiro
-
+            downloadImage();
             Swal.fire({
                 title: 'Imagem Salva!',
                 html: 'A foto foi salva no seu dispositivo.<br><br><b>Abra o Instagram e escolha ela na galeria para postar.</b>',
@@ -414,7 +413,6 @@
             const title = document.getElementById('postAdventureId').value; const quote = document.getElementById('postQuote').value;
             if(!title || !quote) return Swal.fire('Ops','Preencha tudo','warning');
             Swal.fire({title:'Enviando...', didOpen:()=>Swal.showLoading()});
-            
             try {
                 canvas.toBlob(async (blob) => {
                     const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
@@ -423,18 +421,22 @@
                     await supabase.from('mural').insert([{ user_id:currentUser.id, title, quote, author:currentUser.user_metadata.full_name||'Aventureiro', image_url:publicUrl, status:'pending' }]);
                     Swal.fire('Sucesso','Enviado para análise','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
                 }, 'image/jpeg', 0.9);
-            } catch(e) {
-                Swal.fire('Erro', 'Falha ao enviar imagem. Tente novamente.', 'error');
-            }
+            } catch(e) { Swal.fire('Erro', 'Falha ao enviar.', 'error'); }
         }
         window.resetEditor = () => { currentImage=null; badgesOnCanvas=[]; document.getElementById('uploadStep').style.display='block'; document.getElementById('editorArea').style.display='none'; }
 
         async function loadBadges() {
-            const { data: advs } = await supabase.from('aventuras').select('id, title, image_url').order('title');
+            // CORREÇÃO: Busca badge_url
+            const { data: advs } = await supabase.from('aventuras').select('id, title, image_url, badge_url').order('title');
             const { data: ub } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
             const unlocked = new Set(ub ? ub.map(b=>b.adventure_id) : []);
             const g = document.getElementById('badgesGrid'); g.innerHTML='';
-            if(advs) advs.forEach(a => g.innerHTML += `<div class="badge-item ${unlocked.has(a.id)?'unlocked':''}"><img src="${a.image_url}" class="badge-img"><div class="badge-name">${a.title}</div></div>`);
+            
+            if(advs) advs.forEach(a => {
+                // Se tiver badge_url usa, senão usa capa
+                const imgUrl = a.badge_url || a.image_url;
+                g.innerHTML += `<div class="badge-item ${unlocked.has(a.id)?'unlocked':''}"><img src="${imgUrl}" class="badge-img"><div class="badge-name">${a.title}</div></div>`;
+            });
         }
 
         async function redeemBadge() {
