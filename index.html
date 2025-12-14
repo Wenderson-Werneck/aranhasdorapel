@@ -38,7 +38,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* CORREÇÃO DOS PONTINHOS: Remove estilo de lista de TUDO */
+        /* Reset de Lista (Remove pontinhos) */
         ul, li { list-style: none !important; padding: 0; margin: 0; }
         
         html { scroll-behavior: smooth; }
@@ -190,15 +190,14 @@
         .sk-card { height: 380px; width: 100%; border-radius: 12px; background: white; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; padding:15px; gap:10px; }
         .sk-img { height: 250px; width: 100%; } .sk-title { height: 24px; width: 70%; } .sk-text { height: 16px; width: 40%; }
 
-        /* --- MOBILE MEDIA QUERY --- */
+        /* --- MOBILE MEDIA QUERY (Responsividade) --- */
         @media (max-width: 768px) {
-            /* 1. Reset e Header Mobile */
             .desktop-nav { display: none !important; } 
+            
             .mobile-header-content { display: flex; width: 100%; height: 100%; position: relative; justify-content: center; align-items: center; padding: 0 1rem; }
             .header-brand { color: white; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
             .menu-toggle { background: none; border: none; color: white; font-size: 1.6rem; cursor: pointer; padding: 5px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
-            /* 2. Sidebar Mobile */
             .mobile-sidebar { 
                 display: flex; position: fixed; top: 0; right: -280px; width: 280px; height: 100%; 
                 background: white; z-index: 3000; box-shadow: -5px 0 15px rgba(0,0,0,0.2); 
@@ -208,16 +207,12 @@
             .sidebar-overlay { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: 0.3s; }
             .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-            /* 3. Bottom Nav CORRIGIDA (Layout Bonito) */
             .app-bottom-nav { 
-                display: flex !important; /* Força display */
-                position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; 
-                justify-content: space-around; align-items: center; 
-                padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+                display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; justify-content: space-around; 
+                align-items: center; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
             }
             
-            /* ESTILO DOS ITENS DO MENU INFERIOR */
             .app-nav-item {
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 text-decoration: none; color: #888; font-size: 0.75rem; font-weight: 600; 
@@ -226,7 +221,7 @@
             .app-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
             .app-nav-item.active { color: var(--primary); }
 
-            .fixed-spider { display: none; } /* Esconde aranha no mobile */
+            .fixed-spider { display: none; }
             header { height: 60px; } 
             .container { width: 100%; max-width: 100%; padding: 0; }
             .section-title { margin-bottom: 1.5rem; padding: 0 1rem; text-align: left; }
@@ -278,7 +273,7 @@
             <button id="closeSidebarBtn" class="close-sidebar">&times;</button>
         </div>
         <div class="sidebar-content">
-            <div class="sidebar-login-area">
+            <div class="sidebar-login-area" id="sidebarLoginArea">
                 <p>Bem-vindo, aventureiro!</p>
                 <a href="login.html" class="btn-login-mobile" id="mobileLoginBtn">
                     <i class="fas fa-user"></i> Fazer Login
@@ -297,7 +292,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <nav class="app-bottom-nav">
-        <a href="#agenda" class="app-nav-item active">
+        <a href="#agenda" class="app-nav-item">
             <i class="fas fa-calendar-alt"></i>
             <span>Agenda</span>
         </a>
@@ -464,7 +459,6 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const mp = new MercadoPago(MP_PUBLIC_KEY);
 
-        // --- CACHE & SKELETON SETUP ---
         const CACHE_KEY = 'aranhas_data_v1';
         const CACHE_EXPIRY = 15 * 60 * 1000;
 
@@ -472,15 +466,7 @@
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             for(let i=0; i<count; i++) {
-                container.innerHTML += `
-                <div class="sk-card skeleton">
-                    <div class="sk-img skeleton"></div>
-                    <div class="sk-content">
-                        <div class="sk-title skeleton"></div>
-                        <div class="sk-text skeleton"></div>
-                        <div class="sk-price skeleton"></div>
-                    </div>
-                </div>`;
+                container.innerHTML += `<div class="sk-card skeleton"><div class="sk-img skeleton"></div><div class="sk-content"><div class="sk-title skeleton"></div><div class="sk-text skeleton"></div><div class="sk-price skeleton"></div></div></div>`;
             }
         }
 
@@ -494,49 +480,31 @@
                     return;
                 }
             }
-
             renderSkeleton('agendaGrid', 4);
             renderSkeleton('adventuresGrid', 4);
             renderSkeleton('photosGrid', 4);
-
             try {
                 const [agendaRes, advRes, muralRes] = await Promise.all([
                     supabase.from('agenda').select('*').order('display_order', { ascending: true }),
                     supabase.from('aventuras').select('*').order('created_at', { ascending: false }),
                     supabase.from('mural').select('*').eq('status', 'approved').order('created_at', { ascending: false })
                 ]);
-
-                const freshData = {
-                    agenda: agendaRes.data || [],
-                    adventures: advRes.data || [],
-                    mural: muralRes.data || []
-                };
-
+                const freshData = { agenda: agendaRes.data || [], adventures: advRes.data || [], mural: muralRes.data || [] };
                 localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: freshData }));
                 renderAll(freshData);
                 checkLoginState();
-
-            } catch (error) {
-                console.error("Erro ao carregar:", error);
-            }
+            } catch (error) { console.error("Erro:", error); }
         }
 
-        let allAdventures = [];
-        let allAgenda = []; 
-        let currentUser = null;
-        let currentAgendaItem = null;
+        let allAdventures = []; let allAgenda = []; let currentUser = null; let currentAgendaItem = null;
 
         function renderAll(data) {
-            allAdventures = data.adventures;
-            allAgenda = data.agenda; 
-            renderAgenda(data.agenda);
-            renderAdventures(data.adventures);
-            renderMural(data.mural);
+            allAdventures = data.adventures; allAgenda = data.agenda;
+            renderAgenda(data.agenda); renderAdventures(data.adventures); renderMural(data.mural);
         }
 
         function renderAgenda(items) {
-            const grid = document.getElementById('agendaGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('agendaGrid'); grid.innerHTML = '';
             items.forEach(item => {
                 const card = document.createElement('div'); card.className = 'agenda-item';
                 const priceTag = item.price ? `<span style="display:block; color:#27ae60; font-weight:bold; font-size:0.9rem; margin-top:5px;">R$ ${item.price}</span>` : '';
@@ -548,8 +516,7 @@
         }
 
         function renderAdventures(items) {
-            const grid = document.getElementById('adventuresGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('adventuresGrid'); grid.innerHTML = '';
             items.forEach(adv => {
                 const card = document.createElement('div'); card.className = 'adventure-card';
                 card.innerHTML = `<div class="card-image"><img src="${adv.image_url}" loading="lazy"></div><div class="card-content"><h3>${adv.title}</h3><div class="card-meta"><span class="difficulty ${adv.difficulty}">${adv.difficulty}</span><div class="duration"><i class="far fa-clock"></i> ${adv.duration}</div></div></div>`;
@@ -559,8 +526,7 @@
         }
 
         function renderMural(items) {
-            const grid = document.getElementById('photosGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('photosGrid'); grid.innerHTML = '';
             items.forEach(item => {
                 const card = document.createElement('div'); card.className = 'photo-item';
                 card.innerHTML = `<img src="${item.image_url}" class="client-img" loading="lazy"><div class="photo-content"><h4>${item.title}</h4><p>"${item.quote}"</p><small>- ${item.author}</small></div>`;
@@ -583,18 +549,11 @@
             currentAgendaItem = item;
             document.getElementById('agendaModalImage').src = item.image_url;
             document.getElementById('agendaModalButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Dúvida: '+item.title)}`;
-            
             const related = allAdventures.find(a => a.id === item.adventure_id);
             if(related) {
                 agendaSectorBtn.style.setProperty('display', 'inline-flex', 'important');
-                agendaSectorBtn.onclick = (e) => { 
-                    e.preventDefault(); 
-                    closeModal(agModal); 
-                    setTimeout(() => openAdventureModal(related), 100); 
-                };
-            } else {
-                agendaSectorBtn.style.setProperty('display', 'none', 'important');
-            }
+                agendaSectorBtn.onclick = (e) => { e.preventDefault(); closeModal(agModal); setTimeout(() => openAdventureModal(related), 100); };
+            } else { agendaSectorBtn.style.setProperty('display', 'none', 'important'); }
             openModal(agModal);
         }
 
@@ -604,27 +563,16 @@
             document.getElementById('modalImage').src = adv.image_url;
             document.getElementById('adventureDescription').textContent = adv.description;
             document.getElementById('whatsappButton').href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá, tenho dúvidas sobre: '+adv.title)}`;
-            
             const activeEvent = allAgenda.find(item => item.adventure_id === adv.id);
             const reserveBtn = document.getElementById('reserveButton');
-
             if (activeEvent) {
                 reserveBtn.style.setProperty('display', 'inline-flex', 'important');
-                reserveBtn.onclick = (e) => {
-                    e.preventDefault();
-                    closeModal(advModal);
-                    setTimeout(() => openAgendaModal(activeEvent), 100);
-                };
-            } else {
-                reserveBtn.style.setProperty('display', 'none', 'important');
-            }
-
+                reserveBtn.onclick = (e) => { e.preventDefault(); closeModal(advModal); setTimeout(() => openAgendaModal(activeEvent), 100); };
+            } else { reserveBtn.style.setProperty('display', 'none', 'important'); }
             const det = document.getElementById('adventureDetails'); det.innerHTML = '';
             if(adv.details) adv.details.forEach(d => det.innerHTML += `<div class="detail-item"><div class="detail-icon"><i class="${d.icon}"></i></div><div class="detail-text"><h4>${d.label}</h4><p>${d.value}</p></div></div>`);
-            
             const gal = document.getElementById('adventureGallery'); gal.innerHTML = '';
             (adv.gallery_images||[adv.image_url]).forEach(img => gal.innerHTML += `<div class="gallery-item"><img src="${img}"></div>`);
-            
             openModal(advModal);
         }
 
@@ -634,10 +582,23 @@
             if (session) {
                 currentUser = session.user;
                 if(isRedirect && !localStorage.getItem('pendingAgendaId')) { location.href = 'dashboard.html'; return; }
-                const dBtn = document.getElementById('desktopLoginBtn'); 
-                const mBtn = document.getElementById('mobileLoginBtn');
+                const dBtn = document.getElementById('desktopLoginBtn');
                 if(dBtn) { dBtn.href = 'dashboard.html'; dBtn.innerHTML = '<i class="fas fa-user-circle"></i> Minha Conta'; }
-                if(mBtn) { mBtn.href = 'dashboard.html'; mBtn.innerHTML = '<i class="fas fa-user-circle"></i> Fazer Login'; }
+                
+                // ATUALIZAÇÃO DO SIDEBAR COM FOTO (LAYOUT BONITO)
+                const sidebarArea = document.getElementById('sidebarLoginArea');
+                const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
+                const name = currentUser.user_metadata.full_name || 'Aventureiro';
+                
+                sidebarArea.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                        <img src="${avatarUrl}" style="width:70px; height:70px; border-radius:50%; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="text-align:center;">
+                            <strong style="display:block; font-size:1.1rem; color:var(--dark);">${name}</strong>
+                            <a href="dashboard.html" style="color:var(--primary); font-weight:bold; text-decoration:none; font-size:0.9rem;">Acessar Painel <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                `;
             }
         }
 
@@ -651,30 +612,19 @@
 
         document.getElementById('btnSendPhoto').addEventListener('click', async (e) => {
             e.preventDefault();
-            if(currentUser) {
-                window.location.href = 'dashboard.html?section=estudio';
-            } else {
+            if(currentUser) { window.location.href = 'dashboard.html?section=estudio'; } 
+            else {
                 localStorage.setItem('redirectAfterLogin', 'dashboard.html?section=estudio');
-                Swal.fire({
-                    title: 'Faça Login',
-                    text: 'Para postar no mural e ganhar pontos, você precisa entrar na sua conta.',
-                    icon: 'info',
-                    confirmButtonText: 'Entrar Agora',
-                    confirmButtonColor: '#E83D8A'
-                }).then(() => window.location.href = 'login.html');
+                Swal.fire({ title: 'Faça Login', text: 'Para postar no mural e ganhar pontos, você precisa entrar na sua conta.', icon: 'info', confirmButtonText: 'Entrar Agora', confirmButtonColor: '#E83D8A' }).then(() => window.location.href = 'login.html');
             }
         });
 
         btnReserveSpot.addEventListener('click', async () => {
             if(!currentUser) { localStorage.setItem('pendingAgendaId', currentAgendaItem.id); location.href = 'login.html'; return; }
-            
             Swal.fire({
                 title: 'Confirmar Reserva',
                 html: `Evento: <b>${currentAgendaItem.title}</b><br>Valor: <b style="color:#E83D8A">R$ ${currentAgendaItem.price}</b>`,
-                showCancelButton: true, 
-                confirmButtonText: 'Pagar PIX', 
-                cancelButtonText: 'Cancelar', 
-                confirmButtonColor: '#E83D8A'
+                showCancelButton: true, confirmButtonText: 'Pagar PIX', cancelButtonText: 'Cancelar', confirmButtonColor: '#E83D8A'
             }).then(async (res) => {
                 if(res.isConfirmed) {
                     const { data: booking } = await supabase.from('bookings').insert([{ user_id: currentUser.id, agenda_id: currentAgendaItem.id, status: 'pendente', amount: currentAgendaItem.price }]).select().single();
@@ -698,15 +648,8 @@
                     Swal.fire({
                         title: 'Pagamento PIX',
                         html: `<img src="data:image/png;base64,${b64}" style="width:200px;display:block;margin:auto"><textarea id="pix" style="width:100%;margin-top:10px" readonly>${qr}</textarea><button onclick="document.getElementById('pix').select();document.execCommand('copy');" class="swal2-confirm swal2-styled" style="background:#25D366;margin-top:10px">Copiar Código</button>`,
-                        showCancelButton: true,
-                        cancelButtonText: 'Fechar',
-                        confirmButtonText: '<i class="fab fa-whatsapp"></i> Enviar Comprovante', 
-                        confirmButtonColor: '#25D366'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.open(`https://wa.me/${whatsappNumber}?text=Olá! Acabei de pagar a reserva: ${desc}`, '_blank');
-                        }
-                    });
+                        showCancelButton: true, cancelButtonText: 'Fechar', confirmButtonText: '<i class="fab fa-whatsapp"></i> Enviar Comprovante', confirmButtonColor: '#25D366'
+                    }).then((result) => { if (result.isConfirmed) { window.open(`https://wa.me/${whatsappNumber}?text=Olá! Acabei de pagar a reserva: ${desc}`, '_blank'); } });
                 } else throw new Error();
             } catch { Swal.fire('Erro', 'Tente novamente.', 'error'); }
         }
@@ -719,6 +662,27 @@
         if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
         if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         if(overlay) overlay.addEventListener('click', toggleSidebar);
+
+        // --- SCROLL SPY (Ativa botão rosa automaticamente) ---
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.app-nav-item');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= (sectionTop - 150)) { // Offset do header
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').includes(current)) {
+                    item.classList.add('active');
+                }
+            });
+        });
 
         const waLink = `https://wa.me/${whatsappNumber}`;
         document.getElementById('footerWhatsapp').href = waLink;
