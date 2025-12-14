@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Painel | Aranhas do Rapel</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 
     <style>
         :root {
@@ -22,7 +22,7 @@
         .sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--secondary) 0%, #003e7a 100%); color: white; padding: 2rem; position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 100; }
         .brand { font-weight: 800; font-size: 1.2rem; margin-bottom: 3rem; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
         .user-mini-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: white; object-fit: cover; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: white; object-fit: cover; border: 2px solid var(--primary); }
         .nav-menu { list-style: none; flex: 1; }
         .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 10px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; opacity: 0.8; }
         .nav-item:hover, .nav-item.active { opacity: 1; background: var(--primary); }
@@ -47,15 +47,15 @@
         .badge-option:hover { opacity: 1; transform: scale(1.1); }
         .badge-option img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        /* MEUS POSTS (NOVO) */
+        /* MEUS POSTS */
         .my-posts-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
         .post-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; position: relative; }
-        .post-img { width: 100%; height: 300px; object-fit: cover; } /* Mostra mais da imagem */
+        .post-img { width: 100%; height: 300px; object-fit: cover; }
         .post-status { position: absolute; top: 10px; right: 10px; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .status-pending { background: var(--warning); }
+        .status-pending { background: var(--warning); color: #333; }
         .status-approved { background: var(--success); }
         .post-actions { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
-        .btn-delete { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .btn-delete { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 0.9rem; font-weight: bold; }
 
         /* INPUTS */
         .upload-group { text-align: center; margin-bottom: 20px; border: 2px dashed #ddd; padding: 30px; border-radius: 12px; transition:0.3s; cursor: pointer; }
@@ -68,6 +68,9 @@
         .booking-card { background: white; border-radius: 12px; border: 1px solid #eee; overflow: hidden; }
         .booking-img { height: 140px; width: 100%; object-fit: cover; }
         .booking-body { padding: 1.2rem; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .st-pendente { background: #fff8e1; color: #f57c00; }
+        .st-confirmado { background: #e8f5e9; color: #2e7d32; }
         
         .badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; text-align: center; }
         .badge-item { opacity: 0.4; filter: grayscale(100%); transition: 0.4s; }
@@ -83,6 +86,10 @@
         
         .btn-save { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+
+        /* PERFIL HEADER */
+        .profile-header { text-align: center; margin-bottom: 2rem; }
+        .profile-big-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); margin-bottom: 10px; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; } .sidebar { display: none; } .main-content { margin-left: 0; padding: 1.5rem; padding-bottom: 100px; }
@@ -107,7 +114,8 @@
         <ul class="nav-menu">
             <li class="nav-item active" onclick="showSection('badges')"><i class="fas fa-medal"></i> Conquistas</li>
             <li class="nav-item" onclick="showSection('estudio')"><i class="fas fa-camera-retro"></i> Criar Post</li>
-            <li class="nav-item" onclick="showSection('myposts')"><i class="fas fa-images"></i> Meus Posts</li> <li class="nav-item" onclick="showSection('reservas')"><i class="fas fa-ticket-alt"></i> Reservas</li>
+            <li class="nav-item" onclick="showSection('myposts')"><i class="fas fa-images"></i> Meus Posts</li>
+            <li class="nav-item" onclick="showSection('reservas')"><i class="fas fa-ticket-alt"></i> Reservas</li>
             <li class="nav-item" onclick="showSection('perfil')"><i class="fas fa-user-cog"></i> Perfil</li>
             <li class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-home"></i> Voltar</li>
         </ul>
@@ -122,7 +130,7 @@
             <div class="card" style="background: #e3f2fd; border: 1px dashed #90caf9; padding:15px; margin-bottom:20px;">
                 <h3 style="color:var(--secondary); margin-bottom:10px; font-size:1.1rem;"><i class="fas fa-ticket-alt"></i> Resgatar Código</h3>
                 <div class="redeem-box">
-                    <input type="text" id="redeemCode" placeholder="Cole seu código aqui (Ex: ARANHA-X9)">
+                    <input type="text" id="redeemCode" placeholder="Cole seu código (Ex: ARANHA-X9)">
                     <button onclick="redeemBadge()">OK</button>
                 </div>
             </div>
@@ -134,7 +142,7 @@
             <div class="card" style="max-width: 600px; margin: 0 auto;">
                 <div class="upload-group" id="uploadStep" onclick="document.getElementById('photoInput').click()">
                     <i class="fas fa-cloud-upload-alt" style="font-size:3rem; color:#ddd; margin-bottom:15px;"></i>
-                    <p style="color:#666; margin-bottom:15px;">Escolha sua melhor foto (Vertical fica top!)</p>
+                    <p style="color:#666; margin-bottom:15px;">Escolha sua melhor foto</p>
                     <span class="btn-save" style="display: inline-block;"><i class="fas fa-images"></i> Escolher Foto</span>
                     <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="loadCanvas(this)">
                 </div>
@@ -144,11 +152,10 @@
 
                     <h4 style="margin-bottom: 10px; color: var(--secondary);">1. Adicionar Badges:</h4>
                     <div class="badge-selector" id="badgeSelector"></div>
-                    <p style="font-size:0.8rem; color:#888; margin-top:5px;"><i class="fas fa-info-circle"></i> Clique para adicionar. Aparecerá no canto.</p>
                     <button onclick="clearBadgesFromCanvas()" style="background:#ddd; border:none; padding:5px 10px; border-radius:5px; margin-top:5px; cursor:pointer;">Limpar Badges</button>
 
                     <div style="margin-top: 20px;">
-                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Detalhes:</h4>
+                        <h4 style="margin-bottom: 10px; color: var(--secondary);">2. Onde foi?</h4>
                         <div class="form-group"><select id="postAdventureId"><option value="">Carregando locais...</option></select></div>
                         <div class="form-group"><textarea id="postQuote" rows="3" placeholder="Legenda..." maxlength="100"></textarea></div>
                     </div>
@@ -174,9 +181,13 @@
         <div id="section-perfil" class="content-section">
             <h1 class="page-title">Meus Dados</h1>
             <div class="card" style="max-width: 700px;">
+                <div class="profile-header">
+                    <img src="" id="profilePageAvatar" class="profile-big-img">
+                    <h3 id="profilePageName" style="color:var(--secondary)">...</h3>
+                </div>
                 <form id="profileForm">
                     <div class="form-grid">
-                        <div class="form-group"><label>Nome</label><input type="text" id="fullName" required></div>
+                        <div class="form-group"><label>Nome Completo</label><input type="text" id="fullName" required></div>
                         <div class="form-group"><label>Apelido</label><input type="text" id="nickname"></div>
                         <div class="form-group"><label>CPF</label><input type="text" id="cpf" required maxlength="14"></div>
                         <div class="form-group"><label>Celular</label><input type="text" id="phone" maxlength="15"></div>
@@ -208,14 +219,14 @@
         const canvas = document.getElementById('photoCanvas');
         const ctx = canvas.getContext('2d');
 
-        // --- NAVEGAÇÃO ---
+        // NAVEGAÇÃO
         window.showSection = (sectionId, mobileBtn) => {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.getElementById('section-' + sectionId).classList.add('active');
             
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const desktopItems = document.querySelectorAll('.nav-item');
-            // Mapeamento correto dos índices conforme HTML
+            // Índices baseados na ordem do HTML
             if(sectionId === 'badges') desktopItems[0].classList.add('active');
             if(sectionId === 'estudio') desktopItems[1].classList.add('active');
             if(sectionId === 'myposts') desktopItems[2].classList.add('active');
@@ -237,7 +248,7 @@
             await loadBookings();
             await loadBadges();
             await loadAdventuresForSelect();
-            await loadMyPosts(); // Carrega as fotos do usuário
+            await loadMyPosts();
             
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.get('section') === 'estudio') {
@@ -247,204 +258,136 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        // --- CARREGA MEUS POSTS ---
-        async function loadMyPosts() {
-            const { data } = await supabase.from('mural')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
+        // CARREGA DADOS + PREENCHE FORMULÁRIO DE PERFIL
+        async function loadUserData() {
+            document.getElementById('email').value = currentUser.email;
             
-            const list = document.getElementById('myPostsList');
+            const avatarUrl = currentUser.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${currentUser.email}&background=E83D8A&color=fff`;
+            
+            // Popula imagens em todos os lugares
+            const imgs = [document.getElementById('sidebarAvatar'), document.getElementById('mobileAvatar'), document.getElementById('profilePageAvatar')];
+            imgs.forEach(img => { if(img) img.src = avatarUrl; });
+
+            // Busca dados extras
+            const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            
+            const name = data?.full_name || currentUser.user_metadata.full_name || 'Aventureiro';
+            
+            // Preenche textos de nome
+            document.getElementById('sidebarName').textContent = name.split(' ')[0];
+            document.getElementById('profilePageName').textContent = name;
+
+            // Preenche Formulário
+            if (data) {
+                document.getElementById('fullName').value = data.full_name || '';
+                document.getElementById('nickname').value = data.nickname || '';
+                document.getElementById('cpf').value = data.cpf || '';
+                document.getElementById('phone').value = data.phone || ''; 
+            }
+        }
+
+        // OUTRAS FUNÇÕES (Mesma lógica robusta de antes)
+        async function loadBookings() {
+            const list = document.getElementById('bookingsList');
+            const { data } = await supabase.from('bookings').select(`*, agenda (title, date_text, image_url)`).eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            if (!data || data.length === 0) { list.innerHTML = `<div class="card" style="grid-column: 1/-1; text-align:center; padding:3rem;"><p>Sem reservas.</p></div>`; return; }
             list.innerHTML = '';
+            data.forEach(b => {
+                if(!b.agenda) return;
+                const statusMap = { 'pendente': 'st-pendente', 'confirmado': 'st-confirmado', 'pago': 'st-confirmado' };
+                list.innerHTML += `<div class="booking-card"><img src="${b.agenda.image_url}" class="booking-img"><div class="booking-body"><span class="booking-date">${b.agenda.date_text}</span><div class="booking-title">${b.agenda.title}</div><span class="status-badge ${statusMap[b.status]}">${b.status}</span></div></div>`;
+            });
+        }
 
-            if(!data || data.length === 0) {
-                list.innerHTML = '<p style="color:#aaa; grid-column:1/-1; text-align:center;">Você ainda não postou nada.</p>';
-                return;
-            }
-
+        async function loadMyPosts() {
+            const { data } = await supabase.from('mural').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            const list = document.getElementById('myPostsList'); list.innerHTML = '';
+            if(!data || data.length === 0) { list.innerHTML = '<p style="color:#aaa; grid-column:1/-1; text-align:center;">Sem posts ainda.</p>'; return; }
             data.forEach(item => {
-                const statusLabel = item.status === 'approved' 
-                    ? '<span class="post-status status-approved"><i class="fas fa-check"></i> No Ar</span>' 
-                    : '<span class="post-status status-pending"><i class="fas fa-clock"></i> Análise</span>';
-                
-                list.innerHTML += `
-                    <div class="post-card">
-                        ${statusLabel}
-                        <img src="${item.image_url}" class="post-img">
-                        <div class="post-actions">
-                            <span style="font-size:0.8rem; color:#666;">${new Date(item.created_at).toLocaleDateString()}</span>
-                            <button onclick="deleteMyPost('${item.id}')" class="btn-delete"><i class="fas fa-trash"></i> Apagar</button>
-                        </div>
-                    </div>`;
+                const status = item.status === 'approved' ? '<span class="post-status status-approved">No Ar</span>' : '<span class="post-status status-pending">Análise</span>';
+                list.innerHTML += `<div class="post-card">${status}<img src="${item.image_url}" class="post-img"><div class="post-actions"><button onclick="deletePost('${item.id}')" class="btn-delete"><i class="fas fa-trash"></i></button></div></div>`;
             });
         }
+        window.deletePost = async (id) => { if(confirm('Apagar?')) { await supabase.from('mural').delete().eq('id',id); loadMyPosts(); } }
 
-        window.deleteMyPost = async (id) => {
-            if(confirm('Tem certeza que deseja apagar esta foto?')) {
-                const { error } = await supabase.from('mural').delete().eq('id', id);
-                if(error) Swal.fire('Erro', error.message, 'error');
-                else { loadMyPosts(); Swal.fire('Apagado', '', 'success'); }
-            }
-        }
-
-        // --- ESTÚDIO DE CRIAÇÃO ---
+        // ESTÚDIO
         async function loadAdventuresForSelect() {
-            const { data } = await supabase.from('aventuras').select('id, title').order('title');
-            const select = document.getElementById('postAdventureId');
-            select.innerHTML = '<option value="">Selecione o local...</option>';
-            if(data) data.forEach(adv => {
-                const opt = document.createElement('option'); opt.value = adv.title; opt.textContent = adv.title; select.appendChild(opt);
-            });
+            const { data } = await supabase.from('aventuras').select('title').order('title');
+            const sel = document.getElementById('postAdventureId'); sel.innerHTML = '<option value="">Selecione...</option>';
+            if(data) data.forEach(a => { const o=document.createElement('option'); o.value=a.title; o.textContent=a.title; sel.appendChild(o); });
         }
-
+        
         window.loadCanvas = (input) => {
             const file = input.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            const r = new FileReader();
+            r.onload = (e) => {
                 const img = new Image();
-                img.onload = function() {
-                    canvas.width = 1080; canvas.height = (img.height / img.width) * 1080;
-                    currentImage = img; badgesOnCanvas = []; draw();
-                    document.getElementById('uploadStep').style.display = 'none';
-                    document.getElementById('editorArea').style.display = 'block';
-                    loadUserBadgesForEditor();
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+                img.onload = () => {
+                    canvas.width=1080; canvas.height=(img.height/img.width)*1080;
+                    currentImage=img; badgesOnCanvas=[]; draw();
+                    document.getElementById('uploadStep').style.display='none'; document.getElementById('editorArea').style.display='block';
+                    loadUserBadges();
+                }; img.src = e.target.result;
+            }; r.readAsDataURL(file);
         }
 
-        async function loadUserBadgesForEditor() {
-            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id, aventuras(image_url)').eq('user_id', currentUser.id);
-            const container = document.getElementById('badgeSelector');
-            container.innerHTML = '';
-            if(userBadges && userBadges.length > 0) {
-                userBadges.forEach(b => container.innerHTML += `<div class="badge-option" onclick="addBadgeToCanvas('${b.aventuras.image_url}')"><img src="${b.aventuras.image_url}"></div>`);
-            } else {
-                container.innerHTML = '<p style="font-size:0.8rem; color:#666;">Você ainda não tem badges.</p>';
-            }
+        async function loadUserBadges() {
+            const { data: userBadges } = await supabase.from('user_badges').select('aventuras(image_url)').eq('user_id', currentUser.id);
+            const div = document.getElementById('badgeSelector'); div.innerHTML='';
+            if(userBadges && userBadges.length>0) userBadges.forEach(b => div.innerHTML += `<div class="badge-option" onclick="addBadge('${b.aventuras.image_url}')"><img src="${b.aventuras.image_url}"></div>`);
+            else div.innerHTML='<small>Sem badges.</small>';
         }
-
-        window.addBadgeToCanvas = (url) => {
-            // VERIFICAÇÃO ANTI-DUPLICATA
-            if (badgesOnCanvas.some(b => b.src === url)) {
-                return Swal.fire('Ops', 'Você já adicionou este badge!', 'warning');
-            }
-            const badgeImg = new Image();
-            badgeImg.onload = function() { badgesOnCanvas.push(badgeImg); draw(); }
-            badgeImg.src = url;
-        }
-
-        window.clearBadgesFromCanvas = () => { badgesOnCanvas = []; draw(); }
-
+        
+        window.addBadge = (url) => { if(badgesOnCanvas.some(b=>b.src===url)) return Swal.fire('Já adicionado','','info'); const i=new Image(); i.onload=()=>{badgesOnCanvas.push(i); draw();}; i.src=url; }
+        window.clearBadgesFromCanvas = () => { badgesOnCanvas=[]; draw(); }
+        
         function draw() {
             if(!currentImage) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-
-            // Desenha badges (Pequenos no rodapé, alinhados à direita)
-            const size = canvas.width * 0.15; // Menor
-            const padding = 60; // Mais longe da borda (margem de corte)
-            const startX = canvas.width - size - padding;
-            const y = canvas.height - size - padding;
-
-            badgesOnCanvas.forEach((badge, index) => {
-                const x = startX - (index * (size + 20)); 
-                if (x > 0) { 
-                    ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 10;
-                    ctx.drawImage(badge, x, y, size, size); ctx.shadowBlur = 0;
-                }
-            });
-        }
-
-        window.resetEditor = () => {
-            currentImage = null; badgesOnCanvas = [];
-            document.getElementById('uploadStep').style.display = 'block';
-            document.getElementById('editorArea').style.display = 'none';
-            document.getElementById('photoInput').value = '';
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(currentImage,0,0,canvas.width,canvas.height);
+            const size=canvas.width*0.15; const pad=40; const startX=canvas.width-size-pad; const y=canvas.height-size-pad;
+            badgesOnCanvas.forEach((b,i) => { const x=startX-(i*(size+10)); if(x>0){ ctx.shadowColor="rgba(0,0,0,0.5)"; ctx.shadowBlur=10; ctx.drawImage(b,x,y,size,size); ctx.shadowBlur=0; } });
         }
 
         window.submitPost = async () => {
-            const titleElement = document.getElementById('postAdventureId');
-            const title = titleElement.value;
-            const quote = document.getElementById('postQuote').value;
-            
-            if(!title || !quote) return Swal.fire('Ops', 'Selecione o local e escreva uma legenda!', 'warning');
-            Swal.fire({ title: 'Enviando...', didOpen: () => Swal.showLoading() });
-
+            const title = document.getElementById('postAdventureId').value; const quote = document.getElementById('postQuote').value;
+            if(!title || !quote) return Swal.fire('Ops','Preencha tudo','warning');
+            Swal.fire({title:'Enviando...', didOpen:()=>Swal.showLoading()});
             canvas.toBlob(async (blob) => {
                 const fileName = `mural/${Date.now()}_${currentUser.id.slice(0,5)}.jpg`;
-                const { error: uploadError } = await supabase.storage.from('imagens').upload(fileName, blob);
-                if(uploadError) return Swal.fire('Erro', 'Falha no upload da imagem.', 'error');
+                await supabase.storage.from('imagens').upload(fileName, blob);
+                const {data:{publicUrl}} = supabase.storage.from('imagens').getPublicUrl(fileName);
+                await supabase.from('mural').insert([{ user_id:currentUser.id, title, quote, author:currentUser.user_metadata.full_name||'Aventureiro', image_url:publicUrl, status:'pending' }]);
+                Swal.fire('Sucesso','Enviado para análise','success'); window.resetEditor(); showSection('myposts'); loadMyPosts();
+            }, 'image/jpeg', 0.9);
+        }
+        window.resetEditor = () => { currentImage=null; badgesOnCanvas=[]; document.getElementById('uploadStep').style.display='block'; document.getElementById('editorArea').style.display='none'; }
 
-                const { data: { publicUrl } } = supabase.storage.from('imagens').getPublicUrl(fileName);
-
-                const { error: dbError } = await supabase.from('mural').insert([{
-                    user_id: currentUser.id,
-                    title: title,
-                    quote: quote,
-                    author: currentUser.user_metadata.full_name || 'Aventureiro',
-                    image_url: publicUrl,
-                    status: 'pending' 
-                }]);
-
-                if(dbError) Swal.fire('Erro', 'Erro ao salvar post.', 'error');
-                else {
-                    Swal.fire('Enviado!', 'Foto enviada para análise!', 'success');
-                    resetEditor();
-                    showSection('myposts'); // Vai para aba "Meus Posts"
-                    loadMyPosts();
-                }
-            }, 'image/jpeg', 0.90);
+        async function loadBadges() {
+            const { data: advs } = await supabase.from('aventuras').select('id, title, image_url').order('title');
+            const { data: ub } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
+            const unlocked = new Set(ub ? ub.map(b=>b.adventure_id) : []);
+            const g = document.getElementById('badgesGrid'); g.innerHTML='';
+            if(advs) advs.forEach(a => g.innerHTML += `<div class="badge-item ${unlocked.has(a.id)?'unlocked':''}"><img src="${a.image_url}" class="badge-img"><div class="badge-name">${a.title}</div></div>`);
         }
 
-        // --- CARREGAMENTO PADRÃO ---
-        async function loadUserData() { /* ...Mesma lógica do anterior... */ }
-        async function loadBookings() { /* ...Mesma lógica do anterior... */ }
-        async function loadBadges() { 
-            const { data: adventures } = await supabase.from('aventuras').select('id, title, image_url').order('title');
-            const { data: userBadges } = await supabase.from('user_badges').select('adventure_id').eq('user_id', currentUser.id);
-            const unlockedIds = new Set(userBadges ? userBadges.map(b => b.adventure_id) : []);
-            const grid = document.getElementById('badgesGrid'); grid.innerHTML = '';
-            if(adventures) adventures.forEach(adv => {
-                const unlocked = unlockedIds.has(adv.id);
-                grid.innerHTML += `<div class="badge-item ${unlocked ? 'unlocked' : ''}"><img src="${adv.image_url}" class="badge-img"><div class="badge-name">${adv.title}</div>${unlocked ? '<i class="fas fa-check-circle" style="color:var(--success);"></i>' : '<i class="fas fa-lock" style="font-size:0.8rem;color:#ccc;"></i>'}</div>`;
-            });
-        }
-        
-        // --- RESGATE ---
         async function redeemBadge() {
-            const codeInput = document.getElementById('redeemCode');
-            const btn = document.querySelector('.redeem-box button');
-            const code = codeInput.value.trim().toUpperCase();
-            if(!code) return Swal.fire('Ops', 'Digite o código!', 'warning');
-            btn.disabled = true; btn.innerHTML = '...';
-            try {
-                const { data: codeData, error: fetchError } = await supabase.from('redeem_codes').select('*').eq('code', code).single();
-                if (fetchError || !codeData) throw new Error('Código inválido.');
-                if (codeData.used_by) throw new Error('Código já usado.');
-                const { data: updatedData, error: updateError } = await supabase.from('redeem_codes').update({ used_by: currentUser.id }).eq('id', codeData.id).is('used_by', null).select();
-                if (updateError || !updatedData.length) throw new Error('Erro ao resgatar.');
-                await supabase.from('user_badges').upsert({ user_id: currentUser.id, adventure_id: codeData.adventure_id }, { onConflict: 'user_id, adventure_id', ignoreDuplicates: true });
-                Swal.fire({ icon: 'success', title: 'Conquista Desbloqueada!', confirmButtonColor: '#E83D8A' });
-                codeInput.value = ''; loadBadges();
-            } catch (error) { Swal.fire({ icon: 'error', title: 'Falha', text: error.message, confirmButtonColor: '#333' }); } 
-            finally { btn.disabled = false; btn.innerHTML = 'OK'; }
+            const code = document.getElementById('redeemCode').value.trim().toUpperCase();
+            if(!code) return;
+            const { data: c } = await supabase.from('redeem_codes').select('*').eq('code', code).single();
+            if(!c || c.used_by) return Swal.fire('Erro','Código inválido ou usado','error');
+            await supabase.from('redeem_codes').update({used_by:currentUser.id}).eq('id',c.id);
+            await supabase.from('user_badges').upsert({user_id:currentUser.id, adventure_id:c.adventure_id},{onConflict:'user_id,adventure_id'});
+            Swal.fire('Sucesso','Badge liberado!','success'); document.getElementById('redeemCode').value=''; loadBadges();
         }
 
-        // --- PERFIL ---
-        const cpfInput = document.getElementById('cpf'); const phoneInput = document.getElementById('phone');
-        cpfInput.addEventListener('input', (e) => { let v = e.target.value.replace(/\D/g, ""); v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); e.target.value = v; });
-        phoneInput.addEventListener('input', (e) => { let v = e.target.value.replace(/\D/g, ""); v = v.replace(/^(\d{2})(\d)/g, "($1) $2"); v = v.replace(/(\d)(\d{4})$/, "$1-$2"); e.target.value = v; });
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = '...';
-            const updates = { id: currentUser.id, full_name: document.getElementById('fullName').value, nickname: document.getElementById('nickname').value, cpf: document.getElementById('cpf').value, phone: document.getElementById('phone').value, updated_at: new Date() };
-            const { error } = await supabase.from('profiles').upsert(updates);
-            if (error) Swal.fire('Erro', error.message, 'error'); else Swal.fire({ icon: 'success', title: 'Salvo!', timer: 1000, showConfirmButton: false });
-            btn.disabled = false; btn.innerHTML = 'Salvar';
+        document.getElementById('profileForm').addEventListener('submit', async(e)=>{
+            e.preventDefault();
+            const updates = { id:currentUser.id, full_name:document.getElementById('fullName').value, nickname:document.getElementById('nickname').value, cpf:document.getElementById('cpf').value, phone:document.getElementById('phone').value, updated_at:new Date() };
+            await supabase.from('profiles').upsert(updates);
+            Swal.fire('Salvo','','success');
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = 'index.html'; });
+        document.getElementById('logoutBtn').addEventListener('click', async()=>{ await supabase.auth.signOut(); location.href='index.html'; });
         init();
     </script>
 </body>
