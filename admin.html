@@ -101,13 +101,15 @@
 
         <section style="background: #fff0f5; padding: 2rem; border-radius: 12px; border: 2px solid #E83D8A; margin-bottom: 3rem;">
             <h2 style="color:var(--primary); margin-top:0;"><i class="fas fa-medal"></i> Cadastrar Badges Oficiais</h2>
+            <p style="color:#666; font-size:0.9rem;">Aqui você sobe o PNG do badge. <b>O nome da aventura no site NÃO será alterado.</b></p>
+            
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                 <form id="badgeForm" style="margin:0; padding:0; box-shadow:none; border:none; background:transparent;">
                     <label>1. Escolha o Setor</label>
                     <select id="badgeSectorSelect" onchange="checkExistingBadge()" required><option>Carregando...</option></select>
                     
-                    <label>2. Nome do Badge (Opcional)</label>
-                    <input type="text" id="badgeNameInput" placeholder="Ex: Conquistador do Moreno">
+                    <label>2. Nome do Badge (Aparece no Mural)</label>
+                    <input type="text" id="badgeNameInput" placeholder="Ex: Mestre do Moreno (Opcional)">
 
                     <label>3. Upload do PNG (Fundo Transparente)</label>
                     <div class="upload-group">
@@ -176,7 +178,7 @@
                 <form id="adventureForm">
                     <h3 id="adventureFormTitle">Nova Aventura</h3>
                     <input type="hidden" id="adventureId">
-                    <input type="text" id="adventureTitle" placeholder="Título" required>
+                    <input type="text" id="adventureTitle" placeholder="Título (Nome no Site)" required>
                     <input type="text" id="adventureSubtitle" placeholder="Subtítulo">
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -221,32 +223,23 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZ2lqZnBva2ljdGt0ZHJlbmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NTYyNjUsImV4cCI6MjA3ODQzMjI2NX0.xvQBUxEtH8pad25fac6lDU4WbD-fI3L6BcRO9bsO0GE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- 1. AUTENTICAÇÃO E SEGURANÇA ---
+        // --- 1. AUTENTICAÇÃO ---
         checkAuth();
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
-            
             if (!session) {
                 document.getElementById('authScreen').style.display = 'block';
                 document.getElementById('adminLayout').style.display = 'none';
                 return;
             }
-
-            // VERIFICAÇÃO DE ADMIN (CHAVE MESTRA)
-            const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('is_admin')
-                .eq('id', session.user.id)
-                .single();
-
+            const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
             if (error || !profile || profile.is_admin !== true) {
                 await supabase.auth.signOut();
                 alert('Acesso Negado: Você não é administrador.');
                 window.location.href = 'index.html';
                 return;
             }
-
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('adminLayout').style.display = 'block';
             loadAllData();
@@ -265,7 +258,7 @@
             await supabase.auth.signOut(); location.reload();
         });
 
-        // --- 2. CARREGAMENTO GERAL ---
+        // --- 2. CARREGAMENTO ---
         let sectorsData = [];
 
         async function loadAllData() {
@@ -275,6 +268,7 @@
         }
 
         async function loadSectors() {
+            // AGORA BUSCA BADGE_TITLE E BADGE_URL
             const { data } = await supabase.from('aventuras').select('*').order('title');
             sectorsData = data || [];
             
@@ -294,7 +288,6 @@
                 codeSel.innerHTML += opt;
                 agSel.innerHTML += opt;
 
-                // Renderiza Lista de Aventuras
                 list.innerHTML += `
                     <div class="item">
                         <div class="item-info">
@@ -309,7 +302,7 @@
             });
         }
 
-        // --- 3. BADGE MANAGER ---
+        // --- 3. BADGE MANAGER (CORRIGIDO) ---
         window.checkExistingBadge = () => {
             const id = document.getElementById('badgeSectorSelect').value;
             const sector = sectorsData.find(s => s.id == id);
@@ -318,13 +311,15 @@
             const nameInput = document.getElementById('badgeNameInput');
 
             if (sector) {
-                nameInput.value = sector.title;
+                // Tenta pegar o nome do badge, se não tiver, sugere o nome da aventura
+                nameInput.value = sector.badge_title || sector.title; 
+                
                 if(sector.badge_url) {
                     preview.innerHTML = `<img src="${sector.badge_url}">`;
                     msg.innerHTML = '<span style="color:green">Badge Oficial Ativo</span>';
                 } else {
                     preview.innerHTML = `<img src="${sector.image_url}" style="opacity:0.3; filter:grayscale(100%)">`;
-                    msg.innerHTML = '<span style="color:orange">Usando capa (Provisório). Suba um PNG!</span>';
+                    msg.innerHTML = '<span style="color:orange">Sem badge oficial.</span>';
                 }
             }
         };
@@ -349,12 +344,24 @@
             e.preventDefault();
             const id = document.getElementById('badgeSectorSelect').value;
             const url = document.getElementById('badgeImageUrl').value;
-            const title = document.getElementById('badgeNameInput').value;
+            const badgeTitle = document.getElementById('badgeNameInput').value;
             
             if(!id || !url) return alert('Selecione o setor e suba a imagem.');
             
-            const { error } = await supabase.from('aventuras').update({badge_url: url, title: title}).eq('id', id);
-            if(!error) { alert('Badge Salvo!'); loadSectors(); } else alert(error.message);
+            // CORREÇÃO: SALVA EM BADGE_TITLE e BADGE_URL (NÃO MEXE EM TITLE)
+            const { error } = await supabase.from('aventuras')
+                .update({ 
+                    badge_url: url, 
+                    badge_title: badgeTitle 
+                })
+                .eq('id', id);
+
+            if(!error) { 
+                alert('Badge Salvo! O nome da aventura no site permanece intacto.'); 
+                loadSectors(); 
+            } else { 
+                alert(error.message); 
+            }
         });
 
         // --- 4. MURAL ---
@@ -363,22 +370,8 @@
             const p = document.getElementById('pendingMuralList');
             const a = document.getElementById('muralList');
             p.innerHTML=''; a.innerHTML='';
-            
-            data.forEach(m => {
-                const html = `
-                    <div class="item">
-                        <div class="item-info">
-                            <img src="${m.image_url}" onclick="window.open('${m.image_url}')">
-                            <div><strong>${m.author}</strong> - ${m.title}</div>
-                        </div>
-                        <div class="item-actions">
-                            ${m.status === 'pending' 
-                                ? `<button class="success" onclick="updateMural('${m.id}','approved')"><i class="fas fa-check"></i></button>
-                                   <button class="danger" onclick="deleteItem('mural','${m.id}')"><i class="fas fa-times"></i></button>`
-                                : `<button class="danger" onclick="deleteItem('mural','${m.id}')"><i class="fas fa-trash"></i></button>`
-                            }
-                        </div>
-                    </div>`;
+            if(data) data.forEach(m => {
+                const html = `<div class="item"><div class="item-info"><img src="${m.image_url}" onclick="window.open('${m.image_url}')"><div><strong>${m.author}</strong> - ${m.title}</div></div><div class="item-actions">${m.status==='pending' ? `<button class="success" onclick="updateMural('${m.id}','approved')">✔</button><button class="danger" onclick="deleteItem('mural','${m.id}')">✖</button>` : `<button class="danger" onclick="deleteItem('mural','${m.id}')">🗑</button>`}</div></div>`;
                 if(m.status === 'pending') p.innerHTML += html; else a.innerHTML += html;
             });
             if(p.innerHTML === '') p.innerHTML = '<p style="color:#aaa">Nada pendente.</p>';
