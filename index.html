@@ -107,6 +107,9 @@
         .btn-reserve:hover, .btn-whatsapp:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
         footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
+        /* CORREÇÃO DO LOGO NO RODAPÉ */
+        .footer-logo-img { width: 120px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
         .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; position: relative; z-index: 5; }
         .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; text-decoration: none; cursor: pointer; pointer-events: auto; }
 
@@ -330,18 +333,14 @@
                 const pending = localStorage.getItem('pendingAgendaId');
                 
                 if (pending) {
-                    // Se tem reserva pendente, abre o modal dela
                     const item = allAgenda.find(i => i.id == pending);
                     if(item) { openAgendaModal(item); localStorage.removeItem('pendingAgendaId'); }
                 } else if (isRedirect) {
-                    // Se veio do Google/Email link e não tem reserva, vai pro Dashboard
                     window.location.href = 'dashboard.html';
                 }
             }
         }
 
-        // ... RESTO DO CÓDIGO (Igual ao anterior, sem mudanças na lógica de negócio) ...
-        
         function renderSkeleton(id,c){const d=document.getElementById(id);d.innerHTML='';for(let i=0;i<c;i++)d.innerHTML+=`<div class="sk-card skeleton"><div class="sk-img skeleton"></div><div class="sk-content"><div class="sk-title skeleton"></div><div class="sk-text skeleton"></div></div></div>`;}
         async function loadDataWithCache(){
             const c=localStorage.getItem(CACHE_KEY); if(c){const j=JSON.parse(c);if(Date.now()-j.timestamp<CACHE_EXPIRY){renderAll(j.data);checkLoginState();return;}}
@@ -360,7 +359,6 @@
         function renderAdventures(l){const g=document.getElementById('adventuresGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='adventure-card';c.innerHTML=`<div class="card-image"><img src="${i.image_url}" loading="lazy"></div><div class="card-content"><h3>${i.title}</h3><div class="card-meta"><span class="difficulty ${i.difficulty}">${i.difficulty}</span></div></div>`;c.onclick=()=>openAdventureModal(i);g.appendChild(c);});}
         function renderMural(l){const g=document.getElementById('photosGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='photo-item';c.innerHTML=`<img src="${i.image_url}" class="client-img" loading="lazy"><div class="photo-content"><h4>${i.title}</h4><small>by ${i.author}</small></div>`;g.appendChild(c);});}
 
-        // MODALS
         const am=document.getElementById('adventureModal'), gm=document.getElementById('agendaModal');
         function openModal(e){e.classList.add('active');document.body.style.overflow='hidden';history.pushState({m:true},"",location.href);}
         function closeModal(e){e.classList.remove('active');document.body.style.overflow='auto';}
@@ -385,7 +383,6 @@
             const rb=document.getElementById('reserveButton');
             if(ev){rb.style.setProperty('display','inline-flex','important'); rb.onclick=(e)=>{e.preventDefault();closeModal(am);setTimeout(()=>openAgendaModal(ev),100);}}
             else rb.style.setProperty('display','none','important');
-            
             const dt=document.getElementById('adventureDetails'); dt.innerHTML='';
             if(a.details) a.details.forEach(d=>dt.innerHTML+=`<div class="detail-item"><h4>${d.label}</h4><p>${d.value}</p></div>`);
             const gl=document.getElementById('adventureGallery'); gl.innerHTML='';
@@ -399,7 +396,6 @@
             else { localStorage.setItem('redirectAfterLogin','dashboard.html?section=estudio'); Swal.fire({title:'Faça Login', text:'Necessário para postar.', confirmButtonColor:'#E83D8A'}).then(()=>location.href='login.html'); }
         };
 
-        // PAGAMENTO
         document.getElementById('btnReserveSpot').onclick=async()=>{
             if(!currentUser){ localStorage.setItem('pendingAgendaId', currentAgendaItem.id); location.href='login.html'; return; }
             Swal.fire({title:'Confirmar Reserva', html:`Evento: <b>${currentAgendaItem.title}</b><br>R$ ${currentAgendaItem.price}`, showCancelButton:true, confirmButtonText:'Pagar PIX', confirmButtonColor:'#E83D8A'}).then(async(r)=>{
@@ -419,7 +415,6 @@
             });
         };
 
-        // SIDEBAR
         const mb=document.getElementById('mobileMenuBtn'), sb=document.getElementById('mobileSidebar'), ov=document.getElementById('sidebarOverlay'), cb=document.getElementById('closeSidebarBtn');
         function tS(){sb.classList.toggle('active');ov.classList.toggle('active');}
         if(mb)mb.onclick=tS; if(cb)cb.onclick=tS; if(ov)ov.onclick=tS;
