@@ -21,10 +21,7 @@
             --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* RESET GLOBAL (Mantido, mas sobrescrito onde necessário) */
         ul, li { list-style: none !important; margin: 0; padding: 0; }
-        
         html { scroll-behavior: smooth; }
         body { background-color: var(--light); color: var(--dark); line-height: 1.6; overflow-x: hidden; padding-bottom: 80px; padding-top: 70px; }
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
@@ -48,6 +45,7 @@
 
         .mobile-header-content { display: none; }
         .app-bottom-nav { display: none; }
+        .mobile-sidebar { display: none; }
         .sidebar-overlay { display: none; }
 
         /* --- SIDEBAR MOBILE (ESTILO CORRIGIDO) --- */
@@ -104,8 +102,18 @@
         .adventures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
         .agenda-grid, .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2.5rem; }
         
-        .agenda-item, .adventure-card, .photo-item { border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); background: white; cursor: pointer; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
-        .agenda-item:hover, .adventure-card:hover { transform: translateY(-5px); }
+        /* CARD STYLES COM EFEITO ROSA NO HOVER */
+        .agenda-item, .adventure-card, .photo-item { 
+            border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); background: white; 
+            cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            position: relative; display: flex; flex-direction: column; border: 1px solid transparent;
+        }
+        .agenda-item:hover, .adventure-card:hover, .photo-item:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(232, 61, 138, 0.3); /* BRILHO ROSA */
+            border-color: rgba(232, 61, 138, 0.3);
+        }
+
         .agenda-img, .card-image img { width: 100%; height: auto; object-fit: cover; display: block; }
         .agenda-img { aspect-ratio: 4/5; }
         .card-image { height: 280px; overflow: hidden; }
@@ -115,7 +123,10 @@
 
         .agenda-content, .card-content, .photo-content { padding: 1.5rem; flex-grow: 1; text-align: center; }
         .card-content h3 { color: var(--primary); font-size: 1.3rem; text-align: left; }
-        .card-meta { display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 1rem; margin-top: auto; }
+        
+        .card-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 1rem; margin-top: auto; }
+        .duration { color: #666; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px; } /* Estilo da duração */
+        
         .difficulty { padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
         .difficulty.facil { background: #e8f5e9; color: var(--success); }
         .difficulty.medio { background: #fff3e0; color: #ff9800; }
@@ -155,6 +166,7 @@
         .btn-reserve:hover, .btn-whatsapp:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
         footer { background: var(--dark); color: white; padding: 4rem 0 6rem; text-align: center; }
+        /* Logo corrigido */
         .footer-logo-img { width: 120px; height: auto; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
         .social-links { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; position: relative; z-index: 5; }
@@ -356,7 +368,8 @@
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const mp = new MercadoPago(MP_PUBLIC_KEY);
-        const CACHE_KEY = 'aranhas_data_v1';
+        // CACHE ATUALIZADO PARA V2
+        const CACHE_KEY = 'aranhas_data_v2';
         const CACHE_EXPIRY = 15 * 60 * 1000;
 
         // AUTH CHECK & REDIRECT LOGIC
@@ -414,7 +427,7 @@
         function renderAll(d){ allAdventures=d.adventures; allAgenda=d.agenda; renderAgenda(d.agenda); renderAdventures(d.adventures); renderMural(d.mural); }
         
         function renderAgenda(l){const g=document.getElementById('agendaGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='agenda-item';const p=i.price?`<span style="color:#27ae60;font-weight:bold;display:block;margin-top:5px">R$ ${i.price}</span>`:'';c.innerHTML=`<img src="${i.image_url}" class="agenda-img" loading="lazy"><div class="agenda-content"><h4>${i.title}</h4><p>${i.date_text}</p>${p}</div>`;c.onclick=()=>openAgendaModal(i);g.appendChild(c);});}
-        function renderAdventures(l){const g=document.getElementById('adventuresGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='adventure-card';c.innerHTML=`<div class="card-image"><img src="${i.image_url}" loading="lazy"></div><div class="card-content"><h3>${i.title}</h3><div class="card-meta"><span class="difficulty ${i.difficulty}">${i.difficulty}</span></div></div>`;c.onclick=()=>openAdventureModal(i);g.appendChild(c);});}
+        function renderAdventures(l){const g=document.getElementById('adventuresGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='adventure-card';c.innerHTML=`<div class="card-image"><img src="${i.image_url}" loading="lazy"></div><div class="card-content"><h3>${i.title}</h3><div class="card-meta"><span class="difficulty ${i.difficulty}">${i.difficulty}</span><div class="duration"><i class="far fa-clock"></i> ${i.duration}</div></div></div>`;c.onclick=()=>openAdventureModal(i);g.appendChild(c);});}
         function renderMural(l){const g=document.getElementById('photosGrid');g.innerHTML='';l.forEach(i=>{const c=document.createElement('div');c.className='photo-item';c.innerHTML=`<img src="${i.image_url}" class="client-img" loading="lazy"><div class="photo-content"><h4>${i.title}</h4><small>by ${i.author}</small></div>`;g.appendChild(c);});}
 
         const am=document.getElementById('adventureModal'), gm=document.getElementById('agendaModal');
